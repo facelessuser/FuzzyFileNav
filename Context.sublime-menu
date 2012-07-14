@@ -1,0 +1,14 @@
+[
+    { "caption": "-" },
+    {
+        "caption": "Fuzzy Nav",
+        "command": "fuzzy_file_nav",
+        "args": {"regex_exclude": [".*\\.(DS_Store|svn|git)$"]}
+    },
+    {
+        "caption": "Fuzzy Nav Here",
+        "command": "fuzzy_start_from_file",
+        "args": {"regex_exclude": [".*\\.(DS_Store|svn|git)$"]}
+    },
+    { "caption": "-"}
+]
