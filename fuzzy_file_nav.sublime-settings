@@ -1,0 +1,7 @@
+{
+    "home": "",
+
+    // example: {"name": "Home", "path": "/Users/name", "regex_exclude": [".*\\.(DS_Store|svn|git)$"]}
+    "bookmarks": [
+    ]
+}

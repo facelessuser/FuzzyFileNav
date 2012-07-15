@@ -10,5 +10,9 @@
         "command": "fuzzy_start_from_file",
         "args": {"regex_exclude": [".*\\.(DS_Store|svn|git)$"]}
     },
+    {
+        "caption": "Fuzzy BookMarks",
+        "command": "fuzzy_bookmarks_load"
+    },
     { "caption": "-"}
 ]

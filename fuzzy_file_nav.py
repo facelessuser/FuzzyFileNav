@@ -12,8 +12,11 @@ import re
 
 PLATFORM = sublime.platform()
 
-# Move to settings file
-HOME = "/Some/Folder/Here"
+
+def get_root_path():
+    # Windows doesn't have a root, so just
+    # return an empty string to represent its root.
+    return u"" if PLATFORM == "windows" else u"/"
 
 
 class FuzzyEventListener(sublime_plugin.EventListener):
@@ -34,7 +37,9 @@ class FuzzyEventListener(sublime_plugin.EventListener):
             if m:
                 if m.group(1):
                     FuzzyFileNavCommand.fuzzy_relaod = True
-                    win.run_command("fuzzy_file_nav", {"start": HOME, "regex_exclude": FuzzyFileNavCommand.regex_exclude})
+                    home = sublime.load_settings("fuzzy_file_nav.sublime-settings").get("home", "")
+                    home = get_root_path() if not path.exists(home) or not path.isdir(home) else home
+                    win.run_command("fuzzy_file_nav", {"start": home, "regex_exclude": FuzzyFileNavCommand.regex_exclude})
                 elif m.group(2):
                     win.run_command("hide_overlay")
                     FuzzyFileNavCommand.reset()
@@ -77,6 +82,27 @@ class FuzzyMakeFolderCommand(sublime_plugin.WindowCommand):
             sublime.error_message("%d does not exist!" % cwd)
 
 
+class FuzzyBookmarksLoadCommand(sublime_plugin.WindowCommand):
+    def run(self):
+        self.display = []
+        self.excludes = []
+        bookmarks = sublime.load_settings("fuzzy_file_nav.sublime-settings").get("bookmarks", [])
+        for bm in bookmarks:
+            target = bm.get("path", None)
+            if target and path.exists(target) and path.isdir(target):
+                self.display.append([bm.get("name", target), target])
+                self.excludes.append(bm.get("regex_exclude", []))
+        if len(self.display) > 0:
+            self.window.show_quick_panel(self.display, self.check_selection)
+
+    def check_selection(self, value):
+        if value > -1:
+            self.window.run_command(
+                "fuzzy_file_nav",
+                {"start": self.display[value][1], "regex_exclude": self.excludes[value]}
+            )
+
+
 class FuzzyStartFromFileCommand(sublime_plugin.TextCommand):
     def run(self, edit, regex_exclude=[]):
         # Check if you can retrieve a file name (means it exists on disk).
@@ -110,7 +136,7 @@ class FuzzyFileNavCommand(sublime_plugin.WindowCommand):
 
         # Check if a start destination has been given
         # and ensure it is valid.
-        FuzzyFileNavCommand.cwd = self.get_root_path() if start == None or not path.exists(start) or not path.isdir(start) else unicode(start)
+        FuzzyFileNavCommand.cwd = get_root_path() if start == None or not path.exists(start) or not path.isdir(start) else unicode(start)
 
         # Get and display options.
         try:
@@ -142,11 +168,6 @@ class FuzzyFileNavCommand(sublime_plugin.WindowCommand):
                     folders.append(f + ("\\" if PLATFORM == "windows" else "/"))
         return [u".."] + sorted(folders) + sorted(documents)
 
-    def get_root_path(self):
-        # Windows doesn't have a root, so just
-        # return an empty string to represent its root.
-        return u"" if PLATFORM == "windows" else u"/"
-
     def display_files(self, cwd):
         FuzzyFileNavCommand.files = self.get_files(cwd)
         self.window.show_quick_panel(FuzzyFileNavCommand.files, self.check_selection)
@@ -159,7 +180,7 @@ class FuzzyFileNavCommand(sublime_plugin.WindowCommand):
         # So if the previous directory is the same
         # as the current, back out of the drive and
         # list all drives.
-        return self.get_root_path() if prev == cwd else prev
+        return get_root_path() if prev == cwd else prev
 
     def get_drives(self):
         # Search through valid drive names and see if they exist.
@@ -172,7 +193,7 @@ class FuzzyFileNavCommand(sublime_plugin.WindowCommand):
             FuzzyFileNavCommand.cwd = self.back_dir(FuzzyFileNavCommand.cwd) if selection == 0 else path.join(FuzzyFileNavCommand.cwd, FuzzyFileNavCommand.files[selection])
 
             # Check if the option is a folder or if we are at the root (needed for windows)
-            if (path.isdir(FuzzyFileNavCommand.cwd) or FuzzyFileNavCommand.cwd == self.get_root_path()):
+            if (path.isdir(FuzzyFileNavCommand.cwd) or FuzzyFileNavCommand.cwd == get_root_path()):
                 try:
                     self.display_files(FuzzyFileNavCommand.cwd)
                 except:
