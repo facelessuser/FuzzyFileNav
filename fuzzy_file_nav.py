@@ -32,31 +32,36 @@ class FuzzyEventListener(sublime_plugin.EventListener):
             sel = view.sel()[0]
             win = view.window()
             line_text = view.substr(view.line(sel))
-            # Go Home
             m = re.match(r"^(?:(?:(\+)|(\-)|(~)|(\*))(?:\\|/)|([\w\W]*)\:mkdir|([\w\W]*)\:mkfile)", line_text)
             if m:
                 if m.group(1):
+                    # Show hidden files/folders from regex_exclude
                     FuzzyFileNavCommand.fuzzy_relaod = True
                     FuzzyFileNavCommand.ignore_excludes = True
                     win.run_command("fuzzy_file_nav", {"start": FuzzyFileNavCommand.cwd, "regex_exclude": FuzzyFileNavCommand.regex_exclude})
                 elif m.group(2):
+                    # Hide files/folders via regex_exclude
                     FuzzyFileNavCommand.fuzzy_relaod = True
                     FuzzyFileNavCommand.ignore_excludes = False
                     win.run_command("fuzzy_file_nav", {"start": FuzzyFileNavCommand.cwd, "regex_exclude": FuzzyFileNavCommand.regex_exclude})
                 elif m.group(3):
+                    # Go Home
                     FuzzyFileNavCommand.fuzzy_relaod = True
                     home = sublime.load_settings("fuzzy_file_nav.sublime-settings").get("home", "")
                     home = get_root_path() if not path.exists(home) or not path.isdir(home) else home
                     win.run_command("fuzzy_file_nav", {"start": home, "regex_exclude": FuzzyFileNavCommand.regex_exclude})
                 elif m.group(4):
+                    # Load bookmark menu
                     win.run_command("hide_overlay")
                     FuzzyFileNavCommand.reset()
                     win.run_command("fuzzy_bookmarks_load")
                 elif m.group(5):
+                    # Make directory
                     win.run_command("hide_overlay")
                     FuzzyFileNavCommand.reset()
                     win.run_command("fuzzy_make_folder", {"cwd": FuzzyFileNavCommand.cwd, "name": m.group(2)})
                 elif m.group(6):
+                    # Create new file
                     win.run_command("hide_overlay")
                     FuzzyFileNavCommand.reset()
                     win.run_command("fuzzy_make_file", {"cwd": FuzzyFileNavCommand.cwd, "name": m.group(3)})
