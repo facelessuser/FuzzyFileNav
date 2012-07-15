@@ -33,7 +33,7 @@ class FuzzyEventListener(sublime_plugin.EventListener):
             win = view.window()
             line_text = view.substr(view.line(sel))
             # Go Home
-            m = re.match(r"^(?:(~)|([\w\W]*)\:mkdir|([\w\W]*)\:mkfile)", line_text)
+            m = re.match(r"^(?:(~(?:\\|/))|([\w\W]*)\:mkdir|([\w\W]*)\:mkfile|(\*(?:\\|/)))", line_text)
             if m:
                 if m.group(1):
                     FuzzyFileNavCommand.fuzzy_relaod = True
@@ -48,6 +48,10 @@ class FuzzyEventListener(sublime_plugin.EventListener):
                     win.run_command("hide_overlay")
                     FuzzyFileNavCommand.reset()
                     win.run_command("fuzzy_make_file", {"cwd": FuzzyFileNavCommand.cwd, "name": m.group(3)})
+                elif m.group(4):
+                    win.run_command("hide_overlay")
+                    FuzzyFileNavCommand.reset()
+                    win.run_command("fuzzy_bookmarks_load")
 
 
 class FuzzyMakeFileCommand(sublime_plugin.WindowCommand):
