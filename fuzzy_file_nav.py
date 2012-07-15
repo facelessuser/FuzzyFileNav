@@ -207,24 +207,18 @@ class FuzzyFileNavCommand(sublime_plugin.WindowCommand):
             FuzzyFileNavCommand.cwd = path.normpath(self.back_dir(FuzzyFileNavCommand.cwd) if selection == 0 else path.join(FuzzyFileNavCommand.cwd, FuzzyFileNavCommand.files[selection]))
 
             # Check if the option is a folder or if we are at the root (needed for windows)
-            if (path.isdir(FuzzyFileNavCommand.cwd) or FuzzyFileNavCommand.cwd == get_root_path()):
-                try:
+            try:
+                if (path.isdir(FuzzyFileNavCommand.cwd) or FuzzyFileNavCommand.cwd == get_root_path()):
                     self.display_files(FuzzyFileNavCommand.cwd)
-                except:
-                    # Inaccessible folder try backing up
-                    sublime.status_message("%s is not accessible!" % FuzzyFileNavCommand.cwd)
-                    FuzzyFileNavCommand.cwd = self.back_dir(FuzzyFileNavCommand.cwd)
-                    self.window.run_command("hide_overlay")
-                    self.display_files(FuzzyFileNavCommand.cwd)
-            else:
-                try:
+                else:
                     self.window.open_file(FuzzyFileNavCommand.cwd)
                     FuzzyFileNavCommand.reset()
-                except:
-                    sublime.status_message("%s is not accessible!" % FuzzyFileNavCommand.cwd)
-                    FuzzyFileNavCommand.cwd = self.back_dir(FuzzyFileNavCommand.cwd)
-                    self.window.run_command("hide_overlay")
-                    self.display_files(FuzzyFileNavCommand.cwd)
+            except:
+                # Inaccessible folder try backing up
+                sublime.status_message("%s is not accessible!" % FuzzyFileNavCommand.cwd)
+                FuzzyFileNavCommand.cwd = self.back_dir(FuzzyFileNavCommand.cwd)
+                self.window.run_command("hide_overlay")
+                self.display_files(FuzzyFileNavCommand.cwd)
         elif not FuzzyFileNavCommand.fuzzy_relaod:
             FuzzyFileNavCommand.reset()
         else:
