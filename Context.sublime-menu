@@ -2,13 +2,11 @@
     { "caption": "-" },
     {
         "caption": "Fuzzy Nav",
-        "command": "fuzzy_file_nav",
-        "args": {"regex_exclude": [".*\\.(DS_Store|svn|git)$"]}
+        "command": "fuzzy_file_nav"
     },
     {
         "caption": "Fuzzy Nav Here",
-        "command": "fuzzy_start_from_file",
-        "args": {"regex_exclude": [".*\\.(DS_Store|svn|git)$"]}
+        "command": "fuzzy_start_from_file"
     },
     {
         "caption": "Fuzzy BookMarks",

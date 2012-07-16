@@ -38,18 +38,18 @@ class FuzzyEventListener(sublime_plugin.EventListener):
                     # Show hidden files/folders from regex_exclude
                     FuzzyFileNavCommand.fuzzy_relaod = True
                     FuzzyFileNavCommand.ignore_excludes = True
-                    win.run_command("fuzzy_file_nav", {"start": FuzzyFileNavCommand.cwd, "regex_exclude": FuzzyFileNavCommand.regex_exclude})
+                    win.run_command("fuzzy_file_nav", {"start": FuzzyFileNavCommand.cwd})
                 elif m.group(2):
                     # Hide files/folders via regex_exclude
                     FuzzyFileNavCommand.fuzzy_relaod = True
                     FuzzyFileNavCommand.ignore_excludes = False
-                    win.run_command("fuzzy_file_nav", {"start": FuzzyFileNavCommand.cwd, "regex_exclude": FuzzyFileNavCommand.regex_exclude})
+                    win.run_command("fuzzy_file_nav", {"start": FuzzyFileNavCommand.cwd})
                 elif m.group(3):
                     # Go Home
                     FuzzyFileNavCommand.fuzzy_relaod = True
                     home = sublime.load_settings("fuzzy_file_nav.sublime-settings").get("home", "")
                     home = get_root_path() if not path.exists(home) or not path.isdir(home) else home
-                    win.run_command("fuzzy_file_nav", {"start": home, "regex_exclude": FuzzyFileNavCommand.regex_exclude})
+                    win.run_command("fuzzy_file_nav", {"start": home})
                 elif m.group(4):
                     # Load bookmark menu
                     win.run_command("hide_overlay")
@@ -102,37 +102,35 @@ class FuzzyMakeFolderCommand(sublime_plugin.WindowCommand):
 class FuzzyBookmarksLoadCommand(sublime_plugin.WindowCommand):
     def run(self):
         self.display = []
-        self.excludes = []
         bookmarks = sublime.load_settings("fuzzy_file_nav.sublime-settings").get("bookmarks", [])
         for bm in bookmarks:
             target = bm.get("path", None)
-            if target and path.exists(target) and path.isdir(target):
-                self.display.append([bm.get("name", target), target])
-                self.excludes.append(bm.get("regex_exclude", []))
+            if target and (path.exists(target) and path.isdir(target)) or (PLATFORM == "windows" and target == ""):
+                os_exclude = set(bm.get("os_exclude", []))
+                if not PLATFORM in os_exclude:
+                    self.display.append([bm.get("name", target), target])
         if len(self.display) > 0:
             self.window.show_quick_panel(self.display, self.check_selection)
 
     def check_selection(self, value):
         if value > -1:
-            self.window.run_command(
-                "fuzzy_file_nav",
-                {"start": self.display[value][1], "regex_exclude": self.excludes[value]}
-            )
+            self.window.run_command("fuzzy_file_nav", {"start": self.display[value][1]})
 
 
 class FuzzyStartFromFileCommand(sublime_plugin.TextCommand):
-    def run(self, edit, regex_exclude=[]):
+    def run(self, edit):
         # Check if you can retrieve a file name (means it exists on disk).
         name = self.view.file_name()
         if name:
-            self.view.window().run_command("fuzzy_file_nav", {"start": path.dirname(name), "regex_exclude": regex_exclude})
+            self.view.window().run_command("fuzzy_file_nav", {"start": path.dirname(name)})
+        else:
+            self.view.window().run_command("fuzzy_bookmarks_load")
 
 
 class FuzzyFileNavCommand(sublime_plugin.WindowCommand):
     active = False
     win_id = None
     view_id = None
-    regex_exclude = []
     fuzzy_relaod = False
     ignore_excludes = False
 
@@ -143,7 +141,7 @@ class FuzzyFileNavCommand(sublime_plugin.WindowCommand):
         cls.view_id = None
         cls.ignore_excludes = False
 
-    def run(self, start=None, regex_exclude=[]):
+    def run(self, start=None):
         if FuzzyFileNavCommand.active:
             FuzzyFileNavCommand.active = False
             self.window.run_command("hide_overlay")
@@ -151,7 +149,7 @@ class FuzzyFileNavCommand(sublime_plugin.WindowCommand):
         FuzzyFileNavCommand.active = True
         FuzzyFileNavCommand.view_id = None
         FuzzyFileNavCommand.win_id = self.window.id()
-        FuzzyFileNavCommand.regex_exclude = regex_exclude
+        self.regex_exclude = sublime.load_settings("fuzzy_file_nav.sublime-settings").get("regex_exclude", [])
 
         # Check if a start destination has been given
         # and ensure it is valid.
@@ -175,7 +173,7 @@ class FuzzyFileNavCommand(sublime_plugin.WindowCommand):
 
             # Check exclusion regex to omit files.
             if valid and not self.ignore_excludes:
-                for regex in FuzzyFileNavCommand.regex_exclude:
+                for regex in self.regex_exclude:
                     if re.match(regex, full_path):
                         valid = False
 
