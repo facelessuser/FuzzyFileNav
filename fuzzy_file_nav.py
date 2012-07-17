@@ -59,12 +59,12 @@ class FuzzyEventListener(sublime_plugin.EventListener):
                     # Make directory
                     win.run_command("hide_overlay")
                     FuzzyFileNavCommand.reset()
-                    win.run_command("fuzzy_make_folder", {"cwd": FuzzyFileNavCommand.cwd, "name": m.group(2)})
+                    win.run_command("fuzzy_make_folder", {"cwd": FuzzyFileNavCommand.cwd, "name": m.group(5)})
                 elif m.group(6):
                     # Create new file
                     win.run_command("hide_overlay")
                     FuzzyFileNavCommand.reset()
-                    win.run_command("fuzzy_make_file", {"cwd": FuzzyFileNavCommand.cwd, "name": m.group(3)})
+                    win.run_command("fuzzy_make_file", {"cwd": FuzzyFileNavCommand.cwd, "name": m.group(6)})
 
 
 class FuzzyMakeFileCommand(sublime_plugin.WindowCommand):
