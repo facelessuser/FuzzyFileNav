@@ -215,7 +215,11 @@ class FuzzyFileNavCommand(sublime_plugin.WindowCommand):
                     self.display_files(FuzzyFileNavCommand.cwd)
                 else:
                     self.window.open_file(FuzzyFileNavCommand.cwd)
-                    FuzzyFileNavCommand.reset()
+                    if bool(sublime.load_settings("fuzzy_file_nav.sublime-settings").get("multi_file_open", False)):
+                        FuzzyFileNavCommand.cwd = path.normpath(self.back_dir(FuzzyFileNavCommand.cwd))
+                        self.display_files(FuzzyFileNavCommand.cwd)
+                    else:
+                        FuzzyFileNavCommand.reset()
             except:
                 # Inaccessible folder try backing up
                 sublime.status_message("%s is not accessible!" % FuzzyFileNavCommand.cwd)

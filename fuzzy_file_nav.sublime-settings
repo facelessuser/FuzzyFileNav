@@ -5,6 +5,10 @@
     // Patterns of files/folders to exclude
     "regex_exclude": [".*\\.(DS_Store|svn|git)$"],
 
+    // Keep panel open after a file is selected so
+    // More files can be opened
+    "multi_file_open": false,
+
     // Bookmarked paths
     "bookmarks": [
         {"name": "My Computer", "path": "", "os_exclude": ["osx", "linux"]},
