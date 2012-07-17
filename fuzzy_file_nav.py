@@ -105,7 +105,7 @@ class FuzzyBookmarksLoadCommand(sublime_plugin.WindowCommand):
         bookmarks = sublime.load_settings("fuzzy_file_nav.sublime-settings").get("bookmarks", [])
         for bm in bookmarks:
             target = bm.get("path", None)
-            if target and (path.exists(target) and path.isdir(target)) or (PLATFORM == "windows" and target == ""):
+            if target != None and ((path.exists(target) and path.isdir(target)) or (PLATFORM == "windows" and target == u"")):
                 os_exclude = set(bm.get("os_exclude", []))
                 if not PLATFORM in os_exclude:
                     self.display.append([bm.get("name", target), target])
@@ -153,7 +153,8 @@ class FuzzyFileNavCommand(sublime_plugin.WindowCommand):
 
         # Check if a start destination has been given
         # and ensure it is valid.
-        FuzzyFileNavCommand.cwd = path.normpath(get_root_path() if start == None or not path.exists(start) or not path.isdir(start) else unicode(start))
+        directory = get_root_path() if start == None or not path.exists(start) or not path.isdir(start) else unicode(start)
+        FuzzyFileNavCommand.cwd = directory if PLATFORM == "windows" and directory == u"" else path.normpath(directory)
 
         # Get and display options.
         try:
@@ -207,7 +208,8 @@ class FuzzyFileNavCommand(sublime_plugin.WindowCommand):
         if selection > -1:
             FuzzyFileNavCommand.fuzzy_relaod = False
             # The first selection is the "go up a directory" option.
-            FuzzyFileNavCommand.cwd = path.normpath(self.back_dir(FuzzyFileNavCommand.cwd) if selection == 0 else path.join(FuzzyFileNavCommand.cwd, FuzzyFileNavCommand.files[selection]))
+            directory = self.back_dir(FuzzyFileNavCommand.cwd) if selection == 0 else path.join(FuzzyFileNavCommand.cwd, FuzzyFileNavCommand.files[selection])
+            FuzzyFileNavCommand.cwd = directory if PLATFORM == "windows" and directory == u"" else path.normpath(directory)
 
             # Check if the option is a folder or if we are at the root (needed for windows)
             try:
