@@ -202,7 +202,15 @@ class FuzzyFileNavCommand(sublime_plugin.WindowCommand):
 
     def get_drives(self):
         # Search through valid drive names and see if they exist.
-        return [unicode(d + ":") for d in "ABCDEFGHIJKLMNOPQRSTUVWXYZ" if path.exists(d + ":")]
+        drives = []
+        for d in "ABCDEFGHIJKLMNOPQRSTUVWXYZ":
+            try:
+                drive = unicode(d + ":")
+                if path.exists(drive):
+                    drives.append(drive)
+            except:
+                pass
+        return drives
 
     def check_selection(self, selection):
         if selection > -1:
