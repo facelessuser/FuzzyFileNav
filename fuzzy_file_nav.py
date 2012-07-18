@@ -11,6 +11,9 @@ import os.path as path
 import re
 
 PLATFORM = sublime.platform()
+CMD_WIN = r"^(?:(?:(\+)|(\-)|(~)|(\*)|(\.\.))(?:\\|/)|((?:[A-Za-z]{1}\:)?(?:\\|/))|([\w\W]*)\:mkdir|([\w\W]*)\:mkfile|([\w\W]*(?:\\|/)))"
+CMD_NIX = r"^(?:(?:(\+)|(\-)|(~)|(\*)|(\.\.))/|(/)|([\w\W]*)\:mkdir|([\w\W]*)\:mkfile|([\w\W]*/))"
+WIN_DRIVE = r"(^[A-Za-z]{1}\:)"
 
 
 def get_root_path():
@@ -19,20 +22,63 @@ def get_root_path():
     return u"" if PLATFORM == "windows" else u"/"
 
 
+def back_dir(cwd):
+    prev = path.dirname(cwd)
+
+    # On windows, if you try and get the
+    # dirname of a drive, you get the drive.
+    # So if the previous directory is the same
+    # as the current, back out of the drive and
+    # list all drives.
+    return get_root_path() if prev == cwd else prev
+
+
+def get_drives():
+    # Search through valid drive names and see if they exist.
+    drives = []
+    for d in "ABCDEFGHIJKLMNOPQRSTUVWXYZ":
+        try:
+            drive = unicode(d + ":")
+            if path.exists(drive):
+                drives.append(drive)
+        except:
+            pass
+    return drives
+
+
+def back_to_root(cwd):
+    root = ""
+    if PLATFORM != "windows":
+        root = "/"
+    else:
+        m = re.match(WIN_DRIVE, cwd)
+        if m:
+            root = m.group(1)
+    return unicode(root)
+
+
 class FuzzyEventListener(sublime_plugin.EventListener):
     def on_activated(self, view):
         # New window gained activation? Reset fuzzy command state
         if FuzzyFileNavCommand.active and view.window() and view.window().id() != FuzzyFileNavCommand.win_id:
             FuzzyFileNavCommand.reset()
-        if FuzzyFileNavCommand.active and FuzzyFileNavCommand.view_id != view.id():
-            FuzzyFileNavCommand.view_id = view.id()
+        if FuzzyFileNavCommand.active and (FuzzyFileNavCommand.view == None or FuzzyFileNavCommand.view.id() != view.id()):
+            FuzzyFileNavCommand.view = view
+
+    def on_query_context(self, view, key, operator, operand, match_all):
+        active = FuzzyFileNavCommand.active == operand
+        if FuzzyFileNavCommand.view.id() == view.id():
+            if key == "fuzzy_path_complete":
+                return active
+        return False
 
     def on_modified(self, view):
-        if FuzzyFileNavCommand.active and FuzzyFileNavCommand.view_id and FuzzyFileNavCommand.view_id == view.id():
+        if FuzzyFileNavCommand.active and FuzzyFileNavCommand.view and FuzzyFileNavCommand.view.id() == view.id():
             sel = view.sel()[0]
             win = view.window()
             line_text = view.substr(view.line(sel))
-            m = re.match(r"^(?:(?:(\+)|(\-)|(~)|(\*))(?:\\|/)|([\w\W]*)\:mkdir|([\w\W]*)\:mkfile)", line_text)
+            regex = CMD_WIN if PLATFORM == "windows" else CMD_NIX
+            m = re.match(regex, line_text)
             if m:
                 if m.group(1):
                     # Show hidden files/folders from regex_exclude
@@ -56,15 +102,42 @@ class FuzzyEventListener(sublime_plugin.EventListener):
                     FuzzyFileNavCommand.reset()
                     win.run_command("fuzzy_bookmarks_load")
                 elif m.group(5):
+                    # Back a directory
+                    FuzzyFileNavCommand.fuzzy_relaod = True
+                    win.run_command("fuzzy_file_nav", {"start": back_dir(FuzzyFileNavCommand.cwd)})
+                elif m.group(6):
+                    # Go to root of drive/computer
+                    if PLATFORM == "windows" and re.match(WIN_DRIVE, line_text):
+                        try:
+                            if path.exists(line_text):
+                                new_path = line_text.upper()
+                            else:
+                                return
+                        except:
+                            return
+                    else:
+                        new_path = back_to_root(FuzzyFileNavCommand.cwd)
+                    FuzzyFileNavCommand.fuzzy_relaod = True
+                    win.run_command("fuzzy_file_nav", {"start": new_path})
+                elif m.group(7):
                     # Make directory
                     win.run_command("hide_overlay")
                     FuzzyFileNavCommand.reset()
-                    win.run_command("fuzzy_make_folder", {"cwd": FuzzyFileNavCommand.cwd, "name": m.group(5)})
-                elif m.group(6):
+                    win.run_command("fuzzy_make_folder", {"cwd": FuzzyFileNavCommand.cwd, "name": m.group(7)})
+                elif m.group(8):
                     # Create new file
                     win.run_command("hide_overlay")
                     FuzzyFileNavCommand.reset()
-                    win.run_command("fuzzy_make_file", {"cwd": FuzzyFileNavCommand.cwd, "name": m.group(6)})
+                    win.run_command("fuzzy_make_file", {"cwd": FuzzyFileNavCommand.cwd, "name": m.group(8)})
+                elif m.group(9):
+                    # Load folder
+                    new_path = path.join(FuzzyFileNavCommand.cwd, m.group(9))
+                    try:
+                        if path.exists(new_path) and path.isdir(new_path):
+                            FuzzyFileNavCommand.fuzzy_relaod = True
+                            win.run_command("fuzzy_file_nav", {"start": new_path})
+                    except:
+                        return
 
 
 class FuzzyMakeFileCommand(sublime_plugin.WindowCommand):
@@ -127,10 +200,33 @@ class FuzzyStartFromFileCommand(sublime_plugin.TextCommand):
             self.view.window().run_command("fuzzy_bookmarks_load")
 
 
+class FuzzyPathCompleteCommand(sublime_plugin.WindowCommand):
+    def run(self):
+        view = FuzzyFileNavCommand.view
+        complete = []
+        if view != None:
+            sel = view.sel()[0]
+            line_text = view.substr(view.line(sel))
+            for item in FuzzyFileNavCommand.files:
+                i = item.lower() if PLATFORM == "windows" else item
+                current = line_text.lower() if PLATFORM == "windows" else line_text
+                if i.startswith(current):
+                    try:
+                        if path.isdir(path.join(FuzzyFileNavCommand.cwd, item)):
+                            item = item[0:len(item) - 1]
+                        complete.append(item)
+                    except:
+                        pass
+            if len(complete) == 1:
+                edit = view.begin_edit()
+                view.replace(edit, sublime.Region(0, view.size()), complete[0])
+                view.end_edit(edit)
+
+
 class FuzzyFileNavCommand(sublime_plugin.WindowCommand):
     active = False
     win_id = None
-    view_id = None
+    view = None
     fuzzy_relaod = False
     ignore_excludes = False
 
@@ -138,7 +234,7 @@ class FuzzyFileNavCommand(sublime_plugin.WindowCommand):
     def reset(cls):
         cls.active = False
         cls.win_id = None
-        cls.view_id = None
+        cls.view = None
         cls.ignore_excludes = False
 
     def run(self, start=None):
@@ -147,7 +243,7 @@ class FuzzyFileNavCommand(sublime_plugin.WindowCommand):
             self.window.run_command("hide_overlay")
 
         FuzzyFileNavCommand.active = True
-        FuzzyFileNavCommand.view_id = None
+        FuzzyFileNavCommand.view = None
         FuzzyFileNavCommand.win_id = self.window.id()
         self.regex_exclude = sublime.load_settings("fuzzy_file_nav.sublime-settings").get("regex_exclude", [])
 
@@ -161,11 +257,11 @@ class FuzzyFileNavCommand(sublime_plugin.WindowCommand):
             self.display_files(FuzzyFileNavCommand.cwd)
         except:
             FuzzyFileNavCommand.reset()
-            sublime.error_message(FuzzyFileNavCommand.cwd + "is not accessible!")
+            sublime.error_message(FuzzyFileNavCommand.cwd + " is not accessible!")
 
     def get_files(self, cwd):
         # Get files/drives (windows).
-        files = self.get_drives() if PLATFORM == "windows" and cwd == u"" else os.listdir(cwd)
+        files = get_drives() if PLATFORM == "windows" and cwd == u"" else os.listdir(cwd)
         folders = []
         documents = []
         for f in files:
@@ -190,33 +286,11 @@ class FuzzyFileNavCommand(sublime_plugin.WindowCommand):
         FuzzyFileNavCommand.files = self.get_files(cwd)
         self.window.show_quick_panel(FuzzyFileNavCommand.files, self.check_selection)
 
-    def back_dir(self, cwd):
-        prev = path.dirname(cwd)
-
-        # On windows, if you try and get the
-        # dirname of a drive, you get the drive.
-        # So if the previous directory is the same
-        # as the current, back out of the drive and
-        # list all drives.
-        return get_root_path() if prev == cwd else prev
-
-    def get_drives(self):
-        # Search through valid drive names and see if they exist.
-        drives = []
-        for d in "ABCDEFGHIJKLMNOPQRSTUVWXYZ":
-            try:
-                drive = unicode(d + ":")
-                if path.exists(drive):
-                    drives.append(drive)
-            except:
-                pass
-        return drives
-
     def check_selection(self, selection):
         if selection > -1:
             FuzzyFileNavCommand.fuzzy_relaod = False
             # The first selection is the "go up a directory" option.
-            directory = self.back_dir(FuzzyFileNavCommand.cwd) if selection == 0 else path.join(FuzzyFileNavCommand.cwd, FuzzyFileNavCommand.files[selection])
+            directory = back_dir(FuzzyFileNavCommand.cwd) if selection == 0 else path.join(FuzzyFileNavCommand.cwd, FuzzyFileNavCommand.files[selection])
             FuzzyFileNavCommand.cwd = directory if PLATFORM == "windows" and directory == u"" else path.normpath(directory)
 
             # Check if the option is a folder or if we are at the root (needed for windows)
@@ -226,14 +300,14 @@ class FuzzyFileNavCommand(sublime_plugin.WindowCommand):
                 else:
                     self.window.open_file(FuzzyFileNavCommand.cwd)
                     if bool(sublime.load_settings("fuzzy_file_nav.sublime-settings").get("multi_file_open", False)):
-                        FuzzyFileNavCommand.cwd = path.normpath(self.back_dir(FuzzyFileNavCommand.cwd))
+                        FuzzyFileNavCommand.cwd = path.normpath(back_dir(FuzzyFileNavCommand.cwd))
                         self.display_files(FuzzyFileNavCommand.cwd)
                     else:
                         FuzzyFileNavCommand.reset()
             except:
                 # Inaccessible folder try backing up
                 sublime.status_message("%s is not accessible!" % FuzzyFileNavCommand.cwd)
-                FuzzyFileNavCommand.cwd = self.back_dir(FuzzyFileNavCommand.cwd)
+                FuzzyFileNavCommand.cwd = back_dir(FuzzyFileNavCommand.cwd)
                 self.window.run_command("hide_overlay")
                 self.display_files(FuzzyFileNavCommand.cwd)
         elif not FuzzyFileNavCommand.fuzzy_relaod:

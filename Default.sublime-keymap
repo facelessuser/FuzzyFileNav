@@ -1,0 +1,15 @@
+[
+    {
+        "keys": ["tab"],
+        "command": "fuzzy_path_complete",
+        "context":
+        [
+            {
+                "operand": true,
+                "operator": "equal",
+                "match_all": true,
+                "key": "fuzzy_path_complete"
+            }
+        ]
+    }
+]
