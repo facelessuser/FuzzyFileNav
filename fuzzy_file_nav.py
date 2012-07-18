@@ -67,13 +67,13 @@ class FuzzyEventListener(sublime_plugin.EventListener):
 
     def on_query_context(self, view, key, operator, operand, match_all):
         active = FuzzyFileNavCommand.active == operand
-        if FuzzyFileNavCommand.view.id() == view.id():
+        if FuzzyFileNavCommand.view != None and FuzzyFileNavCommand.view.id() == view.id():
             if key == "fuzzy_path_complete":
                 return active
         return False
 
     def on_modified(self, view):
-        if FuzzyFileNavCommand.active and FuzzyFileNavCommand.view and FuzzyFileNavCommand.view.id() == view.id():
+        if FuzzyFileNavCommand.active and FuzzyFileNavCommand.view != None and FuzzyFileNavCommand.view.id() == view.id():
             sel = view.sel()[0]
             win = view.window()
             line_text = view.substr(view.line(sel))
