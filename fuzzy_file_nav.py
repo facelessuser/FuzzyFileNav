@@ -192,13 +192,29 @@ class FuzzyBookmarksLoadCommand(sublime_plugin.WindowCommand):
 
 class FuzzyStartFromFileCommand(sublime_plugin.WindowCommand):
     def run(self):
+        actions = set(["home", "bookmarks", "root"])
         # Check if you can retrieve a file name (means it exists on disk).
         view = self.window.active_view()
         name = view.file_name() if view != None else None
         if name:
             self.window.run_command("fuzzy_file_nav", {"start": path.dirname(name)})
         else:
-            self.window.run_command("fuzzy_bookmarks_load")
+            action = sublime.load_settings("fuzzy_file_nav.sublime-settings").get("start_from_here_default_action", "bookmarks")
+            if action in actions:
+                getattr(self, action)()
+            else:
+                self.window.run_command("fuzzy_bookmarks_load")
+
+    def home(self):
+        home = sublime.load_settings("fuzzy_file_nav.sublime-settings").get("home", "")
+        home = get_root_path() if not path.exists(home) or not path.isdir(home) else home
+        self.window.run_command("fuzzy_file_nav", {"start": home})
+
+    def root(self):
+        self.window.run_command("fuzzy_file_nav")
+
+    def bookmarks(self):
+        self.window.run_command("fuzzy_bookmarks_load")
 
 
 class FuzzyPathCompleteCommand(sublime_plugin.WindowCommand):
