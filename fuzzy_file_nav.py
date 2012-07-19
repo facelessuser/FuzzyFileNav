@@ -37,6 +37,9 @@ def get_drives():
     # Search through valid drive names and see if they exist.
     drives = []
     for d in "ABCDEFGHIJKLMNOPQRSTUVWXYZ":
+        # Ignore drive if it fails while testing if it exists
+        # (not sure if this is needed, but added while trying
+        # to solve a windows issue).
         try:
             drive = unicode(d + ":")
             if path.exists(drive):
@@ -49,8 +52,12 @@ def get_drives():
 def back_to_root(cwd):
     root = ""
     if PLATFORM != "windows":
+        # Linux/Unix: just return root
         root = "/"
     else:
+        # Windows: try and find root drive from path
+        # otherwise return "" to signal fuzzy nav to
+        # list all drives.
         m = re.match(WIN_DRIVE, cwd)
         if m:
             root = m.group(1)
@@ -62,12 +69,14 @@ class FuzzyEventListener(sublime_plugin.EventListener):
         # New window gained activation? Reset fuzzy command state
         if FuzzyFileNavCommand.active and view.window() and view.window().id() != FuzzyFileNavCommand.win_id:
             FuzzyFileNavCommand.reset()
+        # View has not been assinged yet for since fuzzy nav panel appeared; assign it
         if FuzzyFileNavCommand.active and (FuzzyFileNavCommand.view == None or FuzzyFileNavCommand.view.id() != view.id()):
             FuzzyFileNavCommand.view = view
 
     def on_query_context(self, view, key, operator, operand, match_all):
         active = FuzzyFileNavCommand.active == operand
         if FuzzyFileNavCommand.view != None and FuzzyFileNavCommand.view.id() == view.id():
+            # See if this is the auto-complete path command
             if key == "fuzzy_path_complete":
                 return active
         return False
@@ -175,18 +184,23 @@ class FuzzyMakeFolderCommand(sublime_plugin.WindowCommand):
 class FuzzyBookmarksLoadCommand(sublime_plugin.WindowCommand):
     def run(self):
         self.display = []
+        # Search through bookmarks
         bookmarks = sublime.load_settings("fuzzy_file_nav.sublime-settings").get("bookmarks", [])
         for bm in bookmarks:
             target = bm.get("path", None)
+            # Make sure bookmards point to valid locations
             if target != None and ((path.exists(target) and path.isdir(target)) or (PLATFORM == "windows" and target == u"")):
+                # Only show the bookmards for this platform
                 os_exclude = set(bm.get("os_exclude", []))
                 if not PLATFORM in os_exclude:
                     self.display.append([bm.get("name", target), target])
         if len(self.display) > 0:
+            # Display bookmarks if valid ones were found
             self.window.show_quick_panel(self.display, self.check_selection)
 
     def check_selection(self, value):
         if value > -1:
+            # Load fuzzy nav with bookmarked shortcut
             self.window.run_command("fuzzy_file_nav", {"start": self.display[value][1]})
 
 
@@ -197,12 +211,15 @@ class FuzzyStartFromFileCommand(sublime_plugin.WindowCommand):
         view = self.window.active_view()
         name = view.file_name() if view != None else None
         if name:
+            # Buffer/view has a file name, so it exists on disk; naviagte its parent directory.
             self.window.run_command("fuzzy_file_nav", {"start": path.dirname(name)})
         else:
             action = sublime.load_settings("fuzzy_file_nav.sublime-settings").get("start_from_here_default_action", "bookmarks")
             if action in actions:
+                # Load special action
                 getattr(self, action)()
             else:
+                # Invalid action; just load bookmarks
                 self.window.run_command("fuzzy_bookmarks_load")
 
     def home(self):
@@ -225,8 +242,11 @@ class FuzzyPathCompleteCommand(sublime_plugin.WindowCommand):
             sel = view.sel()[0]
             line_text = view.substr(view.line(sel))
             for item in FuzzyFileNavCommand.files:
+                # Windows is case insensitive
                 i = item.lower() if PLATFORM == "windows" else item
                 current = line_text.lower() if PLATFORM == "windows" else line_text
+
+                # See if current input matches the beginning of some of the entries
                 if i.startswith(current):
                     try:
                         if path.isdir(path.join(FuzzyFileNavCommand.cwd, item)):
@@ -234,6 +254,7 @@ class FuzzyPathCompleteCommand(sublime_plugin.WindowCommand):
                         complete.append(item)
                     except:
                         pass
+            # If only one entry matches, auto-complete it
             if len(complete) == 1:
                 edit = view.begin_edit()
                 view.replace(edit, sublime.Region(0, view.size()), complete[0])
@@ -246,6 +267,7 @@ class FuzzyFileNavCommand(sublime_plugin.WindowCommand):
     view = None
     fuzzy_relaod = False
     ignore_excludes = False
+    cwd = ""
 
     @classmethod
     def reset(cls):
@@ -255,12 +277,8 @@ class FuzzyFileNavCommand(sublime_plugin.WindowCommand):
         cls.ignore_excludes = False
 
     def run(self, start=None):
-        if FuzzyFileNavCommand.active:
-            FuzzyFileNavCommand.active = False
-            self.window.run_command("hide_overlay")
-
+        previous = FuzzyFileNavCommand.cwd
         FuzzyFileNavCommand.active = True
-        FuzzyFileNavCommand.view = None
         FuzzyFileNavCommand.win_id = self.window.id()
         self.regex_exclude = sublime.load_settings("fuzzy_file_nav.sublime-settings").get("regex_exclude", [])
 
@@ -273,8 +291,14 @@ class FuzzyFileNavCommand(sublime_plugin.WindowCommand):
         try:
             self.display_files(FuzzyFileNavCommand.cwd)
         except:
-            FuzzyFileNavCommand.reset()
-            sublime.error_message(FuzzyFileNavCommand.cwd + " is not accessible!")
+            if FuzzyFileNavCommand.fuzzy_relaod:
+                # Reloading, so fuzzy panel must be up, so preserve previous state
+                FuzzyFileNavCommand.fuzzy_relaod = False
+                FuzzyFileNavCommand.cwd = previous
+            else:
+                # Not reloading, so go ahead and reset the state
+                FuzzyFileNavCommand.reset()
+            sublime.status_message("%s is not accessible!" % FuzzyFileNavCommand.cwd)
 
     def get_files(self, cwd):
         # Get files/drives (windows).
@@ -300,7 +324,12 @@ class FuzzyFileNavCommand(sublime_plugin.WindowCommand):
         return [u".."] + sorted(folders) + sorted(documents)
 
     def display_files(self, cwd):
+        # Get the folders children
         FuzzyFileNavCommand.files = self.get_files(cwd)
+
+        # Make sure panel is down before loading a new one.
+        self.window.run_command("hide_overlay")
+        FuzzyFileNavCommand.view = None
         self.window.show_quick_panel(FuzzyFileNavCommand.files, self.check_selection)
 
     def check_selection(self, selection):
@@ -313,9 +342,13 @@ class FuzzyFileNavCommand(sublime_plugin.WindowCommand):
             # Check if the option is a folder or if we are at the root (needed for windows)
             try:
                 if (path.isdir(FuzzyFileNavCommand.cwd) or FuzzyFileNavCommand.cwd == get_root_path()):
+                    # List directories content
                     self.display_files(FuzzyFileNavCommand.cwd)
                 else:
+                    # Open file
                     self.window.open_file(FuzzyFileNavCommand.cwd)
+
+                    # If multi-file open is set, leave panel open after opening file
                     if bool(sublime.load_settings("fuzzy_file_nav.sublime-settings").get("multi_file_open", False)):
                         FuzzyFileNavCommand.cwd = path.normpath(back_dir(FuzzyFileNavCommand.cwd))
                         self.display_files(FuzzyFileNavCommand.cwd)
@@ -328,6 +361,8 @@ class FuzzyFileNavCommand(sublime_plugin.WindowCommand):
                 self.window.run_command("hide_overlay")
                 self.display_files(FuzzyFileNavCommand.cwd)
         elif not FuzzyFileNavCommand.fuzzy_relaod:
+            # Reset if not reloading
             FuzzyFileNavCommand.reset()
         else:
+            # Reset reload flag if reloading
             FuzzyFileNavCommand.fuzzy_relaod = False
