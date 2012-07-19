@@ -190,14 +190,15 @@ class FuzzyBookmarksLoadCommand(sublime_plugin.WindowCommand):
             self.window.run_command("fuzzy_file_nav", {"start": self.display[value][1]})
 
 
-class FuzzyStartFromFileCommand(sublime_plugin.TextCommand):
-    def run(self, edit):
+class FuzzyStartFromFileCommand(sublime_plugin.WindowCommand):
+    def run(self):
         # Check if you can retrieve a file name (means it exists on disk).
-        name = self.view.file_name()
+        view = self.window.active_view()
+        name = view.file_name() if view != None else None
         if name:
-            self.view.window().run_command("fuzzy_file_nav", {"start": path.dirname(name)})
+            self.window.run_command("fuzzy_file_nav", {"start": path.dirname(name)})
         else:
-            self.view.window().run_command("fuzzy_bookmarks_load")
+            self.window.run_command("fuzzy_bookmarks_load")
 
 
 class FuzzyPathCompleteCommand(sublime_plugin.WindowCommand):
