@@ -11,8 +11,8 @@ import os.path as path
 import re
 
 PLATFORM = sublime.platform()
-CMD_WIN = r"^(?:(?:(\+)|(\-)|(~)|(\*)|(\.\.))(?:\\|/)|((?:[A-Za-z]{1}\:)?(?:\\|/))|([\w\W]*)\:mkdir|([\w\W]*)\:mkfile|([\w\W]*(?:\\|/)))"
-CMD_NIX = r"^(?:(?:(\+)|(\-)|(~)|(\*)|(\.\.))/|(/)|([\w\W]*)\:mkdir|([\w\W]*)\:mkfile|([\w\W]*/))"
+CMD_WIN = r"^(?:(?:(\+)|(\-)|(~)|(\*)|(\.\.)|(\?))(?:\\|/)|((?:[A-Za-z]{1}\:)?(?:\\|/))|([\w\W]*)\:mkdir|([\w\W]*)\:mkfile|([\w\W]*(?:\\|/)))$"
+CMD_NIX = r"^(?:(?:(\+)|(\-)|(~)|(\*)|(\.\.)|(\?))/|(/)|([\w\W]*)\:mkdir|([\w\W]*)\:mkfile|([\w\W]*/))$"
 WIN_DRIVE = r"(^[A-Za-z]{1}\:)"
 
 
@@ -79,6 +79,12 @@ class FuzzyEventListener(sublime_plugin.EventListener):
             # See if this is the auto-complete path command
             if key == "fuzzy_path_complete":
                 return active
+            if key == "fuzzy_toggle_hidden":
+                return active
+            if key == "fuzzy_bookmarks_load":
+                return active
+            if key == "fuzzy_get_cwd":
+                return active
         return False
 
     def on_modified(self, view):
@@ -91,30 +97,30 @@ class FuzzyEventListener(sublime_plugin.EventListener):
             if m:
                 if m.group(1):
                     # Show hidden files/folders from regex_exclude
-                    FuzzyFileNavCommand.fuzzy_relaod = True
-                    FuzzyFileNavCommand.ignore_excludes = True
-                    win.run_command("fuzzy_file_nav", {"start": FuzzyFileNavCommand.cwd})
+                    win.run_command("fuzzy_toggle_hidden", {"show": True})
                 elif m.group(2):
                     # Hide files/folders via regex_exclude
-                    FuzzyFileNavCommand.fuzzy_relaod = True
-                    FuzzyFileNavCommand.ignore_excludes = False
-                    win.run_command("fuzzy_file_nav", {"start": FuzzyFileNavCommand.cwd})
+                    win.run_command("fuzzy_toggle_hidden", {"show": False})
                 elif m.group(3):
                     # Go Home
-                    FuzzyFileNavCommand.fuzzy_relaod = True
+                    FuzzyFileNavCommand.fuzzy_reload = True
                     home = sublime.load_settings("fuzzy_file_nav.sublime-settings").get("home", "")
                     home = get_root_path() if not path.exists(home) or not path.isdir(home) else home
                     win.run_command("fuzzy_file_nav", {"start": home})
                 elif m.group(4):
                     # Load bookmark menu
-                    win.run_command("hide_overlay")
-                    FuzzyFileNavCommand.reset()
                     win.run_command("fuzzy_bookmarks_load")
                 elif m.group(5):
                     # Back a directory
-                    FuzzyFileNavCommand.fuzzy_relaod = True
+                    FuzzyFileNavCommand.fuzzy_reload = True
                     win.run_command("fuzzy_file_nav", {"start": back_dir(FuzzyFileNavCommand.cwd)})
                 elif m.group(6):
+                    # Show current working directory
+                    edit = view.begin_edit()
+                    view.replace(edit, sublime.Region(0, view.size()), "")
+                    view.end_edit(edit)
+                    sublime.run_command("fuzzy_get_cwd")
+                elif m.group(7):
                     # Go to root of drive/computer
                     if PLATFORM == "windows" and re.match(WIN_DRIVE, line_text):
                         try:
@@ -126,24 +132,24 @@ class FuzzyEventListener(sublime_plugin.EventListener):
                             return
                     else:
                         new_path = back_to_root(FuzzyFileNavCommand.cwd)
-                    FuzzyFileNavCommand.fuzzy_relaod = True
+                    FuzzyFileNavCommand.fuzzy_reload = True
                     win.run_command("fuzzy_file_nav", {"start": new_path})
-                elif m.group(7):
+                elif m.group(8):
                     # Make directory
                     win.run_command("hide_overlay")
                     FuzzyFileNavCommand.reset()
-                    win.run_command("fuzzy_make_folder", {"cwd": FuzzyFileNavCommand.cwd, "name": m.group(7)})
-                elif m.group(8):
+                    win.run_command("fuzzy_make_folder", {"cwd": FuzzyFileNavCommand.cwd, "name": m.group(8)})
+                elif m.group(9):
                     # Create new file
                     win.run_command("hide_overlay")
                     FuzzyFileNavCommand.reset()
-                    win.run_command("fuzzy_make_file", {"cwd": FuzzyFileNavCommand.cwd, "name": m.group(8)})
-                elif m.group(9):
+                    win.run_command("fuzzy_make_file", {"cwd": FuzzyFileNavCommand.cwd, "name": m.group(9)})
+                elif m.group(10):
                     # Load folder
-                    new_path = path.join(FuzzyFileNavCommand.cwd, m.group(9))
+                    new_path = path.join(FuzzyFileNavCommand.cwd, m.group(10))
                     try:
                         if path.exists(new_path) and path.isdir(new_path):
-                            FuzzyFileNavCommand.fuzzy_relaod = True
+                            FuzzyFileNavCommand.fuzzy_reload = True
                             win.run_command("fuzzy_file_nav", {"start": new_path})
                     except:
                         return
@@ -196,12 +202,33 @@ class FuzzyBookmarksLoadCommand(sublime_plugin.WindowCommand):
                     self.display.append([bm.get("name", target), target])
         if len(self.display) > 0:
             # Display bookmarks if valid ones were found
+            self.window.run_command("hide_overlay")
+            FuzzyFileNavCommand.reset()
             self.window.show_quick_panel(self.display, self.check_selection)
 
     def check_selection(self, value):
         if value > -1:
             # Load fuzzy nav with bookmarked shortcut
             self.window.run_command("fuzzy_file_nav", {"start": self.display[value][1]})
+
+
+class FuzzyGetCwdCommand(sublime_plugin.ApplicationCommand):
+    def run(self):
+        if FuzzyFileNavCommand.active:
+            sublime.status_message("CWD: " + FuzzyFileNavCommand.cwd)
+
+
+class FuzzyToggleHiddenCommand(sublime_plugin.WindowCommand):
+    def run(self, show=None):
+        if FuzzyFileNavCommand.active:
+            FuzzyFileNavCommand.fuzzy_reload = True
+            if show == None:
+                FuzzyFileNavCommand.ignore_excludes = not FuzzyFileNavCommand.ignore_excludes
+            elif bool(show):
+                FuzzyFileNavCommand.ignore_excludes = True
+            else:
+                FuzzyFileNavCommand.ignore_excludes = False
+            self.window.run_command("fuzzy_file_nav", {"start": FuzzyFileNavCommand.cwd})
 
 
 class FuzzyStartFromFileCommand(sublime_plugin.WindowCommand):
@@ -265,7 +292,7 @@ class FuzzyFileNavCommand(sublime_plugin.WindowCommand):
     active = False
     win_id = None
     view = None
-    fuzzy_relaod = False
+    fuzzy_reload = False
     ignore_excludes = False
     cwd = ""
 
@@ -291,9 +318,9 @@ class FuzzyFileNavCommand(sublime_plugin.WindowCommand):
         try:
             self.display_files(FuzzyFileNavCommand.cwd)
         except:
-            if FuzzyFileNavCommand.fuzzy_relaod:
+            if FuzzyFileNavCommand.fuzzy_reload:
                 # Reloading, so fuzzy panel must be up, so preserve previous state
-                FuzzyFileNavCommand.fuzzy_relaod = False
+                FuzzyFileNavCommand.fuzzy_reload = False
                 FuzzyFileNavCommand.cwd = previous
             else:
                 # Not reloading, so go ahead and reset the state
@@ -334,7 +361,7 @@ class FuzzyFileNavCommand(sublime_plugin.WindowCommand):
 
     def check_selection(self, selection):
         if selection > -1:
-            FuzzyFileNavCommand.fuzzy_relaod = False
+            FuzzyFileNavCommand.fuzzy_reload = False
             # The first selection is the "go up a directory" option.
             directory = back_dir(FuzzyFileNavCommand.cwd) if selection == 0 else path.join(FuzzyFileNavCommand.cwd, FuzzyFileNavCommand.files[selection])
             FuzzyFileNavCommand.cwd = directory if PLATFORM == "windows" and directory == u"" else path.normpath(directory)
@@ -360,9 +387,9 @@ class FuzzyFileNavCommand(sublime_plugin.WindowCommand):
                 FuzzyFileNavCommand.cwd = back_dir(FuzzyFileNavCommand.cwd)
                 self.window.run_command("hide_overlay")
                 self.display_files(FuzzyFileNavCommand.cwd)
-        elif not FuzzyFileNavCommand.fuzzy_relaod:
+        elif not FuzzyFileNavCommand.fuzzy_reload:
             # Reset if not reloading
             FuzzyFileNavCommand.reset()
         else:
             # Reset reload flag if reloading
-            FuzzyFileNavCommand.fuzzy_relaod = False
+            FuzzyFileNavCommand.fuzzy_reload = False
