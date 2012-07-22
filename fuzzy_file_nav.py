@@ -11,8 +11,8 @@ import os.path as path
 import re
 
 PLATFORM = sublime.platform()
-CMD_WIN = r"^(?:(?:(\+)|(\-)|(~)|(\*)|(\.\.)|(\?))(?:\\|/)|((?:[A-Za-z]{1}\:)?(?:\\|/))|([\w\W]*)\:mkdir|([\w\W]*)\:mkfile|([\w\W]*(?:\\|/)))$"
-CMD_NIX = r"^(?:(?:(\+)|(\-)|(~)|(\*)|(\.\.)|(\?))/|(/)|([\w\W]*)\:mkdir|([\w\W]*)\:mkfile|([\w\W]*/))$"
+CMD_WIN = r"^(?:(?:(~)|(\.\.))(?:\\|/)|((?:[A-Za-z]{1}\:)?(?:\\|/))|([\w\W]*)\:mkdir|([\w\W]*)\:mkfile|([\w\W]*(?:\\|/)))$"
+CMD_NIX = r"^(?:(?:(~)|(\.\.))/|(/)|([\w\W]*)\:mkdir|([\w\W]*)\:mkfile|([\w\W]*/))$"
 WIN_DRIVE = r"(^[A-Za-z]{1}\:)"
 
 
@@ -35,18 +35,7 @@ def back_dir(cwd):
 
 def get_drives():
     # Search through valid drive names and see if they exist.
-    drives = []
-    for d in "ABCDEFGHIJKLMNOPQRSTUVWXYZ":
-        # Ignore drive if it fails while testing if it exists
-        # (not sure if this is needed, but added while trying
-        # to solve a windows issue).
-        try:
-            drive = unicode(d + ":")
-            if path.exists(drive):
-                drives.append(drive)
-        except:
-            pass
-    return drives
+    return [unicode(d + ":") for d in "ABCDEFGHIJKLMNOPQRSTUVWXYZ" if path.exists(d + ":")]
 
 
 def back_to_root(cwd):
@@ -96,63 +85,42 @@ class FuzzyEventListener(sublime_plugin.EventListener):
             m = re.match(regex, line_text)
             if m:
                 if m.group(1):
-                    # Show hidden files/folders from regex_exclude
-                    win.run_command("fuzzy_toggle_hidden", {"show": True})
-                elif m.group(2):
-                    # Hide files/folders via regex_exclude
-                    win.run_command("fuzzy_toggle_hidden", {"show": False})
-                elif m.group(3):
                     # Go Home
                     FuzzyFileNavCommand.fuzzy_reload = True
                     home = sublime.load_settings("fuzzy_file_nav.sublime-settings").get("home", "")
                     home = get_root_path() if not path.exists(home) or not path.isdir(home) else home
                     win.run_command("fuzzy_file_nav", {"start": home})
-                elif m.group(4):
-                    # Load bookmark menu
-                    win.run_command("fuzzy_bookmarks_load")
-                elif m.group(5):
+                elif m.group(2):
                     # Back a directory
                     FuzzyFileNavCommand.fuzzy_reload = True
                     win.run_command("fuzzy_file_nav", {"start": back_dir(FuzzyFileNavCommand.cwd)})
-                elif m.group(6):
-                    # Show current working directory
-                    edit = view.begin_edit()
-                    view.replace(edit, sublime.Region(0, view.size()), "")
-                    view.end_edit(edit)
-                    sublime.run_command("fuzzy_get_cwd")
-                elif m.group(7):
+                elif m.group(3):
                     # Go to root of drive/computer
                     if PLATFORM == "windows" and re.match(WIN_DRIVE, line_text):
-                        try:
-                            if path.exists(line_text):
-                                new_path = line_text.upper()
-                            else:
-                                return
-                        except:
+                        if path.exists(line_text):
+                            new_path = line_text.upper()
+                        else:
                             return
                     else:
                         new_path = back_to_root(FuzzyFileNavCommand.cwd)
                     FuzzyFileNavCommand.fuzzy_reload = True
                     win.run_command("fuzzy_file_nav", {"start": new_path})
-                elif m.group(8):
+                elif m.group(4):
                     # Make directory
                     win.run_command("hide_overlay")
                     FuzzyFileNavCommand.reset()
-                    win.run_command("fuzzy_make_folder", {"cwd": FuzzyFileNavCommand.cwd, "name": m.group(8)})
-                elif m.group(9):
+                    win.run_command("fuzzy_make_folder", {"cwd": FuzzyFileNavCommand.cwd, "name": m.group(4)})
+                elif m.group(5):
                     # Create new file
                     win.run_command("hide_overlay")
                     FuzzyFileNavCommand.reset()
-                    win.run_command("fuzzy_make_file", {"cwd": FuzzyFileNavCommand.cwd, "name": m.group(9)})
-                elif m.group(10):
+                    win.run_command("fuzzy_make_file", {"cwd": FuzzyFileNavCommand.cwd, "name": m.group(5)})
+                elif m.group(6):
                     # Load folder
-                    new_path = path.join(FuzzyFileNavCommand.cwd, m.group(10))
-                    try:
-                        if path.exists(new_path) and path.isdir(new_path):
-                            FuzzyFileNavCommand.fuzzy_reload = True
-                            win.run_command("fuzzy_file_nav", {"start": new_path})
-                    except:
-                        return
+                    new_path = path.join(FuzzyFileNavCommand.cwd, m.group(6))
+                    if path.exists(new_path) and path.isdir(new_path):
+                        FuzzyFileNavCommand.fuzzy_reload = True
+                        win.run_command("fuzzy_file_nav", {"start": new_path})
 
 
 class FuzzyMakeFileCommand(sublime_plugin.WindowCommand):
@@ -275,12 +243,10 @@ class FuzzyPathCompleteCommand(sublime_plugin.WindowCommand):
 
                 # See if current input matches the beginning of some of the entries
                 if i.startswith(current):
-                    try:
-                        if path.isdir(path.join(FuzzyFileNavCommand.cwd, item)):
-                            item = item[0:len(item) - 1]
-                        complete.append(item)
-                    except:
-                        pass
+                    if path.isdir(path.join(FuzzyFileNavCommand.cwd, item)):
+                        item = item[0:len(item) - 1]
+                    complete.append(item)
+
             # If only one entry matches, auto-complete it
             if len(complete) == 1:
                 edit = view.begin_edit()
