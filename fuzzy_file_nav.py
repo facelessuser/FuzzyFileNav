@@ -9,10 +9,11 @@ import sublime_plugin
 import os
 import os.path as path
 import re
+import shutil
 
 PLATFORM = sublime.platform()
-CMD_WIN = r"^(?:(?:(~)|(\.\.))(?:\\|/)|((?:[A-Za-z]{1}\:)?(?:\\|/))|([\w\W]*)\:mkdir|([\w\W]*)\:mkfile|([\w\W]*(?:\\|/)))$"
-CMD_NIX = r"^(?:(?:(~)|(\.\.))/|(/)|([\w\W]*)\:mkdir|([\w\W]*)\:mkfile|([\w\W]*/))$"
+CMD_WIN = r"^(?:(?:(~)|(\.\.))(?:\\|/)|((?:[A-Za-z]{1}\:)?(?:\\|/))|([\w\W]*)\:(?:(mkdir)|(mkfile)|(del))|([\w\W]*(?:\\|/)))$"
+CMD_NIX = r"^(?:(?:(~)|(\.\.))/|(/)|([\w\W]*)\:(?:(mkdir)|(mkfile)|(del))|([\w\W]*/))$"
 WIN_DRIVE = r"(^[A-Za-z]{1}\:)"
 
 
@@ -105,22 +106,46 @@ class FuzzyEventListener(sublime_plugin.EventListener):
                         new_path = back_to_root(FuzzyFileNavCommand.cwd)
                     FuzzyFileNavCommand.fuzzy_reload = True
                     win.run_command("fuzzy_file_nav", {"start": new_path})
-                elif m.group(4):
+                elif m.group(5):
                     # Make directory
                     win.run_command("hide_overlay")
                     FuzzyFileNavCommand.reset()
                     win.run_command("fuzzy_make_folder", {"cwd": FuzzyFileNavCommand.cwd, "name": m.group(4)})
-                elif m.group(5):
+                elif m.group(6):
                     # Create new file
                     win.run_command("hide_overlay")
                     FuzzyFileNavCommand.reset()
-                    win.run_command("fuzzy_make_file", {"cwd": FuzzyFileNavCommand.cwd, "name": m.group(5)})
-                elif m.group(6):
+                    win.run_command("fuzzy_make_file", {"cwd": FuzzyFileNavCommand.cwd, "name": m.group(4)})
+                elif m.group(7):
+                    # Delete file or folder
+                    win.run_command("hide_overlay")
+                    FuzzyFileNavCommand.reset()
+                    win.run_command("fuzzy_delete", {"cwd": FuzzyFileNavCommand.cwd, "name": m.group(4)})
+                elif m.group(8):
                     # Load folder
-                    new_path = path.join(FuzzyFileNavCommand.cwd, m.group(6))
+                    new_path = path.join(FuzzyFileNavCommand.cwd, m.group(8))
                     if path.exists(new_path) and path.isdir(new_path):
                         FuzzyFileNavCommand.fuzzy_reload = True
                         win.run_command("fuzzy_file_nav", {"start": new_path})
+
+
+class FuzzyDeleteCommand(sublime_plugin.WindowCommand):
+    def run(self, cwd, name):
+        full_name = path.join(cwd, name)
+        if path.exists(cwd):
+            if path.exists(full_name):
+                if sublime.ok_cancel_dialog("Delete %s?\n\nWarning: this is permanent!" % full_name):
+                    try:
+                        if path.isdir(full_name):
+                            shutil.rmtree(full_name)
+                        else:
+                            os.remove(full_name)
+                    except:
+                        sublime.error_message("Error deleting %d!" % full_name)
+            else:
+                sublime.error_message("%d does not exist!" % full_name)
+        else:
+            sublime.error_message("%d does not exist!" % cwd)
 
 
 class FuzzyMakeFileCommand(sublime_plugin.WindowCommand):
