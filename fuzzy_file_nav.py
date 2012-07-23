@@ -84,6 +84,7 @@ class FuzzyEventListener(sublime_plugin.EventListener):
             line_text = view.substr(view.line(sel))
             regex = CMD_WIN if PLATFORM == "windows" else CMD_NIX
             m = re.match(regex, line_text)
+            multi_file = bool(sublime.load_settings("fuzzy_file_nav.sublime-settings").get("keep_panel_open_after_action", False))
             if m:
                 if m.group(1):
                     # Go Home
@@ -108,19 +109,22 @@ class FuzzyEventListener(sublime_plugin.EventListener):
                     win.run_command("fuzzy_file_nav", {"start": new_path})
                 elif m.group(5):
                     # Make directory
-                    win.run_command("hide_overlay")
-                    FuzzyFileNavCommand.reset()
-                    win.run_command("fuzzy_make_folder", {"cwd": FuzzyFileNavCommand.cwd, "name": m.group(4)})
+                    if not multi_file:
+                        win.run_command("hide_overlay")
+                        FuzzyFileNavCommand.reset()
+                    win.run_command("fuzzy_make_folder", {"cwd": FuzzyFileNavCommand.cwd, "name": m.group(4), "nav_cwd": multi_file})
                 elif m.group(6):
                     # Create new file
-                    win.run_command("hide_overlay")
-                    FuzzyFileNavCommand.reset()
-                    win.run_command("fuzzy_make_file", {"cwd": FuzzyFileNavCommand.cwd, "name": m.group(4)})
+                    if not multi_file:
+                        win.run_command("hide_overlay")
+                        FuzzyFileNavCommand.reset()
+                    win.run_command("fuzzy_make_file", {"cwd": FuzzyFileNavCommand.cwd, "name": m.group(4), "nav_cwd": multi_file})
                 elif m.group(7):
                     # Delete file or folder
-                    win.run_command("hide_overlay")
-                    FuzzyFileNavCommand.reset()
-                    win.run_command("fuzzy_delete", {"cwd": FuzzyFileNavCommand.cwd, "name": m.group(4)})
+                    if not multi_file:
+                        win.run_command("hide_overlay")
+                        FuzzyFileNavCommand.reset()
+                    win.run_command("fuzzy_delete", {"cwd": FuzzyFileNavCommand.cwd, "name": m.group(4), "nav_cwd": multi_file})
                 elif m.group(8):
                     # Load folder
                     new_path = path.join(FuzzyFileNavCommand.cwd, m.group(8))
@@ -130,7 +134,7 @@ class FuzzyEventListener(sublime_plugin.EventListener):
 
 
 class FuzzyDeleteCommand(sublime_plugin.WindowCommand):
-    def run(self, cwd, name):
+    def run(self, cwd, name, nav_cwd):
         full_name = path.join(cwd, name)
         if path.exists(cwd):
             if path.exists(full_name):
@@ -146,10 +150,13 @@ class FuzzyDeleteCommand(sublime_plugin.WindowCommand):
                 sublime.error_message("%d does not exist!" % full_name)
         else:
             sublime.error_message("%d does not exist!" % cwd)
+        if nav_cwd:
+            FuzzyFileNavCommand.fuzzy_reload = True
+            self.window.run_command("fuzzy_file_nav", {"start": cwd})
 
 
 class FuzzyMakeFileCommand(sublime_plugin.WindowCommand):
-    def run(self, cwd, name):
+    def run(self, cwd, name, nav_cwd):
         full_name = path.join(cwd, name)
         if path.exists(cwd):
             if not path.exists(full_name):
@@ -163,10 +170,13 @@ class FuzzyMakeFileCommand(sublime_plugin.WindowCommand):
                 sublime.error_message("%d already exists!" % full_name)
         else:
             sublime.error_message("%d does not exist!" % cwd)
+        if nav_cwd:
+            FuzzyFileNavCommand.fuzzy_reload = True
+            self.window.run_command("fuzzy_file_nav", {"start": cwd})
 
 
 class FuzzyMakeFolderCommand(sublime_plugin.WindowCommand):
-    def run(self, cwd, name):
+    def run(self, cwd, name, nav_cwd):
         full_name = path.join(cwd, name)
         if path.exists(cwd):
             if not path.exists(full_name):
@@ -178,6 +188,9 @@ class FuzzyMakeFolderCommand(sublime_plugin.WindowCommand):
                 sublime.error_message("%d already exists!" % full_name)
         else:
             sublime.error_message("%d does not exist!" % cwd)
+        if nav_cwd:
+            FuzzyFileNavCommand.fuzzy_reload = True
+            self.window.run_command("fuzzy_file_nav", {"start": cwd})
 
 
 class FuzzyBookmarksLoadCommand(sublime_plugin.WindowCommand):
@@ -367,7 +380,7 @@ class FuzzyFileNavCommand(sublime_plugin.WindowCommand):
                     self.window.open_file(FuzzyFileNavCommand.cwd)
 
                     # If multi-file open is set, leave panel open after opening file
-                    if bool(sublime.load_settings("fuzzy_file_nav.sublime-settings").get("multi_file_open", False)):
+                    if bool(sublime.load_settings("fuzzy_file_nav.sublime-settings").get("keep_panel_open_after_action", False)):
                         FuzzyFileNavCommand.cwd = path.normpath(back_dir(FuzzyFileNavCommand.cwd))
                         self.display_files(FuzzyFileNavCommand.cwd)
                     else:

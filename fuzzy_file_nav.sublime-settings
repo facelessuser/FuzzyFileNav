@@ -5,9 +5,9 @@
     // Patterns of files/folders to exclude
     "regex_exclude": [".*\\.(DS_Store|svn|git)$"],
 
-    // Keep panel open after a file is selected so
-    // More files can be opened
-    "multi_file_open": false,
+    // Keep panel open after a file is opened, deleted, created, etc. so
+    // More files can be have actions perfomred on them.
+    "keep_panel_open_after_action": true,
 
     // If the "FuzzyStartFromFileCommand" is run outside of a open buffer
     // or from a buffer that does not exist on disk, you can specify
