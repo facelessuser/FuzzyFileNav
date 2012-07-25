@@ -234,7 +234,6 @@ class FuzzyPasteCommand(sublime_plugin.WindowCommand):
             if error:
                 FuzzyFileNavCommand.reset()
             else:
-                FuzzyFileNavCommand.fuzzy_reload = True
                 self.window.run_command("fuzzy_file_nav", {"start": FuzzyFileNavCommand.cwd})
 
     def dir_copy(self):
