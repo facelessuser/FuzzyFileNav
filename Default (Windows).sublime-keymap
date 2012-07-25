@@ -1,0 +1,145 @@
+[
+    {
+        "keys": ["tab"],
+        "command": "fuzzy_path_complete",
+        "context":
+        [
+            {
+                "operand": true,
+                "operator": "equal",
+                "match_all": true,
+                "key": "fuzzy_path_complete"
+            }
+        ]
+    },
+    {
+        "keys": ["ctrl+h"],
+        "command": "fuzzy_toggle_hidden",
+        "context":
+        [
+            {
+                "operand": true,
+                "operator": "equal",
+                "match_all": true,
+                "key": "fuzzy_toggle_hidden"
+            }
+        ]
+    },
+    {
+        "keys": ["ctrl+b"],
+        "command": "fuzzy_bookmarks_load",
+        "context":
+        [
+            {
+                "operand": true,
+                "operator": "equal",
+                "match_all": true,
+                "key": "fuzzy_bookmarks_load"
+            }
+        ]
+    },
+    {
+        "keys": ["ctrl+d"],
+        "command": "fuzzy_delete",
+        "context":
+        [
+            {
+                "operand": true,
+                "operator": "equal",
+                "match_all": true,
+                "key": "fuzzy_delete"
+            }
+        ]
+    },
+        {
+        "keys": ["ctrl+c"],
+        "command": "fuzzy_copy",
+        "context":
+        [
+            {
+                "operand": true,
+                "operator": "equal",
+                "match_all": true,
+                "key": "fuzzy_copy"
+            }
+        ]
+    },
+    {
+        "keys": ["ctrl+x"],
+        "command": "fuzzy_cut",
+        "context":
+        [
+            {
+                "operand": true,
+                "operator": "equal",
+                "match_all": true,
+                "key": "fuzzy_cut"
+            }
+        ]
+    },
+    {
+        "keys": ["ctrl+v"],
+        "command": "fuzzy_paste",
+        "context":
+        [
+            {
+                "operand": true,
+                "operator": "equal",
+                "match_all": true,
+                "key": "fuzzy_paste"
+            }
+        ]
+    },
+    {
+        "keys": ["ctrl+n"],
+        "command": "fuzzy_make_file",
+        "context":
+        [
+            {
+                "operand": true,
+                "operator": "equal",
+                "match_all": true,
+                "key": "fuzzy_make_file"
+            }
+        ]
+    },
+    {
+        "keys": ["ctrl+shift+n"],
+        "command": "fuzzy_make_folder",
+        "context":
+        [
+            {
+                "operand": true,
+                "operator": "equal",
+                "match_all": true,
+                "key": "fuzzy_make_folder"
+            }
+        ]
+    },
+    {
+        "keys": ["ctrl+back_slash"],
+        "command": "fuzzy_get_cwd",
+        "context":
+        [
+            {
+                "operand": true,
+                "operator": "equal",
+                "match_all": true,
+                "key": "fuzzy_get_cwd"
+            }
+        ]
+    },
+    {
+        "keys": ["ctrl+forward_slash"],
+        "command": "fuzzy_get_cwd",
+        "context":
+        [
+            {
+                "operand": true,
+                "operator": "equal",
+                "match_all": true,
+                "key": "fuzzy_get_cwd"
+            }
+        ]
+    }
+]
