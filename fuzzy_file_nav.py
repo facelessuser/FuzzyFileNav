@@ -177,7 +177,7 @@ class FuzzyEventListener(sublime_plugin.EventListener):
                     win.run_command("fuzzy_file_nav", {"start": new_path})
                 elif m.group(4):
                     # Load folder
-                    new_path = path.join(FuzzyFileNavCommand.cwd, m.group(8))
+                    new_path = path.join(FuzzyFileNavCommand.cwd, m.group(4))
                     if path.exists(new_path) and path.isdir(new_path):
                         FuzzyFileNavCommand.fuzzy_reload = True
                         win.run_command("fuzzy_file_nav", {"start": new_path})
