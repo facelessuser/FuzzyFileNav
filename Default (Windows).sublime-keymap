@@ -51,7 +51,7 @@
             }
         ]
     },
-        {
+    {
         "keys": ["ctrl+c"],
         "command": "fuzzy_copy",
         "context":
@@ -139,6 +139,19 @@
                 "operator": "equal",
                 "match_all": true,
                 "key": "fuzzy_get_cwd"
+            }
+        ]
+    },
+    {
+        "keys": ["ctrl+r"],
+        "command": "fuzzy_reveal",
+        "context":
+        [
+            {
+                "operand": true,
+                "operator": "equal",
+                "match_all": true,
+                "key": "fuzzy_reveal"
             }
         ]
     }

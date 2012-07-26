@@ -128,5 +128,18 @@
                 "key": "fuzzy_get_cwd"
             }
         ]
+    },
+    {
+        "keys": ["super+r"],
+        "command": "fuzzy_reveal",
+        "context":
+        [
+            {
+                "operand": true,
+                "operator": "equal",
+                "match_all": true,
+                "key": "fuzzy_reveal"
+            }
+        ]
     }
 ]

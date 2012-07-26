@@ -10,6 +10,7 @@ import os
 import os.path as path
 import re
 import shutil
+import ctypes
 
 PLATFORM = sublime.platform()
 CMD_WIN = r"^(?:(?:(~)|(\.\.))(?:\\|/)|((?:[A-Za-z]{1}\:)?(?:\\|/))|([\w\W]*(?:\\|/)))$"
@@ -116,6 +117,11 @@ class FuzzyEventListener(sublime_plugin.EventListener):
                 return active
             elif key == "fuzzy_get_cwd":
                 return active
+            elif key == "fuzzy_reveal":
+                if path.exists(FuzzyFileNavCommand.cwd):
+                    return active
+                else:
+                    sublime.status_message("%d does not exist!" % FuzzyFileNavCommand.cwd)
             elif key == "fuzzy_delete":
                 if not empty and path.exists(full_name):
                     return active
@@ -181,6 +187,16 @@ class FuzzyEventListener(sublime_plugin.EventListener):
                     if path.exists(new_path) and path.isdir(new_path):
                         FuzzyFileNavCommand.fuzzy_reload = True
                         win.run_command("fuzzy_file_nav", {"start": new_path})
+
+
+class FuzzyRevealCommand(sublime_plugin.WindowCommand):
+    def run(self):
+        file_name = FuzzyPanelText.get_content()
+        FuzzyPanelText.clear_content()
+        if path.exists(path.join(FuzzyFileNavCommand.cwd, file_name)):
+            self.window.run_command("open_dir", {"dir": FuzzyFileNavCommand.cwd, "file": file_name})
+        else:
+            self.window.run_command("open_dir", {"dir": FuzzyFileNavCommand.cwd, "file": ""})
 
 
 class FuzzyCopyCommand(sublime_plugin.WindowCommand):
@@ -504,15 +520,26 @@ class FuzzyFileNavCommand(sublime_plugin.WindowCommand):
         files = get_drives() if PLATFORM == "windows" and cwd == u"" else os.listdir(cwd)
         folders = []
         documents = []
+        show_hidden = sublime.load_settings("fuzzy_file_nav.sublime-settings").get("show_system_hidden_files", False)
         for f in files:
             valid = True
             full_path = path.join(cwd, f)
 
-            # Check exclusion regex to omit files.
-            if valid and not self.ignore_excludes:
-                for regex in self.regex_exclude:
-                    if re.match(regex, full_path):
-                        valid = False
+            # Check exclusion to omit files.
+            if not self.ignore_excludes:
+                if valid and not show_hidden:
+                    if not PLATFORM == "windows":
+                        if f.startswith('.') and f != "..":
+                            valid = False
+                    else:
+                        attrs = ctypes.windll.kernel32.GetFileAttributesW(unicode(full_path))
+                        if attrs != -1 and bool(attrs & 2):
+                            valid = False
+
+                if valid:
+                    for regex in self.regex_exclude:
+                        if re.match(regex, full_path):
+                            valid = False
 
             # Store file/folder info.
             if valid:
