@@ -10,7 +10,11 @@ import os
 import os.path as path
 import re
 import shutil
-import ctypes
+
+PLATFORM = sublime.platform()
+
+if PLATFORM == "windows":
+    import ctypes
 
 PLATFORM = sublime.platform()
 CMD_WIN = r"^(?:(?:(~)|(\.\.))(?:\\|/)|((?:[A-Za-z]{1}\:)?(?:\\|/))|([\w\W]*(?:\\|/)))$"
@@ -538,7 +542,7 @@ class FuzzyFileNavCommand(sublime_plugin.WindowCommand):
 
                 if valid:
                     for regex in self.regex_exclude:
-                        if re.match(regex, full_path):
+                        if re.match(regex, f):
                             valid = False
 
             # Store file/folder info.

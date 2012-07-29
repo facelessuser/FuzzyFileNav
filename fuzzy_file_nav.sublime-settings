@@ -12,7 +12,7 @@
     // By default, files hidden by the system are hidden in Fuzzy File Nav
     // as well (files that start with "." in Linux\Unix and files with the
     // hidden attribute in windows)
-    "show_system_hidden_files": false,
+    "show_system_hidden_files": true,
 
     // If the "FuzzyStartFromFileCommand" is run outside of a open buffer
     // or from a buffer that does not exist on disk, you can specify
