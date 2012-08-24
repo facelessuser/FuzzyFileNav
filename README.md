@@ -48,6 +48,9 @@ There are a number of custom settings that can be defined for Fuzzy File Nav in 
     // hidden attribute in windows)
     "show_system_hidden_files": true,
 
+    // (Unix/Linux only) control whether autocomplete is case sensitive
+    "case_sensitive": true,
+
     // If the "FuzzyStartFromFileCommand" is run outside of a open buffer
     // or from a buffer that does not exist on disk, you can specify
     // its default action to do instead of starting navigation from

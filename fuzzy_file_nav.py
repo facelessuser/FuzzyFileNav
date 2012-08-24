@@ -12,6 +12,7 @@ import re
 import shutil
 
 PLATFORM = sublime.platform()
+FUZZY_SETTINGS = "fuzzy_file_nav.sublime-settings"
 
 if PLATFORM == "windows":
     import ctypes
@@ -169,7 +170,7 @@ class FuzzyEventListener(sublime_plugin.EventListener):
                 if m.group(1):
                     # Go Home
                     FuzzyFileNavCommand.fuzzy_reload = True
-                    home = sublime.load_settings("fuzzy_file_nav.sublime-settings").get("home", "")
+                    home = sublime.load_settings(FUZZY_SETTINGS).get("home", "")
                     home = get_root_path() if not path.exists(home) or not path.isdir(home) else home
                     win.run_command("fuzzy_file_nav", {"start": home})
                 elif m.group(2):
@@ -235,7 +236,7 @@ class FuzzyPasteCommand(sublime_plugin.WindowCommand):
         move = (Clipboard.action == "cut")
         self.from_path = Clipboard.clips[0]
         Clipboard.clear_entries()
-        multi_file = bool(sublime.load_settings("fuzzy_file_nav.sublime-settings").get("keep_panel_open_after_action", False))
+        multi_file = bool(sublime.load_settings(FUZZY_SETTINGS).get("keep_panel_open_after_action", False))
 
         if not multi_file:
             self.window.run_command("hide_overlay")
@@ -303,7 +304,7 @@ class FuzzyDeleteCommand(sublime_plugin.WindowCommand):
         error = False
         full_name = path.join(FuzzyFileNavCommand.cwd, FuzzyPanelText.get_content())
         FuzzyPanelText.clear_content()
-        multi_file = bool(sublime.load_settings("fuzzy_file_nav.sublime-settings").get("keep_panel_open_after_action", False))
+        multi_file = bool(sublime.load_settings(FUZZY_SETTINGS).get("keep_panel_open_after_action", False))
 
         if not multi_file:
             self.window.run_command("hide_overlay")
@@ -333,7 +334,7 @@ class FuzzyMakeFileCommand(sublime_plugin.WindowCommand):
         error = False
         full_name = path.join(FuzzyFileNavCommand.cwd, FuzzyPanelText.get_content())
         FuzzyPanelText.clear_content()
-        multi_file = bool(sublime.load_settings("fuzzy_file_nav.sublime-settings").get("keep_panel_open_after_action", False))
+        multi_file = bool(sublime.load_settings(FUZZY_SETTINGS).get("keep_panel_open_after_action", False))
         if not multi_file:
             self.window.run_command("hide_overlay")
             FuzzyFileNavCommand.reset()
@@ -360,7 +361,7 @@ class FuzzyMakeFolderCommand(sublime_plugin.WindowCommand):
         error = False
         full_name = path.join(FuzzyFileNavCommand.cwd, FuzzyPanelText.get_content())
         FuzzyPanelText.clear_content()
-        multi_file = bool(sublime.load_settings("fuzzy_file_nav.sublime-settings").get("keep_panel_open_after_action", False))
+        multi_file = bool(sublime.load_settings(FUZZY_SETTINGS).get("keep_panel_open_after_action", False))
         if not multi_file:
             self.window.run_command("hide_overlay")
             FuzzyFileNavCommand.reset()
@@ -384,7 +385,7 @@ class FuzzyBookmarksLoadCommand(sublime_plugin.WindowCommand):
     def run(self):
         self.display = []
         # Search through bookmarks
-        bookmarks = sublime.load_settings("fuzzy_file_nav.sublime-settings").get("bookmarks", [])
+        bookmarks = sublime.load_settings(FUZZY_SETTINGS).get("bookmarks", [])
         for bm in bookmarks:
             target = bm.get("path", None)
             # Make sure bookmards point to valid locations
@@ -434,7 +435,7 @@ class FuzzyStartFromFileCommand(sublime_plugin.WindowCommand):
             # Buffer/view has a file name, so it exists on disk; naviagte its parent directory.
             self.window.run_command("fuzzy_file_nav", {"start": path.dirname(name)})
         else:
-            action = sublime.load_settings("fuzzy_file_nav.sublime-settings").get("start_from_here_default_action", "bookmarks")
+            action = sublime.load_settings(FUZZY_SETTINGS).get("start_from_here_default_action", "bookmarks")
             if action in actions:
                 # Load special action
                 getattr(self, action)()
@@ -443,7 +444,7 @@ class FuzzyStartFromFileCommand(sublime_plugin.WindowCommand):
                 self.window.run_command("fuzzy_bookmarks_load")
 
     def home(self):
-        home = sublime.load_settings("fuzzy_file_nav.sublime-settings").get("home", "")
+        home = sublime.load_settings(FUZZY_SETTINGS).get("home", "")
         home = get_root_path() if not path.exists(home) or not path.isdir(home) else home
         self.window.run_command("fuzzy_file_nav", {"start": home})
 
@@ -463,7 +464,7 @@ class FuzzyPathCompleteCommand(sublime_plugin.WindowCommand):
             line_text = view.substr(view.line(sel))
             for item in FuzzyFileNavCommand.files:
                 # Windows is case insensitive
-                i = item.lower() if PLATFORM == "windows" else item
+                i = item.lower() if PLATFORM == "windows" or not sublime.load_settings(FUZZY_SETTINGS).get("case_sensitive", True) else item
                 current = line_text.lower() if PLATFORM == "windows" else line_text
 
                 # See if current input matches the beginning of some of the entries
@@ -499,7 +500,7 @@ class FuzzyFileNavCommand(sublime_plugin.WindowCommand):
         previous = FuzzyFileNavCommand.cwd
         FuzzyFileNavCommand.active = True
         FuzzyFileNavCommand.win_id = self.window.id()
-        self.regex_exclude = sublime.load_settings("fuzzy_file_nav.sublime-settings").get("regex_exclude", [])
+        self.regex_exclude = sublime.load_settings(FUZZY_SETTINGS).get("regex_exclude", [])
 
         # Check if a start destination has been given
         # and ensure it is valid.
@@ -524,7 +525,7 @@ class FuzzyFileNavCommand(sublime_plugin.WindowCommand):
         files = get_drives() if PLATFORM == "windows" and cwd == u"" else os.listdir(cwd)
         folders = []
         documents = []
-        show_hidden = sublime.load_settings("fuzzy_file_nav.sublime-settings").get("show_system_hidden_files", False)
+        show_hidden = sublime.load_settings(FUZZY_SETTINGS).get("show_system_hidden_files", False)
         for f in files:
             valid = True
             full_path = path.join(cwd, f)
@@ -579,7 +580,7 @@ class FuzzyFileNavCommand(sublime_plugin.WindowCommand):
                     self.window.open_file(FuzzyFileNavCommand.cwd)
 
                     # If multi-file open is set, leave panel open after opening file
-                    if bool(sublime.load_settings("fuzzy_file_nav.sublime-settings").get("keep_panel_open_after_action", False)):
+                    if bool(sublime.load_settings(FUZZY_SETTINGS).get("keep_panel_open_after_action", False)):
                         FuzzyFileNavCommand.cwd = path.normpath(back_dir(FuzzyFileNavCommand.cwd))
                         self.display_files(FuzzyFileNavCommand.cwd)
                     else:
