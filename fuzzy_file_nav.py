@@ -164,6 +164,12 @@ class FuzzyEventListener(sublime_plugin.EventListener):
             sel = view.sel()[0]
             win = view.window()
             line_text = view.substr(view.line(sel))
+            if line_text != FuzzyPathCompleteCommand.text and FuzzyPathCompleteCommand.last != None:
+                if not FuzzyPathCompleteCommand.in_progress:
+                    FuzzyPathCompleteCommand.text = ""
+                    FuzzyPathCompleteCommand.last = None
+                else:
+                    FuzzyPathCompleteCommand.in_progress = False
             regex = CMD_WIN if PLATFORM == "windows" else CMD_NIX
             m = re.match(regex, line_text)
             if m:
@@ -456,16 +462,21 @@ class FuzzyStartFromFileCommand(sublime_plugin.WindowCommand):
 
 
 class FuzzyPathCompleteCommand(sublime_plugin.WindowCommand):
+    last = None
+    in_progress = False
+    text = ""
+
     def run(self):
         view = FuzzyFileNavCommand.view
         complete = []
         if view != None:
             sel = view.sel()[0]
-            line_text = view.substr(view.line(sel))
+            if FuzzyPathCompleteCommand.text == "":
+                FuzzyPathCompleteCommand.text = view.substr(view.line(sel))
             for item in FuzzyFileNavCommand.files:
                 # Windows is case insensitive
                 i = item.lower() if PLATFORM == "windows" or not sublime.load_settings(FUZZY_SETTINGS).get("case_sensitive", True) else item
-                current = line_text.lower() if PLATFORM == "windows" else line_text
+                current = FuzzyPathCompleteCommand.text.lower() if PLATFORM == "windows" or not sublime.load_settings(FUZZY_SETTINGS).get("case_sensitive", True) else FuzzyPathCompleteCommand.text
 
                 # See if current input matches the beginning of some of the entries
                 if i.startswith(current):
@@ -474,10 +485,17 @@ class FuzzyPathCompleteCommand(sublime_plugin.WindowCommand):
                     complete.append(item)
 
             # If only one entry matches, auto-complete it
-            if len(complete) == 1:
+            complete_len = len(complete)
+            if complete_len:
+                last = FuzzyPathCompleteCommand.last
+                FuzzyPathCompleteCommand.last = 0 if last == None or last >= complete_len - 1 else last + 1
+                FuzzyPathCompleteCommand.in_progress = True
                 edit = view.begin_edit()
-                view.replace(edit, sublime.Region(0, view.size()), complete[0])
+                view.replace(edit, sublime.Region(0, view.size()), complete[FuzzyPathCompleteCommand.last])
                 view.end_edit(edit)
+            else:
+                FuzzyPathCompleteCommand.last = None
+                FuzzyPathCompleteCommand.text = ""
 
 
 class FuzzyFileNavCommand(sublime_plugin.WindowCommand):
@@ -501,6 +519,9 @@ class FuzzyFileNavCommand(sublime_plugin.WindowCommand):
         FuzzyFileNavCommand.active = True
         FuzzyFileNavCommand.win_id = self.window.id()
         self.regex_exclude = sublime.load_settings(FUZZY_SETTINGS).get("regex_exclude", [])
+        FuzzyPathCompleteCommand.last = None
+        FuzzyPathCompleteCommand.in_progress = False
+        FuzzyPathCompleteCommand.text = ""
 
         # Check if a start destination has been given
         # and ensure it is valid.
