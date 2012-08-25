@@ -67,7 +67,7 @@ There are a number of featues accessibe by shortcuts when the Fuzzy File Nav Pan
 ```ctrl+b``` Show the Fuzzy Nav Bookmarks panel.
 
 ### Fuzzy File Name Complete
-```tab``` Complete the file name being typed.  If the current typed name matches one or more file/folders, tab will complete it.  Saddly it cannot tab into the currently selected fuzzy results, but it will tab through close options.
+```tab``` or ```shift+tab``` Complete the file name being typed (shift modifier cycles backwards).  If the current typed name matches one or more file/folders, tab will complete it.  Saddly it cannot tab into the currently selected fuzzy results, but it will tab through close options.
 
 ### Navigate Folders
 ```/``` When you have a completed file name typed, you can type a slash after the name and you will descend into the folder.  Windows can also use ```\``` which will do the same thing.  You can also descend into folders by simply selected them in the nave panel.

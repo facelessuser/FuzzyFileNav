@@ -13,6 +13,20 @@
         ]
     },
     {
+        "keys": ["shift+tab"],
+        "command": "fuzzy_path_complete",
+        "context":
+        [
+            {
+                "operand": true,
+                "operator": "equal",
+                "match_all": true,
+                "key": "fuzzy_path_complete_back"
+            }
+        ],
+        "args": {"back": true}
+    },
+    {
         "keys": ["super+h"],
         "command": "fuzzy_toggle_hidden",
         "context":

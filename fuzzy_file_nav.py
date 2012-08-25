@@ -114,7 +114,7 @@ class FuzzyEventListener(sublime_plugin.EventListener):
             full_name = path.join(FuzzyFileNavCommand.cwd, FuzzyPanelText.get_content())
             empty = (FuzzyPanelText.get_content() == "")
             # See if this is the auto-complete path command
-            if key == "fuzzy_path_complete":
+            if key == "fuzzy_path_complete" or "fuzzy_path_complete_back":
                 return active
             elif key == "fuzzy_toggle_hidden":
                 return active
@@ -466,7 +466,7 @@ class FuzzyPathCompleteCommand(sublime_plugin.WindowCommand):
     in_progress = False
     text = ""
 
-    def run(self):
+    def run(self, back=False):
         view = FuzzyFileNavCommand.view
         complete = []
         if view != None:
@@ -488,7 +488,10 @@ class FuzzyPathCompleteCommand(sublime_plugin.WindowCommand):
             complete_len = len(complete)
             if complete_len:
                 last = FuzzyPathCompleteCommand.last
-                FuzzyPathCompleteCommand.last = 0 if last == None or last >= complete_len - 1 else last + 1
+                if back:
+                    FuzzyPathCompleteCommand.last = complete_len - 1 if last == None or last < 1 else last - 1
+                else:
+                    FuzzyPathCompleteCommand.last = 0 if last == None or last >= complete_len - 1 else last + 1
                 FuzzyPathCompleteCommand.in_progress = True
                 edit = view.begin_edit()
                 view.replace(edit, sublime.Region(0, view.size()), complete[FuzzyPathCompleteCommand.last])
