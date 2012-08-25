@@ -67,7 +67,7 @@
     },
     {
         "keys": ["super+c"],
-        "command": "fuzzy_copy",
+        "command": "fuzzy_clipboard",
         "context":
         [
             {
@@ -76,11 +76,12 @@
                 "match_all": true,
                 "key": "fuzzy_copy"
             }
-        ]
+        ],
+        "args": {"action": "copy"}
     },
     {
         "keys": ["super+x"],
-        "command": "fuzzy_cut",
+        "command": "fuzzy_clipboard",
         "context":
         [
             {
@@ -89,11 +90,12 @@
                 "match_all": true,
                 "key": "fuzzy_cut"
             }
-        ]
+        ],
+        "args": {"action": "cut"}
     },
     {
         "keys": ["super+v"],
-        "command": "fuzzy_paste",
+        "command": "fuzzy_clipboard",
         "context":
         [
             {
@@ -102,7 +104,8 @@
                 "match_all": true,
                 "key": "fuzzy_paste"
             }
-        ]
+        ],
+        "args": {"action": "paste"}
     },
     {
         "keys": ["super+n"],
