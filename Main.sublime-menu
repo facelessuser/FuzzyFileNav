@@ -1,0 +1,125 @@
+[
+    {
+        "caption": "Preferences",
+        "mnemonic": "n",
+        "id": "preferences",
+        "children":
+        [
+            {
+                "caption": "Package Settings",
+                "mnemonic": "P",
+                "id": "package-settings",
+                "children":
+                [
+                    {
+                        "caption": "FuzzyFileNav",
+                        "children":
+                        [
+                            // FuzzyFileNav default settings
+                            {
+                                "command": "open_file", "args":
+                                {
+                                    "file": "${packages}/FuzzyFileNav/FuzzyFileNav (Windows).sublime-settings",
+                                    "platform": "Windows"
+                                },
+                                "caption": "Settings – Default"
+                            },
+                            {
+                                "command": "open_file", "args":
+                                {
+                                    "file": "${packages}/FuzzyFileNav/FuzzyFileNav (OSX).sublime-settings",
+                                    "platform": "OSX"
+                                },
+                                "caption": "Settings – Default"
+                            },
+                            {
+                                "command": "open_file", "args":
+                                {
+                                    "file": "${packages}/FuzzyFileNav/FuzzyFileNav (Linux).sublime-settings",
+                                    "platform": "Linux"
+                                },
+                                "caption": "Settings – Default"
+                            },
+                            // FuzzyFileNav user settings
+                            {
+                                "command": "open_file", "args":
+                                {
+                                    "file": "${packages}/User/FuzzyFileNav (Windows).sublime-settings",
+                                    "platform": "Windows"
+                                },
+                                "caption": "Settings – User"
+                            },
+                            {
+                                "command": "open_file", "args":
+                                {
+                                    "file": "${packages}/User/FuzzyFileNav (OSX).sublime-settings",
+                                    "platform": "OSX"
+                                },
+                                "caption": "Settings – User"
+                            },
+                            {
+                                "command": "open_file", "args":
+                                {
+                                    "file": "${packages}/User/FuzzyFileNav (Linux).sublime-settings",
+                                    "platform": "Linux"
+                                },
+                                "caption": "Settings – User"
+                            },
+                            { "caption": "-" },
+                            // FuzzyFileNav Default Key mappings
+                            {
+                                "command": "open_file",
+                                "args": {
+                                    "file": "${packages}/FuzzyFileNav/Default (Windows).sublime-keymap",
+                                    "platform": "Windows"
+                                },
+                                "caption": "Key Bindings – Default"
+                            },
+                            {
+                                "command": "open_file",
+                                "args": {
+                                    "file": "${packages}/FuzzyFileNav/Default (OSX).sublime-keymap",
+                                    "platform": "OSX"
+                                },
+                                "caption": "Key Bindings – Default"
+                            },
+                            {
+                                "command": "open_file",
+                                "args": {
+                                    "file": "${packages}/FuzzyFileNav/Default (Linux).sublime-keymap",
+                                    "platform": "Linux"
+                                },
+                                "caption": "Key Bindings – Default"
+                            },
+                            // FuzzyFileNav User Key mappings
+                            {
+                                "command": "open_file",
+                                "args": {
+                                    "file": "${packages}/User/Default (Windows).sublime-keymap",
+                                    "platform": "Windows"
+                                },
+                                "caption": "Key Bindings – User"
+                            },
+                            {
+                                "command": "open_file",
+                                "args": {
+                                    "file": "${packages}/User/Default (OSX).sublime-keymap",
+                                    "platform": "OSX"
+                                },
+                                "caption": "Key Bindings – User"
+                            },
+                            {
+                                "command": "open_file",
+                                "args": {
+                                    "file": "${packages}/User/Default (Linux).sublime-keymap",
+                                    "platform": "Linux"
+                                },
+                                "caption": "Key Bindings – User"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    }
+]
