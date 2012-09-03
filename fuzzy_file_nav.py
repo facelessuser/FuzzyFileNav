@@ -11,8 +11,9 @@ import os.path as path
 import re
 import shutil
 
+platforms = {'windows': 'Windows', 'linux':'Linux', 'osx':'OSX'}
 PLATFORM = sublime.platform()
-FUZZY_SETTINGS = "FuzzyFileNav.sublime-settings"
+FUZZY_SETTINGS = "FuzzyFileNav (%s).sublime-settings" % (platforms[PLATFORM])
 
 if PLATFORM == "windows":
     import ctypes
