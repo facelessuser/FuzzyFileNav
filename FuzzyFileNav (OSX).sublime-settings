@@ -1,0 +1,31 @@
+{
+    // Location of home folder
+    "home": "",
+
+    // Patterns of files/folders to exclude
+    "regex_exclude": [".*\\.(DS_Store|svn|git)$"],
+
+    // Keep panel open after a file is opened, deleted, created, etc. so
+    // More files can be have actions perfomred on them.
+    "keep_panel_open_after_action": true,
+
+    // By default, files hidden by the system are hidden in Fuzzy File Nav
+    // as well (files that start with "." in Linux\Unix and files with the
+    // hidden attribute in windows)
+    "show_system_hidden_files": true,
+
+    // (Unix/Linux only) control whether autocomplete is case sensitive
+    "case_sensitive": false,
+
+    // If the "FuzzyStartFromFileCommand" is run outside of a open buffer
+    // or from a buffer that does not exist on disk, you can specify
+    // its default action to do instead of starting navigation from
+    // a file's location.  Options are "bookmarks", "home", "root".
+    "start_from_here_default_action": "bookmarks",
+
+    // Bookmarked paths
+    "bookmarks": [
+        {"name": "My Computer", "path": "", "os_exclude": ["osx", "linux"]},
+        {"name": "Root", "path": "/", "os_exclude": ["windows"]}
+    ]
+}
