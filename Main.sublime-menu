@@ -57,7 +57,6 @@
                                 },
                                 "caption": "Settings – User"
                             },
-                            { "caption": "-" },
                             {
                                 "command": "open_file", "args":
                                 {
@@ -66,6 +65,7 @@
                                 },
                                 "caption": "Settings – User"
                             },
+                            { "caption": "-" },
                             // FuzzyFileNav Default Key mappings
                             {
                                 "command": "open_file",
