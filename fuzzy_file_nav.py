@@ -134,7 +134,7 @@ class FuzzyEventListener(sublime_plugin.EventListener):
                 if m.group(1):
                     # Go Home
                     FuzzyFileNavCommand.fuzzy_reload = True
-                    home = sublime.load_settings(FUZZY_SETTINGS).get("home", "")
+                    home = os.path.expanduser(sublime.load_settings(FUZZY_SETTINGS).get("home", ""))
                     home = get_root_path() if not path.exists(home) or not path.isdir(home) else home
                     win.run_command("fuzzy_file_nav", {"start": home})
                 elif m.group(2):
@@ -358,7 +358,7 @@ class FuzzyBookmarksLoadCommand(sublime_plugin.WindowCommand):
         # Search through bookmarks
         bookmarks = sublime.load_settings(FUZZY_SETTINGS).get("bookmarks", [])
         for bm in bookmarks:
-            target = bm.get("path", None)
+            target = os.path.expanduser(bm.get("path", None))
             # Make sure bookmards point to valid locations
             if target != None and ((path.exists(target) and path.isdir(target)) or (PLATFORM == "windows" and target == u"")):
                 # Only show the bookmards for this platform
