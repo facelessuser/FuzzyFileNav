@@ -12,7 +12,7 @@ import re
 import shutil
 
 PLATFORM = sublime.platform()
-FUZZY_SETTINGS = "fuzzy_file_nav.sublime-settings"
+FUZZY_SETTINGS = "FuzzyFileNav.sublime-settings"
 
 if PLATFORM == "windows":
     import ctypes
