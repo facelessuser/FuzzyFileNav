@@ -417,7 +417,7 @@ class FuzzyStartFromFileCommand(sublime_plugin.WindowCommand):
                 self.window.run_command("fuzzy_bookmarks_load")
 
     def home(self):
-        home = sublime.load_settings(FUZZY_SETTINGS).get("home", "")
+        home = os.path.expanduser(sublime.load_settings(FUZZY_SETTINGS).get("home", ""))
         home = get_root_path() if not path.exists(home) or not path.isdir(home) else home
         self.window.run_command("fuzzy_file_nav", {"start": home})
 
