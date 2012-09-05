@@ -60,7 +60,7 @@ def back_to_root(cwd):
     return unicode(root)
 
 
-class FuzzyPanelText:
+class FuzzyPanelText(object):
     content = ""
 
     @classmethod
@@ -134,7 +134,7 @@ class FuzzyEventListener(sublime_plugin.EventListener):
                 if m.group(1):
                     # Go Home
                     FuzzyFileNavCommand.fuzzy_reload = True
-                    home = sublime.load_settings(FUZZY_SETTINGS).get("home", "")
+                    home = os.path.expanduser(sublime.load_settings(FUZZY_SETTINGS).get("home", ""))
                     home = get_root_path() if not path.exists(home) or not path.isdir(home) else home
                     win.run_command("fuzzy_file_nav", {"start": home})
                 elif m.group(2):
@@ -359,6 +359,8 @@ class FuzzyBookmarksLoadCommand(sublime_plugin.WindowCommand):
         bookmarks = sublime.load_settings(FUZZY_SETTINGS).get("bookmarks", [])
         for bm in bookmarks:
             target = bm.get("path", None)
+            if target != None:
+                target = os.path.expanduser(target)
             # Make sure bookmards point to valid locations
             if target != None and ((path.exists(target) and path.isdir(target)) or (PLATFORM == "windows" and target == u"")):
                 # Only show the bookmards for this platform

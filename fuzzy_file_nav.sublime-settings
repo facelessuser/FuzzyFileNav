@@ -1,6 +1,6 @@
 {
     // Location of home folder
-    "home": "",
+    "home": "~",
 
     // Patterns of files/folders to exclude
     "regex_exclude": [".*\\.(DS_Store|svn|git)$"],
