@@ -25,7 +25,7 @@
 
     // Bookmarked paths
     "bookmarks": [
-        {"name": "My Computer", "path": "", "os_exclude": ["osx", "linux"]},
-        {"name": "Root", "path": "/", "os_exclude": ["windows"]}
+        {"name": "My Computer", "path": {"#multiconf#": [{"os:windows": ""}]}},
+        {"name": "Root", "path": {"#multiconf#": [{"os:linux": "/"}, {"os:osx": "/"}]}}
     ]
 }

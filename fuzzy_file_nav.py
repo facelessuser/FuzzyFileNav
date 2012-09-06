@@ -10,6 +10,7 @@ import os
 import os.path as path
 import re
 import shutil
+from multiconf import get as qualify_settings
 
 PLATFORM = sublime.platform()
 FUZZY_SETTINGS = "fuzzy_file_nav.sublime-settings"
@@ -27,6 +28,10 @@ def get_root_path():
     # Windows doesn't have a root, so just
     # return an empty string to represent its root.
     return u"" if PLATFORM == "windows" else u"/"
+
+
+def expanduser(path, default):
+    return os.path.expanduser(path) if path != None else path
 
 
 def back_dir(cwd):
@@ -99,27 +104,32 @@ class FuzzyEventListener(sublime_plugin.EventListener):
                 if path.exists(FuzzyFileNavCommand.cwd):
                     return active
                 else:
-                    sublime.status_message("%d does not exist!" % FuzzyFileNavCommand.cwd)
+                    sublime.status_message("%s does not exist!" % FuzzyFileNavCommand.cwd)
             elif key == "fuzzy_delete":
                 if not empty and path.exists(full_name):
                     return active
                 elif not empty:
-                    sublime.status_message("%d does not exist!" % full_name)
+                    sublime.status_message("%s does not exist!" % full_name)
             elif key in ["fuzzy_make_file", "fuzzy_make_folder"]:
                 if not empty and not path.exists(full_name):
                     return active
                 elif not empty:
-                    sublime.status_message("%d already exists!" % full_name)
+                    sublime.status_message("%s already exists!" % full_name)
             elif key == "fuzzy_copy":
                 if not empty and path.exists(full_name):
                     return active
                 elif not empty:
-                    sublime.status_message("%d does not exist!" % full_name)
-            elif key in ["fuzzy_cut", "fuzzy_paste"]:
+                    sublime.status_message("%s does not exist!" % full_name)
+            elif key == "fuzzy_cut":
                 if path.exists(FuzzyFileNavCommand.cwd):
                     return active
                 else:
-                    sublime.status_message("%d does not exist!" % FuzzyFileNavCommand.cwd)
+                    sublime.status_message("%s does not exist!" % FuzzyFileNavCommand.cwd)
+            elif key == "fuzzy_paste":
+                if path.exists(FuzzyFileNavCommand.cwd) and len(FuzzyClipboardCommand.clips):
+                    return active
+                else:
+                    sublime.status_message("%s does not exist!" % FuzzyFileNavCommand.cwd)
         return False
 
     def on_modified(self, view):
@@ -134,7 +144,7 @@ class FuzzyEventListener(sublime_plugin.EventListener):
                 if m.group(1):
                     # Go Home
                     FuzzyFileNavCommand.fuzzy_reload = True
-                    home = os.path.expanduser(sublime.load_settings(FUZZY_SETTINGS).get("home", ""))
+                    home = qualify_settings(sublime.load_settings(FUZZY_SETTINGS), "home", u"", expanduser)
                     home = get_root_path() if not path.exists(home) or not path.isdir(home) else home
                     win.run_command("fuzzy_file_nav", {"start": home})
                 elif m.group(2):
@@ -358,15 +368,11 @@ class FuzzyBookmarksLoadCommand(sublime_plugin.WindowCommand):
         # Search through bookmarks
         bookmarks = sublime.load_settings(FUZZY_SETTINGS).get("bookmarks", [])
         for bm in bookmarks:
-            target = bm.get("path", None)
-            if target != None:
-                target = os.path.expanduser(target)
+            # Only show bookmarks that are for this host and/or platform
+            target = qualify_settings(bm, "path", None, expanduser)
             # Make sure bookmards point to valid locations
             if target != None and ((path.exists(target) and path.isdir(target)) or (PLATFORM == "windows" and target == u"")):
-                # Only show the bookmards for this platform
-                os_exclude = set(bm.get("os_exclude", []))
-                if not PLATFORM in os_exclude:
-                    self.display.append([bm.get("name", target), target])
+                self.display.append([bm.get("name", target), target])
         if len(self.display) > 0:
             # Display bookmarks if valid ones were found
             self.window.run_command("hide_overlay")
@@ -417,7 +423,7 @@ class FuzzyStartFromFileCommand(sublime_plugin.WindowCommand):
                 self.window.run_command("fuzzy_bookmarks_load")
 
     def home(self):
-        home = os.path.expanduser(sublime.load_settings(FUZZY_SETTINGS).get("home", ""))
+        home = qualify_settings(sublime.load_settings(FUZZY_SETTINGS), "home", u"", expanduser)
         home = get_root_path() if not path.exists(home) or not path.isdir(home) else home
         self.window.run_command("fuzzy_file_nav", {"start": home})
 

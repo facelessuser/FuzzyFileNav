@@ -26,8 +26,16 @@ As mentioned earlier, you can bring up a list of bookmarked folders.  To add or 
 
     // Bookmarked paths
     "bookmarks": [
-        {"name": "My Computer", "path": "", "os_exclude": ["osx", "linux"]},
-        {"name": "Root", "path": "/", "os_exclude": ["windows"]}
+        {"name": "My Computer", "path": "",
+        {"name": "Root", "path": "/"}
+    ]
+
+If it is desired to have specific bookmarks show up on a specific OS only or a specific host only, you augment the ```path``` option using the notation below.  For more information, please see **Platform/Computer Specific Settings**.
+
+    // Bookmarked paths
+    "bookmarks": [
+        {"name": "My Computer", "path": {"#multiconf#": [{"os:windows": ""}]}},
+        {"name": "Root", "path": {"#multiconf#": [{"os:linux": "/"}, {"os:osx": "/"}]}}
     ]
 
 ## Custom Settings
@@ -56,6 +64,25 @@ There are a number of custom settings that can be defined for Fuzzy File Nav in 
     // its default action to do instead of starting navigation from
     // a file's location.  Options are "bookmarks", "home", "root".
     "start_from_here_default_action": "bookmarks",
+
+Home folder can be accessed any time by typing ```~/``` into the FuzzyFileNav quick panel. Home folder can be configured for multiple OS and/or hosts.  Simply use the notation below and see **Platform/Computer Specific Settings** for more information.
+
+    "home": {"#multiconf#": [{"os:windows": "c:\Some\Location"}, {"os:linux": "/Some/Linux/Location"}]},
+
+## Platform/Computer Specific Settings
+Currently the ```home``` settings in the settings file, and the ```path``` setting in a bookmark entry can be configured to have multiple OS and/or host specific settings to help manage settings across different machines.
+
+The syntax to configure one of these settings to be OS and/or host specific is found below:
+
+- The setting should be a key/value pair, where the key is ```#multiconf#``` and the value is an array of key/value entries whose keys describe the host and/or os qualifiers needed for the value to be used.
+- The key/value entries will have a key that represents one or more qualifiers, each of which must be separated with a ```;```
+- Each qualifier consists of the qualifier type and a qualifier value to compare against.  These will be separated by a ```:```.
+- There are two supported qualifiers: ```host``` and ```os```.  ```host``` is the name of your PC.  ```os``` is the platform and can be either ```windows```, ```linux```, or ```osx```.
+- The key/value entries will have a value associated with the key, and can be of any type: string, number, array, dictionary, etc.
+
+example:
+
+    "home": {"#multiconf#": [{"os:windows": "c:\Some\Location"}, {"os:linux": "/Some/Linux/Location"}]},
 
 ## Fuzzy File Nav Panel Features
 There are a number of featues accessibe by shortcuts when the Fuzzy File Nav Panel is open.  Most shorcuts are combinations of the modifier key ```ctrl```; for OSX simply replace the ```ctrl``` modifier with ```super```.
