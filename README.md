@@ -67,7 +67,7 @@ There are a number of custom settings that can be defined for Fuzzy File Nav in 
 
 Home folder can be accessed any time by typing ```~/``` into the FuzzyFileNav quick panel. Home folder can be configured for multiple OS and/or hosts.  Simply use the notation below and see **Platform/Computer Specific Settings** for more information.
 
-    "home": {"#multiconf#": [{"os:windows": "c:\Some\Location"}, {"os:linux": "/Some/Linux/Location"}]},
+    "home": {"#multiconf#": [{"os:windows": "c:\\Some\\Location"}, {"os:linux": "/Some/Linux/Location"}]},
 
 ## Platform/Computer Specific Settings
 Currently the ```home``` settings in the settings file, and the ```path``` setting in a bookmark entry can be configured to have multiple OS and/or host specific settings to help manage settings across different machines.
@@ -82,7 +82,7 @@ The syntax to configure one of these settings to be OS and/or host specific is f
 
 example:
 
-    "home": {"#multiconf#": [{"os:windows": "c:\Some\Location"}, {"os:linux": "/Some/Linux/Location"}]},
+    "home": {"#multiconf#": [{"os:windows": "c:\\Some\\Location"}, {"os:linux": "/Some/Linux/Location"}]},
 
 ## Fuzzy File Nav Panel Features
 There are a number of featues accessibe by shortcuts when the Fuzzy File Nav Panel is open.  Most shorcuts are combinations of the modifier key ```ctrl```; for OSX simply replace the ```ctrl``` modifier with ```super```.
@@ -133,3 +133,5 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 * Thanks to quodlibet for helping come up with great ideas for the plugin during development.
 
 * Special thanks to [Boundincode](https://github.com/Boundincode) whose witty humor and quirky coding fueled the development of the plugin. (If only he was more humble...)
+
+* Thanks to biermeester and matthjes for thier suggestions and ideas with platform/host specific settings.
