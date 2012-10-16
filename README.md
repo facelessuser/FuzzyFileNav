@@ -26,7 +26,7 @@ As mentioned earlier, you can bring up a list of bookmarked folders.  To add or 
 
     // Bookmarked paths
     "bookmarks": [
-        {"name": "My Computer", "path": "",
+        {"name": "My Computer", "path": ""},
         {"name": "Root", "path": "/"}
     ]
 
