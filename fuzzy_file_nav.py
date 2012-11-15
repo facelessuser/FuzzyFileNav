@@ -19,9 +19,14 @@ if PLATFORM == "windows":
     import ctypes
 
 PLATFORM = sublime.platform()
-CMD_WIN = r"^(?:(?:(~)|(\.\.))(?:\\|/)|((?:[A-Za-z]{1}\:)?(?:\\|/))|([\w\W]*(?:\\|/)))$"
+CMD_WIN = r"^(?:(?:(~)|(\.\.))(?:\\|/)|((?:[A-Za-z]{1}:)?(?:\\|/))|([\w\W]*(?:\\|/)))$"
 CMD_NIX = r"^(?:(?:(~)|(\.\.))/|(/)|([\w\W]*/))$"
-WIN_DRIVE = r"(^[A-Za-z]{1}\:)"
+WIN_DRIVE = r"(^[A-Za-z]{1}:(?:\\|/))"
+
+
+def debug_log(s):
+    if sublime.load_settings(FUZZY_SETTINGS).get("debug", False):
+        print "FuzzyFileNav: %s" % s
 
 
 def get_root_path():
@@ -570,10 +575,14 @@ class FuzzyFileNavCommand(sublime_plugin.WindowCommand):
         self.regex_exclude = sublime.load_settings(FUZZY_SETTINGS).get("regex_exclude", [])
         FuzzyPathCompleteCommand.reset_autocomplete()
 
+        debug_log("start - %s" % start if start is not None else "None")
+
         # Check if a start destination has been given
         # and ensure it is valid.
         directory = get_root_path() if start == None or not path.exists(start) or not path.isdir(start) else unicode(start)
         self.cls.cwd = directory if PLATFORM == "windows" and directory == u"" else path.normpath(directory)
+
+        debug_log("cwd - %s" % self.cls.cwd)
 
         # Get and display options.
         try:
