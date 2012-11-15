@@ -501,7 +501,6 @@ class FuzzyPathCompleteCommand(sublime_plugin.WindowCommand):
 
     def run(self, back=False):
         def nix_common_chars(current_complete, l, case_insensitive):
-            print l
             common = current_complete
             while True:
                 match = True
