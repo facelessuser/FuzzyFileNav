@@ -2,161 +2,70 @@
     {
         "keys": ["tab"],
         "command": "fuzzy_path_complete",
-        "context":
-        [
-            {
-                "operand": true,
-                "operator": "equal",
-                "match_all": true,
-                "key": "fuzzy_path_complete"
-            }
-        ]
+        "context": [{"key": "fuzzy_path_complete"}]
     },
     {
         "keys": ["shift+tab"],
         "command": "fuzzy_path_complete",
-        "context":
-        [
-            {
-                "operand": true,
-                "operator": "equal",
-                "match_all": true,
-                "key": "fuzzy_path_complete_back"
-            }
-        ],
+        "context": [{"key": "fuzzy_path_complete_back"}],
         "args": {"back": true}
     },
     {
         "keys": ["super+h"],
         "command": "fuzzy_toggle_hidden",
-        "context":
-        [
-            {
-                "operand": true,
-                "operator": "equal",
-                "match_all": true,
-                "key": "fuzzy_toggle_hidden"
-            }
-        ]
+        "context": [{"key": "fuzzy_toggle_hidden"}]
     },
     {
         "keys": ["super+b"],
         "command": "fuzzy_bookmarks_load",
-        "context":
-        [
-            {
-                "operand": true,
-                "operator": "equal",
-                "match_all": true,
-                "key": "fuzzy_bookmarks_load"
-            }
-        ]
+        "context": [{"key": "fuzzy_bookmarks_load"}]
     },
     {
         "keys": ["super+d"],
         "command": "fuzzy_delete",
-        "context":
-        [
-            {
-                "operand": true,
-                "operator": "equal",
-                "match_all": true,
-                "key": "fuzzy_delete"
-            }
-        ]
+        "context": [{"key": "fuzzy_delete"}]
     },
     {
         "keys": ["super+c"],
         "command": "fuzzy_clipboard",
-        "context":
-        [
-            {
-                "operand": true,
-                "operator": "equal",
-                "match_all": true,
-                "key": "fuzzy_copy"
-            }
-        ],
+        "context": [{"key": "fuzzy_copy"}],
         "args": {"action": "copy"}
     },
     {
         "keys": ["super+x"],
         "command": "fuzzy_clipboard",
-        "context":
-        [
-            {
-                "operand": true,
-                "operator": "equal",
-                "match_all": true,
-                "key": "fuzzy_cut"
-            }
-        ],
+        "context": [{"key": "fuzzy_cut"}],
         "args": {"action": "cut"}
     },
     {
         "keys": ["super+v"],
         "command": "fuzzy_clipboard",
-        "context":
-        [
-            {
-                "operand": true,
-                "operator": "equal",
-                "match_all": true,
-                "key": "fuzzy_paste"
-            }
-        ],
+        "context": [{"key": "fuzzy_paste"}],
         "args": {"action": "paste"}
     },
     {
         "keys": ["super+n"],
         "command": "fuzzy_make_file",
-        "context":
-        [
-            {
-                "operand": true,
-                "operator": "equal",
-                "match_all": true,
-                "key": "fuzzy_make_file"
-            }
-        ]
+        "context": [{"key": "fuzzy_make_file"}]
     },
     {
         "keys": ["super+shift+n"],
         "command": "fuzzy_make_folder",
-        "context":
-        [
-            {
-                "operand": true,
-                "operator": "equal",
-                "match_all": true,
-                "key": "fuzzy_make_folder"
-            }
-        ]
+        "context": [{"key": "fuzzy_make_folder"}]
     },
     {
         "keys": ["super+forward_slash"],
         "command": "fuzzy_get_cwd",
-        "context":
-        [
-            {
-                "operand": true,
-                "operator": "equal",
-                "match_all": true,
-                "key": "fuzzy_get_cwd"
-            }
-        ]
+        "context": [{"key": "fuzzy_get_cwd"}]
     },
     {
         "keys": ["super+r"],
         "command": "fuzzy_reveal",
-        "context":
-        [
-            {
-                "operand": true,
-                "operator": "equal",
-                "match_all": true,
-                "key": "fuzzy_reveal"
-            }
-        ]
+        "context": [{"key": "fuzzy_reveal"}]
+    },
+    {
+        "keys": ["super+s"],
+        "command": "fuzzy_save_file",
+        "context": [{"key": "fuzzy_save_as"}]
     }
 ]

@@ -117,6 +117,9 @@ There are a number of featues accessibe by shortcuts when the Fuzzy File Nav Pan
 ### Fuzzy Make Folder
 ```ctrl+shift+n``` Creates a new folder in the currently opened folder in the Fuzzy File Nav Panel.  The name that is typed into the panel is the name that will be used.
 
+### Fuzzy Save As File
+```ctrl+s``` Saves view to the the currently opened folder in the Fuzzy File Nav Panel.  The name that is typed into the panel is the name of the file the view will be saved to.  You will be prompted for file overwrite.
+
 # License
 
 Fuzzy File nav is released under the MIT license.
