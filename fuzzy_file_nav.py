@@ -519,14 +519,19 @@ class FuzzyPathCompleteCommand(sublime_plugin.WindowCommand):
                         item = item[0:len(item) - 1]
                     complete.append(item)
 
-            # If only one entry matches, auto-complete it
             complete_len = len(complete)
-            if complete_len:
-                last = cls.last
-                if back:
-                    cls.last = complete_len - 1 if last == None or last < 1 else last - 1
+            nix_path_complete = settings.get("nix_style_path_complete", False)
+
+            # If only one entry matches, auto-complete it
+            if (nix_path_complete and complete_len == 1) or (not nix_path_complete and complete_len):
+                if nix_path_complete:
+                    cls.last = 0
                 else:
-                    cls.last = 0 if last == None or last >= complete_len - 1 else last + 1
+                    last = cls.last
+                    if back:
+                        cls.last = complete_len - 1 if last == None or last < 1 else last - 1
+                    else:
+                        cls.last = 0 if last == None or last >= complete_len - 1 else last + 1
                 cls.in_progress = True
                 edit = view.begin_edit()
                 view.replace(edit, sublime.Region(0, view.size()), complete[cls.last])

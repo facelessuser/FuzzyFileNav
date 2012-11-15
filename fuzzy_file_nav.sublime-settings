@@ -17,6 +17,9 @@
     // (Unix/Linux only) control whether autocomplete is case sensitive
     "case_sensitive": false,
 
+    // (Unix/Linux) style path complete
+    "nix_style_path_complete": false,
+
     // If the "FuzzyStartFromFileCommand" is run outside of a open buffer
     // or from a buffer that does not exist on disk, you can specify
     // its default action to do instead of starting navigation from
