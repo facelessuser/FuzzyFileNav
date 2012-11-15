@@ -500,19 +500,43 @@ class FuzzyPathCompleteCommand(sublime_plugin.WindowCommand):
     text = ""
 
     def run(self, back=False):
+        def nix_common_chars(current_complete, l, case_insensitive):
+            print l
+            common = current_complete
+            while True:
+                match = True
+                cmn_len = len(current_complete)
+                if len(l[0]) > cmn_len:
+                    common += l[0][cmn_len]
+                    cmn_len += 1
+                else:
+                    break
+                for item in l:
+                    value = item.lower() if case_insensitive else item
+                    if not value.startswith(common):
+                        match = False
+                        break
+                if not match:
+                    break
+                else:
+                    current_complete = common
+            selection = l[0][0:len(current_complete)]
+            del l[:]
+            l.append(selection)
+
         cls = FuzzyPathCompleteCommand
         view = FuzzyFileNavCommand.view
         complete = []
         settings = sublime.load_settings(FUZZY_SETTINGS)
+        case_insensitive = PLATFORM == "windows" or not settings.get("case_sensitive", True)
         if view != None:
             sel = view.sel()[0]
             if cls.text == "":
                 cls.text = view.substr(view.line(sel))
+            current = cls.text.lower() if case_insensitive else cls.text
             for item in FuzzyFileNavCommand.files:
                 # Windows is case insensitive
-                i = item.lower() if PLATFORM == "windows" or not settings.get("case_sensitive", True) else item
-                current = cls.text.lower() if PLATFORM == "windows" or not settings.get("case_sensitive", True) else cls.text
-
+                i = item.lower() if case_insensitive else item
                 # See if current input matches the beginning of some of the entries
                 if i.startswith(current):
                     if path.isdir(path.join(FuzzyFileNavCommand.cwd, item)):
@@ -521,6 +545,10 @@ class FuzzyPathCompleteCommand(sublime_plugin.WindowCommand):
 
             complete_len = len(complete)
             nix_path_complete = settings.get("nix_style_path_complete", False)
+
+            if nix_path_complete and complete_len:
+                nix_common_chars(current, complete, case_insensitive)
+                complete_len = len(complete)
 
             # If only one entry matches, auto-complete it
             if (nix_path_complete and complete_len == 1) or (not nix_path_complete and complete_len):
