@@ -69,7 +69,7 @@
         "context": [{"key": "fuzzy_reveal"}]
     },
     {
-        "keys": ["super+s"],
+        "keys": ["ctrl+s"],
         "command": "fuzzy_save_file",
         "context": [{"key": "fuzzy_save_as"}]
     }
