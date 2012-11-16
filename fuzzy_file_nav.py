@@ -506,7 +506,7 @@ class FuzzyPathCompleteCommand(sublime_plugin.WindowCommand):
                 match = True
                 cmn_len = len(current_complete)
                 if len(l[0]) > cmn_len:
-                    common += l[0][cmn_len]
+                    common += l[0][cmn_len].lower() if case_insensitive else l[0][cmn_len]
                     cmn_len += 1
                 else:
                     break
@@ -533,6 +533,7 @@ class FuzzyPathCompleteCommand(sublime_plugin.WindowCommand):
             sel = view.sel()[0]
             if cls.text == "":
                 cls.text = view.substr(view.line(sel))
+            debug_log("completion text - " + cls.text)
             current = cls.text.lower() if case_insensitive else cls.text
             for item in FuzzyFileNavCommand.files:
                 # Windows is case insensitive
@@ -559,7 +560,7 @@ class FuzzyPathCompleteCommand(sublime_plugin.WindowCommand):
                         cls.last = complete_len - 1 if last == None or last < 1 else last - 1
                     else:
                         cls.last = 0 if last == None or last >= complete_len - 1 else last + 1
-                cls.in_progress = True
+                    cls.in_progress = True
                 edit = view.begin_edit()
                 view.replace(edit, sublime.Region(0, view.size()), complete[cls.last])
                 view.end_edit(edit)
