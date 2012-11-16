@@ -527,7 +527,8 @@ class FuzzyPathCompleteCommand(sublime_plugin.WindowCommand):
         view = FuzzyFileNavCommand.view
         complete = []
         settings = sublime.load_settings(FUZZY_SETTINGS)
-        case_insensitive = PLATFORM == "windows" or not settings.get("case_sensitive", True)
+        nix_path_complete = bool(settings.get("nix_style_path_complete", False))
+        case_insensitive = PLATFORM == "windows" or not nix_path_complete
         if view != None:
             sel = view.sel()[0]
             if cls.text == "":
@@ -543,7 +544,6 @@ class FuzzyPathCompleteCommand(sublime_plugin.WindowCommand):
                     complete.append(item)
 
             complete_len = len(complete)
-            nix_path_complete = settings.get("nix_style_path_complete", False)
 
             if nix_path_complete and complete_len:
                 nix_common_chars(current, complete, case_insensitive)

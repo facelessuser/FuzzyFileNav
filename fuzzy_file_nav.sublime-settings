@@ -14,9 +14,6 @@
     // hidden attribute in windows)
     "show_system_hidden_files": true,
 
-    // (Unix/Linux only) control whether autocomplete is case sensitive
-    "case_sensitive": false,
-
     // (Unix/Linux) style path complete
     "nix_style_path_complete": false,
 
