@@ -72,5 +72,10 @@
         "keys": ["ctrl+s"],
         "command": "fuzzy_save_file",
         "context": [{"key": "fuzzy_save_as"}]
+    },
+    {
+        "keys": ["ctrl+."],
+        "command": "fuzzy_current_working_view",
+        "context": [{"key": "fuzzy_cwv"}]
     }
 ]

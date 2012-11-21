@@ -120,6 +120,9 @@ There are a number of featues accessibe by shortcuts when the Fuzzy File Nav Pan
 ### Fuzzy Save As File
 ```ctrl+s``` Saves view to the the currently opened folder in the Fuzzy File Nav Panel.  The name that is typed into the panel is the name of the file the view will be saved to.  You will be prompted for file overwrite.
 
+### Fuzzy Current Working View
+```ctrl+.``` Gets the file name of the current working view and copies it to the Fuzzy File Nav Panel.
+
 # License
 
 Fuzzy File nav is released under the MIT license.

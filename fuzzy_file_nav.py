@@ -103,7 +103,7 @@ class FuzzyEventListener(sublime_plugin.EventListener):
             full_name = path.join(FuzzyFileNavCommand.cwd, FuzzyPanelText.get_content())
             empty = (FuzzyPanelText.get_content() == "")
             # See if this is the auto-complete path command
-            if key in ["fuzzy_path_complete", "fuzzy_path_complete_back", "fuzzy_toggle_hidden", "fuzzy_bookmarks_load", "fuzzy_get_cwd"]:
+            if key in ["fuzzy_path_complete", "fuzzy_path_complete_back", "fuzzy_toggle_hidden", "fuzzy_bookmarks_load", "fuzzy_get_cwd", "fuzzy_cwv"]:
                 return active
             elif key == "fuzzy_reveal":
                 if path.exists(FuzzyFileNavCommand.cwd):
@@ -176,6 +176,26 @@ class FuzzyEventListener(sublime_plugin.EventListener):
                     if path.exists(new_path) and path.isdir(new_path):
                         FuzzyFileNavCommand.fuzzy_reload = True
                         win.run_command("fuzzy_file_nav", {"start": new_path})
+
+
+class FuzzyCurrentWorkingViewCommand(sublime_plugin.TextCommand):
+    def run(self, edit):
+        name = None
+        win = sublime.active_window()
+        if win is not None:
+            cwv = win.active_view()
+            if cwv is not None:
+                file_name = cwv.file_name()
+                if file_name is not None:
+                    name = path.basename(file_name)
+        if name is not None:
+            view = FuzzyFileNavCommand.view
+            edit = view.begin_edit()
+            view.replace(edit, sublime.Region(0, view.size()), name)
+            view.end_edit(edit)
+            sels = view.sel()
+            sels.clear()
+            sels.add(sublime.Region(view.size()))
 
 
 class FuzzyRevealCommand(sublime_plugin.WindowCommand):
@@ -497,7 +517,7 @@ class FuzzyStartFromFileCommand(sublime_plugin.WindowCommand):
 class FuzzyPathCompleteCommand(sublime_plugin.WindowCommand):
     last = None
     in_progress = False
-    text = ""
+    text = None
 
     def run(self, back=False):
         def nix_common_chars(current_complete, l, case_insensitive):
@@ -531,7 +551,7 @@ class FuzzyPathCompleteCommand(sublime_plugin.WindowCommand):
         case_insensitive = PLATFORM == "windows" or not nix_path_complete
         if view != None:
             sel = view.sel()[0]
-            if cls.text == "":
+            if cls.text == None:
                 cls.text = view.substr(view.line(sel))
             debug_log("completion text - " + cls.text)
             current = cls.text.lower() if case_insensitive else cls.text
@@ -564,15 +584,18 @@ class FuzzyPathCompleteCommand(sublime_plugin.WindowCommand):
                 edit = view.begin_edit()
                 view.replace(edit, sublime.Region(0, view.size()), complete[cls.last])
                 view.end_edit(edit)
+                sels = view.sel()
+                sels.clear()
+                sels.add(sublime.Region(view.size()))
             else:
                 cls.last = None
-                cls.text = ""
+                cls.text = None
 
     @classmethod
     def update_autocomplete(cls, text):
         if text != cls.text and cls.last != None:
             if not cls.in_progress:
-                cls.text = ""
+                cls.text = None
                 cls.last = None
             else:
                 cls.in_progress = False
@@ -581,7 +604,7 @@ class FuzzyPathCompleteCommand(sublime_plugin.WindowCommand):
     def reset_autocomplete(cls):
         cls.last = None
         cls.in_progress = False
-        cls.text = ""
+        cls.text = None
 
 
 class FuzzyFileNavCommand(sublime_plugin.WindowCommand):
