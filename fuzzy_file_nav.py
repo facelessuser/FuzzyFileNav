@@ -105,7 +105,7 @@ class FuzzyEventListener(sublime_plugin.EventListener):
             # See if this is the auto-complete path command
             if key in ["fuzzy_path_complete", "fuzzy_path_complete_back", "fuzzy_toggle_hidden", "fuzzy_bookmarks_load", "fuzzy_get_cwd", "fuzzy_cwv"]:
                 return active
-            elif key == "fuzzy_reveal":
+            elif key in ["fuzzy_reveal", "fuzzy_search"]:
                 if path.exists(FuzzyFileNavCommand.cwd):
                     return active
                 else:
@@ -206,6 +206,11 @@ class FuzzyRevealCommand(sublime_plugin.WindowCommand):
             self.window.run_command("open_dir", {"dir": FuzzyFileNavCommand.cwd, "file": file_name})
         else:
             self.window.run_command("open_dir", {"dir": FuzzyFileNavCommand.cwd, "file": ""})
+
+
+class FuzzySearchFolderCommand(sublime_plugin.WindowCommand):
+    def run(self):
+        self.window.run_command("show_panel", {"panel": "find_in_files", "where": FuzzyFileNavCommand.cwd})
 
 
 class FuzzyClipboardCommand(sublime_plugin.WindowCommand):

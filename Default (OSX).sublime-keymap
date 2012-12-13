@@ -72,5 +72,10 @@
         "keys": ["super+."],
         "command": "fuzzy_current_working_view",
         "context": [{"key": "fuzzy_cwv"}]
+    },
+    {
+        "keys": ["super+f"],
+        "command": "fuzzy_search_folder",
+        "context": [{"key": "fuzzy_search"}]
     }
 ]

@@ -77,5 +77,10 @@
         "keys": ["ctrl+."],
         "command": "fuzzy_current_working_view",
         "context": [{"key": "fuzzy_cwv"}]
+    },
+    {
+        "keys": ["ctrl+f"],
+        "command": "fuzzy_search_folder",
+        "context": [{"key": "fuzzy_search"}]
     }
 ]
