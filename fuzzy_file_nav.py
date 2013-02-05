@@ -10,29 +10,23 @@ import os
 import os.path as path
 import re
 import shutil
-from multiconf import get as qualify_settings
+from FuzzyFileNav.multiconf import get as qualify_settings
 
-PLATFORM = sublime.platform()
 FUZZY_SETTINGS = "fuzzy_file_nav.sublime-settings"
-
-if PLATFORM == "windows":
-    import ctypes
-
-PLATFORM = sublime.platform()
 CMD_WIN = r"^(?:(?:(~)|(\.\.))(?:\\|/)|((?:[A-Za-z]{1}:)?(?:\\|/))|([\w\W]*(?:\\|/)))$"
 CMD_NIX = r"^(?:(?:(~)|(\.\.))/|(/)|([\w\W]*/))$"
 WIN_DRIVE = r"(^[A-Za-z]{1}:(?:\\|/))"
 
 
 def debug_log(s):
-    if sublime.load_settings(FUZZY_SETTINGS).get("debug", False):
-        print "FuzzyFileNav: %s" % s
+    if True:  # sublime.load_settings(FUZZY_SETTINGS).get("debug", False):
+        print("FuzzyFileNav: %s" % s)
 
 
 def get_root_path():
     # Windows doesn't have a root, so just
     # return an empty string to represent its root.
-    return u"" if PLATFORM == "windows" else u"/"
+    return "" if PLATFORM == "windows" else "/"
 
 
 def expanduser(path, default):
@@ -52,7 +46,7 @@ def back_dir(cwd):
 
 def get_drives():
     # Search through valid drive names and see if they exist.
-    return [unicode(d + ":") for d in "ABCDEFGHIJKLMNOPQRSTUVWXYZ" if path.exists(d + ":")]
+    return [d + ":" for d in "ABCDEFGHIJKLMNOPQRSTUVWXYZ" if path.exists(d + ":")]
 
 
 def back_to_root(cwd):
@@ -67,7 +61,22 @@ def back_to_root(cwd):
         m = re.match(WIN_DRIVE, cwd)
         if m:
             root = m.group(1)
-    return unicode(root)
+    return root
+
+
+class FuzzyEditGlobal(object):
+    bfr = None
+    region = None
+
+    @classmethod
+    def clear(cls):
+        cls.bfr = None
+        cls.region = None
+
+
+class FuzzyApplyEditsCommand(sublime_plugin.TextCommand):
+    def run(self, edit):
+        self.view.replace(edit, FuzzyEditGlobal.region, FuzzyEditGlobal.bfr)
 
 
 class FuzzyPanelText(object):
@@ -154,7 +163,7 @@ class FuzzyEventListener(sublime_plugin.EventListener):
                 if m.group(1):
                     # Go Home
                     FuzzyFileNavCommand.fuzzy_reload = True
-                    home = qualify_settings(sublime.load_settings(FUZZY_SETTINGS), "home", u"", expanduser)
+                    home = qualify_settings(sublime.load_settings(FUZZY_SETTINGS), "home", "", expanduser)
                     home = get_root_path() if not path.exists(home) or not path.isdir(home) else home
                     win.run_command("fuzzy_file_nav", {"start": home})
                 elif m.group(2):
@@ -190,9 +199,10 @@ class FuzzyCurrentWorkingViewCommand(sublime_plugin.TextCommand):
                     name = path.basename(file_name)
         if name is not None:
             view = FuzzyFileNavCommand.view
-            edit = view.begin_edit()
-            view.replace(edit, sublime.Region(0, view.size()), name)
-            view.end_edit(edit)
+            FuzzyEditGlobal.bfr = name
+            FuzzyEditGlobal.region = sublime.Region(0, view.size())
+            view.run_command("fuzzy_apply_edits")
+            FuzzyEditGlobal.clear()
             sels = view.sel()
             sels.clear()
             sels.add(sublime.Region(view.size()))
@@ -350,13 +360,10 @@ class FuzzySaveFileCommand(sublime_plugin.WindowCommand):
         if self.view.is_loading():
             sublime.set_timeout(self.save, 100)
         else:
-            edit = self.view.begin_edit()
-            self.view.replace(
-                edit,
-                sublime.Region(0, self.view.size()),
-                self.bfr
-            )
-            self.view.end_edit(edit)
+            FuzzyEditGlobal.bfr = self.bfr
+            FuzzyEditGlobal.region = sublime.Region(0, self.view.size())
+            self.view.run_command("fuzzy_apply_edits")
+            FuzzyEditGlobal.clear()
             self.window.focus_view(self.view)
             self.view.run_command("save")
             if self.multi_file:
@@ -456,7 +463,7 @@ class FuzzyBookmarksLoadCommand(sublime_plugin.WindowCommand):
             # Only show bookmarks that are for this host and/or platform
             target = qualify_settings(bm, "path", None, expanduser)
             # Make sure bookmards point to valid locations
-            if target != None and ((path.exists(target) and path.isdir(target)) or (PLATFORM == "windows" and target == u"")):
+            if target != None and ((path.exists(target) and path.isdir(target)) or (PLATFORM == "windows" and target == "")):
                 self.display.append([bm.get("name", target), target])
         if len(self.display) > 0:
             # Display bookmarks if valid ones were found
@@ -486,6 +493,7 @@ class FuzzyToggleHiddenCommand(sublime_plugin.WindowCommand):
                 FuzzyFileNavCommand.ignore_excludes = True
             else:
                 FuzzyFileNavCommand.ignore_excludes = False
+            self.window.run_command("hide_overlay")
             self.window.run_command("fuzzy_file_nav", {"start": FuzzyFileNavCommand.cwd})
 
 
@@ -508,7 +516,7 @@ class FuzzyStartFromFileCommand(sublime_plugin.WindowCommand):
                 self.window.run_command("fuzzy_bookmarks_load")
 
     def home(self):
-        home = qualify_settings(sublime.load_settings(FUZZY_SETTINGS), "home", u"", expanduser)
+        home = qualify_settings(sublime.load_settings(FUZZY_SETTINGS), "home", "", expanduser)
         home = get_root_path() if not path.exists(home) or not path.isdir(home) else home
         self.window.run_command("fuzzy_file_nav", {"start": home})
 
@@ -586,9 +594,10 @@ class FuzzyPathCompleteCommand(sublime_plugin.WindowCommand):
                     else:
                         cls.last = 0 if last == None or last >= complete_len - 1 else last + 1
                     cls.in_progress = True
-                edit = view.begin_edit()
-                view.replace(edit, sublime.Region(0, view.size()), complete[cls.last])
-                view.end_edit(edit)
+                FuzzyEditGlobal.bfr = complete[cls.last]
+                FuzzyEditGlobal.region = sublime.Region(0, view.size())
+                view.run_command("fuzzy_apply_edits")
+                FuzzyEditGlobal.clear()
                 sels = view.sel()
                 sels.clear()
                 sels.add(sublime.Region(view.size()))
@@ -640,8 +649,8 @@ class FuzzyFileNavCommand(sublime_plugin.WindowCommand):
 
         # Check if a start destination has been given
         # and ensure it is valid.
-        directory = get_root_path() if start == None or not path.exists(start) or not path.isdir(start) else unicode(start)
-        self.cls.cwd = directory if PLATFORM == "windows" and directory == u"" else path.normpath(directory)
+        directory = get_root_path() if start == None or not path.exists(start) or not path.isdir(start) else start
+        self.cls.cwd = directory if PLATFORM == "windows" and directory == "" else path.normpath(directory)
 
         debug_log("cwd - %s" % self.cls.cwd)
 
@@ -660,7 +669,7 @@ class FuzzyFileNavCommand(sublime_plugin.WindowCommand):
 
     def get_files(self, cwd):
         # Get files/drives (windows).
-        files = get_drives() if PLATFORM == "windows" and cwd == u"" else os.listdir(cwd)
+        files = get_drives() if PLATFORM == "windows" and cwd == "" else os.listdir(cwd)
         folders = []
         documents = []
         show_hidden = sublime.load_settings(FUZZY_SETTINGS).get("show_system_hidden_files", False)
@@ -675,7 +684,7 @@ class FuzzyFileNavCommand(sublime_plugin.WindowCommand):
                         if f.startswith('.') and f != "..":
                             valid = False
                     else:
-                        attrs = ctypes.windll.kernel32.GetFileAttributesW(unicode(full_path))
+                        attrs = ctypes.windll.kernel32.GetFileAttributesW(full_path)
                         if attrs != -1 and bool(attrs & 2):
                             valid = False
 
@@ -690,23 +699,23 @@ class FuzzyFileNavCommand(sublime_plugin.WindowCommand):
                     documents.append(f)
                 else:
                     folders.append(f + ("\\" if PLATFORM == "windows" else "/"))
-        return [u".."] + sorted(folders) + sorted(documents)
+        return [".."] + sorted(folders) + sorted(documents)
 
     def display_files(self, cwd):
         # Get the folders children
         self.cls.files = self.get_files(cwd)
 
         # Make sure panel is down before loading a new one.
-        self.window.run_command("hide_overlay")
         self.cls.view = None
-        self.window.show_quick_panel(self.cls.files, self.check_selection)
+        sublime.set_timeout(lambda: self.window.show_quick_panel(self.cls.files, self.check_selection), 0)
 
     def check_selection(self, selection):
+        debug_log("Process selection")
         if selection > -1:
             self.cls.fuzzy_reload = False
             # The first selection is the "go up a directory" option.
             directory = back_dir(self.cls.cwd) if selection == 0 else path.join(self.cls.cwd, self.cls.files[selection])
-            self.cls.cwd = directory if PLATFORM == "windows" and directory == u"" else path.normpath(directory)
+            self.cls.cwd = directory if PLATFORM == "windows" and directory == "" else path.normpath(directory)
 
             # Check if the option is a folder or if we are at the root (needed for windows)
             try:
@@ -727,7 +736,6 @@ class FuzzyFileNavCommand(sublime_plugin.WindowCommand):
                 # Inaccessible folder try backing up
                 sublime.status_message("%s is not accessible!" % self.cls.cwd)
                 self.cls.cwd = back_dir(self.cls.cwd)
-                self.window.run_command("hide_overlay")
                 self.display_files(self.cls.cwd)
         elif not self.cls.fuzzy_reload:
             # Reset if not reloading
@@ -735,3 +743,10 @@ class FuzzyFileNavCommand(sublime_plugin.WindowCommand):
         else:
             # Reset reload flag if reloading
             self.cls.fuzzy_reload = False
+
+def plugin_loaded():
+    global PLATFORM
+    global ctypes
+    PLATFORM = sublime.platform()
+    if PLATFORM == "windows":
+        import ctypes

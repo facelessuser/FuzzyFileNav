@@ -41,14 +41,13 @@ be replaced with
 
 Now the same configuration file will provide different values depending on the
 machine it's on. On an MS Windows machine the value returned by `get` will be
-"C:\Users", and on a Linux machine with the host name 'his_pc' the value will be
+"C:\\Users", and on a Linux machine with the host name 'his_pc' the value will be
 "/home".
 """
 
 __version__ = "1.0"
 
 __CURRENT_HOSTNAME = socket.gethostname().lower()
-__CURRENT_PLATFORM = sublime.platform()
 
 QUALIFIERS = r"""([A-Za-z\d_]*):([^;]*)(?:;|$)"""
 
@@ -69,7 +68,7 @@ def get(settings_obj, key, default=None, callback=None):
     # Parameter validation
     if not isinstance(settings_obj, (dict, sublime.Settings)):
         raise AttributeError("Invalid settings object")
-    if not isinstance(key, basestring):
+    if not isinstance(key, str):
         raise AttributeError("Invalid callback function")
     if callback != None and not hasattr(callback, '__call__'):
         raise AttributeError("Invalid callback function")
@@ -116,7 +115,7 @@ class Qualifications(object):
 
     @classmethod
     def add_qual(cls, key, callback):
-        if isinstance(key, basestring) and re.match(r"^[a-zA-Z][a-zA-Z\d_]*$", key) == None:
+        if isinstance(key, str) and re.match(r"^[a-zA-Z][a-zA-Z\d_]*$", key) == None:
             raise QualException("'%s' is not a valid function name." % key)
         if not hasattr(callback, '__call__'):
             raise QualException("Bad function callback.")
@@ -142,7 +141,7 @@ def __host_match(h):
 
 
 def __os_match(os):
-    return (os == __CURRENT_PLATFORM)
+    return (os == sublime.platform())
 
 
 Qualifications.add_qual("host", __host_match)
