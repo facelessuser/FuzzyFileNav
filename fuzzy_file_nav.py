@@ -19,7 +19,7 @@ WIN_DRIVE = r"(^[A-Za-z]{1}:(?:\\|/))"
 
 
 def debug_log(s):
-    if True:  # sublime.load_settings(FUZZY_SETTINGS).get("debug", False):
+    if sublime.load_settings(FUZZY_SETTINGS).get("debug", False):
         print("FuzzyFileNav: %s" % s)
 
 
