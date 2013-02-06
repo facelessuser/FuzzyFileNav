@@ -237,6 +237,7 @@ class FuzzyClipboardCommand(sublime_plugin.WindowCommand):
             self.cls.add_entry(full_name)
             self.cls.set_action(action)
             FuzzyFileNavCommand.fuzzy_reload = True
+            self.window.run_command("hide_overlay")
             self.window.run_command("fuzzy_file_nav", {"start": FuzzyFileNavCommand.cwd})
         elif action == "paste":
             self.paste()
@@ -267,6 +268,7 @@ class FuzzyClipboardCommand(sublime_plugin.WindowCommand):
             if error:
                 FuzzyFileNavCommand.reset()
             else:
+                self.window.run_command("hide_overlay")
                 self.window.run_command("fuzzy_file_nav", {"start": FuzzyFileNavCommand.cwd})
 
     def dir_copy(self):
@@ -352,6 +354,7 @@ class FuzzyDeleteCommand(sublime_plugin.WindowCommand):
             if error:
                 FuzzyFileNavCommand.reset()
             else:
+                self.window.run_command("hide_overlay")
                 self.window.run_command("fuzzy_file_nav", {"start": FuzzyFileNavCommand.cwd})
 
 
@@ -367,6 +370,7 @@ class FuzzySaveFileCommand(sublime_plugin.WindowCommand):
             self.window.focus_view(self.view)
             self.view.run_command("save")
             if self.multi_file:
+                self.window.run_command("hide_overlay")
                 self.window.run_command("fuzzy_file_nav", {"start": FuzzyFileNavCommand.cwd})
 
     def run(self):
@@ -426,6 +430,7 @@ class FuzzyMakeFileCommand(sublime_plugin.WindowCommand):
             if error:
                 FuzzyFileNavCommand.reset()
             else:
+                self.window.run_command("hide_overlay")
                 self.window.run_command("fuzzy_file_nav", {"start": FuzzyFileNavCommand.cwd})
 
 
@@ -451,6 +456,7 @@ class FuzzyMakeFolderCommand(sublime_plugin.WindowCommand):
             if error:
                 FuzzyFileNavCommand.reset()
             else:
+                self.window.run_command("hide_overlay")
                 self.window.run_command("fuzzy_file_nav", {"start": FuzzyFileNavCommand.cwd})
 
 
