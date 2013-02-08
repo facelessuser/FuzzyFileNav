@@ -11,6 +11,9 @@ import os.path as path
 import re
 import shutil
 from FuzzyFileNav.multiconf import get as qualify_settings
+import platform
+if platform.system() == "Windows":
+    import ctypes
 
 FUZZY_SETTINGS = "fuzzy_file_nav.sublime-settings"
 CMD_WIN = r"^(?:(?:(~)|(\.\.))(?:\\|/)|((?:[A-Za-z]{1}:)?(?:\\|/))|([\w\W]*(?:\\|/)))$"
@@ -746,7 +749,4 @@ class FuzzyFileNavCommand(sublime_plugin.WindowCommand):
 
 def plugin_loaded():
     global PLATFORM
-    global ctypes
     PLATFORM = sublime.platform()
-    if PLATFORM == "windows":
-        import ctypes
