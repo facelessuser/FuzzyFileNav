@@ -567,6 +567,8 @@ class FuzzyPathCompleteCommand(sublime_plugin.WindowCommand):
     def sublime_completion(self, cls, view):
         if cls.hl_index != -1 or cls.hl_index < len(FuzzyFileNavCommand.files):
             FuzzyEditGlobal.bfr = FuzzyFileNavCommand.files[cls.hl_index]
+            if path.isdir(path.join(FuzzyFileNavCommand.cwd, FuzzyEditGlobal.bfr)):
+                FuzzyEditGlobal.bfr = FuzzyEditGlobal.bfr[0:len(FuzzyEditGlobal.bfr) - 1]
             FuzzyEditGlobal.region = sublime.Region(0, view.size())
             view.run_command("fuzzy_apply_edits")
             FuzzyEditGlobal.clear()
