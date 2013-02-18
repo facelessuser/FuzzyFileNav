@@ -14,8 +14,11 @@
     // hidden attribute in windows)
     "show_system_hidden_files": true,
 
-    // (Unix/Linux) style path complete
-    "nix_style_path_complete": false,
+    // (fuzzy/windows/nix)
+    // fuzzy   - this will auto-complete with the selected index in the quick panel
+    // windows - this will complete like a windows terminal would complete paths
+    // nix     - this will complete like a unix/linux terminal traditionally completes paths
+    "completion_style": "fuzzy",
 
     // If the "FuzzyStartFromFileCommand" is run outside of a open buffer
     // or from a buffer that does not exist on disk, you can specify

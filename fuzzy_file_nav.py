@@ -540,79 +540,98 @@ class FuzzyPathCompleteCommand(sublime_plugin.WindowCommand):
     last = None
     in_progress = False
     text = None
+    hl_index = -1
 
     def run(self, back=False):
-        def nix_common_chars(current_complete, l, case_insensitive):
-            common = current_complete
-            while True:
-                match = True
-                cmn_len = len(current_complete)
-                if len(l[0]) > cmn_len:
-                    common += l[0][cmn_len].lower() if case_insensitive else l[0][cmn_len]
-                    cmn_len += 1
-                else:
-                    break
-                for item in l:
-                    value = item.lower() if case_insensitive else item
-                    if not value.startswith(common):
-                        match = False
-                        break
-                if not match:
-                    break
-                else:
-                    current_complete = common
-            selection = l[0][0:len(current_complete)]
-            del l[:]
-            l.append(selection)
-
         cls = FuzzyPathCompleteCommand
         view = FuzzyFileNavCommand.view
-        complete = []
         settings = sublime.load_settings(FUZZY_SETTINGS)
-        nix_path_complete = bool(settings.get("nix_style_path_complete", False))
-        case_insensitive = PLATFORM == "windows" or not nix_path_complete
+        completion_style = settings.get("completion_style", "fuzzy")
         if view != None:
-            sel = view.sel()[0]
-            if cls.text == None:
-                cls.text = view.substr(view.line(sel))
-            debug_log("completion text - " + cls.text)
-            current = cls.text.lower() if case_insensitive else cls.text
-            for item in FuzzyFileNavCommand.files:
-                # Windows is case insensitive
-                i = item.lower() if case_insensitive else item
-                # See if current input matches the beginning of some of the entries
-                if i.startswith(current):
-                    if path.isdir(path.join(FuzzyFileNavCommand.cwd, item)):
-                        item = item[0:len(item) - 1]
-                    complete.append(item)
+            if completion_style == "fuzzy":
+                self.sublime_completion(cls, view)
+            else:
+                nix_path_complete = completion_style == "nix"
+                self.terminal_completion(cls, view, back, nix_path_complete)
 
+    def sublime_completion(self, cls, view):
+        if cls.hl_index != -1 or cls.hl_index < len(FuzzyFileNavCommand.files):
+            FuzzyEditGlobal.bfr = FuzzyFileNavCommand.files[cls.hl_index]
+            FuzzyEditGlobal.region = sublime.Region(0, view.size())
+            view.run_command("fuzzy_apply_edits")
+            FuzzyEditGlobal.clear()
+            sels = view.sel()
+            sels.clear()
+            sels.add(sublime.Region(view.size()))
+
+    def terminal_completion(self, cls, view, back, nix_path_complete):
+        complete = []
+        case_insensitive = PLATFORM == "windows" or not nix_path_complete
+        sel = view.sel()[0]
+
+        if cls.text == None:
+            cls.text = view.substr(view.line(sel))
+        debug_log("completion text - " + cls.text)
+        current = cls.text.lower() if case_insensitive else cls.text
+        for item in FuzzyFileNavCommand.files:
+            # Windows is case insensitive
+            i = item.lower() if case_insensitive else item
+            # See if current input matches the beginning of some of the entries
+            if i.startswith(current):
+                if path.isdir(path.join(FuzzyFileNavCommand.cwd, item)):
+                    item = item[0:len(item) - 1]
+                complete.append(item)
+
+        complete_len = len(complete)
+
+        if nix_path_complete and complete_len:
+            self.nix_common_chars(current, complete, case_insensitive)
             complete_len = len(complete)
 
-            if nix_path_complete and complete_len:
-                nix_common_chars(current, complete, case_insensitive)
-                complete_len = len(complete)
-
-            # If only one entry matches, auto-complete it
-            if (nix_path_complete and complete_len == 1) or (not nix_path_complete and complete_len):
-                if nix_path_complete:
-                    cls.last = 0
-                else:
-                    last = cls.last
-                    if back:
-                        cls.last = complete_len - 1 if last == None or last < 1 else last - 1
-                    else:
-                        cls.last = 0 if last == None or last >= complete_len - 1 else last + 1
-                    cls.in_progress = True
-                FuzzyEditGlobal.bfr = complete[cls.last]
-                FuzzyEditGlobal.region = sublime.Region(0, view.size())
-                view.run_command("fuzzy_apply_edits")
-                FuzzyEditGlobal.clear()
-                sels = view.sel()
-                sels.clear()
-                sels.add(sublime.Region(view.size()))
+        # If only one entry matches, auto-complete it
+        if (nix_path_complete and complete_len == 1) or (not nix_path_complete and complete_len):
+            if nix_path_complete:
+                cls.last = 0
             else:
-                cls.last = None
-                cls.text = None
+                last = cls.last
+                if back:
+                    cls.last = complete_len - 1 if last == None or last < 1 else last - 1
+                else:
+                    cls.last = 0 if last == None or last >= complete_len - 1 else last + 1
+                cls.in_progress = True
+            FuzzyEditGlobal.bfr = complete[cls.last]
+            FuzzyEditGlobal.region = sublime.Region(0, view.size())
+            view.run_command("fuzzy_apply_edits")
+            FuzzyEditGlobal.clear()
+            sels = view.sel()
+            sels.clear()
+            sels.add(sublime.Region(view.size()))
+        else:
+            cls.last = None
+            cls.text = None
+
+    def nix_common_chars(self, current_complete, l, case_insensitive):
+        common = current_complete
+        while True:
+            match = True
+            cmn_len = len(current_complete)
+            if len(l[0]) > cmn_len:
+                common += l[0][cmn_len].lower() if case_insensitive else l[0][cmn_len]
+                cmn_len += 1
+            else:
+                break
+            for item in l:
+                value = item.lower() if case_insensitive else item
+                if not value.startswith(common):
+                    match = False
+                    break
+            if not match:
+                break
+            else:
+                current_complete = common
+        selection = l[0][0:len(current_complete)]
+        del l[:]
+        l.append(selection)
 
     @classmethod
     def update_autocomplete(cls, text):
@@ -628,6 +647,8 @@ class FuzzyPathCompleteCommand(sublime_plugin.WindowCommand):
         cls.last = None
         cls.in_progress = False
         cls.text = None
+        cls.hl_index = -1
+        cls.hl_last = -1
 
 
 class FuzzyFileNavCommand(sublime_plugin.WindowCommand):
@@ -710,13 +731,16 @@ class FuzzyFileNavCommand(sublime_plugin.WindowCommand):
                     folders.append(f + ("\\" if PLATFORM == "windows" else "/"))
         return [".."] + sorted(folders) + sorted(documents)
 
+    def on_highlight(self, value):
+        FuzzyPathCompleteCommand.hl_index = value
+
     def display_files(self, cwd):
         # Get the folders children
         self.cls.files = self.get_files(cwd)
 
         # Make sure panel is down before loading a new one.
         self.cls.view = None
-        sublime.set_timeout(lambda: self.window.show_quick_panel(self.cls.files, self.check_selection), 0)
+        sublime.set_timeout(lambda: self.window.show_quick_panel(self.cls.files, self.check_selection, on_highlight=self.on_highlight), 0)
 
     def check_selection(self, selection):
         debug_log("Process selection")
