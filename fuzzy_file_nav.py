@@ -227,7 +227,13 @@ class FuzzyRevealCommand(sublime_plugin.WindowCommand):
 
 class FuzzySearchFolderCommand(sublime_plugin.WindowCommand):
     def run(self):
-        self.window.run_command("show_panel", {"panel": "find_in_files", "where": FuzzyFileNavCommand.cwd})
+        file_name = FuzzyPanelText.get_content()
+        FuzzyPanelText.clear_content()
+        folder = path.join(FuzzyFileNavCommand.cwd, file_name)
+        if path.exists(folder) and path.isdir(folder):
+            self.window.run_command("show_panel", {"panel": "find_in_files", "where": folder})
+        else:
+            self.window.run_command("show_panel", {"panel": "find_in_files", "where": FuzzyFileNavCommand.cwd})
 
 
 class FuzzyClipboardCommand(sublime_plugin.WindowCommand):
