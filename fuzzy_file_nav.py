@@ -244,7 +244,10 @@ class FuzzyClipboardCommand(sublime_plugin.WindowCommand):
         move = (self.cls.action == "cut")
         self.from_path = self.cls.clips[0]
         self.cls.clear_entries()
-        multi_file = bool(sublime.load_settings(FUZZY_SETTINGS).get("keep_panel_open_after_action", False))
+        multi_file = (
+            bool(sublime.load_settings(FUZZY_SETTINGS).get("keep_panel_open_after_action", False)) and
+            "paste" not in sublime.load_settings(FUZZY_SETTINGS).get("keep_panel_open_exceptions", [])
+        )
 
         if not multi_file:
             self.window.run_command("hide_overlay")
@@ -326,7 +329,10 @@ class FuzzyDeleteCommand(sublime_plugin.WindowCommand):
         error = False
         full_name = path.join(FuzzyFileNavCommand.cwd, FuzzyPanelText.get_content())
         FuzzyPanelText.clear_content()
-        multi_file = bool(sublime.load_settings(FUZZY_SETTINGS).get("keep_panel_open_after_action", False))
+        multi_file = (
+            bool(sublime.load_settings(FUZZY_SETTINGS).get("keep_panel_open_after_action", False)) and
+            "delete" not in sublime.load_settings(FUZZY_SETTINGS).get("keep_panel_open_exceptions", [])
+        )
 
         if not multi_file:
             self.window.run_command("hide_overlay")
@@ -376,7 +382,10 @@ class FuzzySaveFileCommand(sublime_plugin.WindowCommand):
                 return
 
         FuzzyPanelText.clear_content()
-        self.multi_file = bool(sublime.load_settings(FUZZY_SETTINGS).get("keep_panel_open_after_action", False))
+        self.multi_file = (
+            bool(sublime.load_settings(FUZZY_SETTINGS).get("keep_panel_open_after_action", False)) and
+            "saveas" not in sublime.load_settings(FUZZY_SETTINGS).get("keep_panel_open_exceptions", [])
+        )
         active_view = self.window.active_view()
         if active_view is None:
             return
@@ -406,7 +415,10 @@ class FuzzyMakeFileCommand(sublime_plugin.WindowCommand):
         error = False
         full_name = path.join(FuzzyFileNavCommand.cwd, FuzzyPanelText.get_content())
         FuzzyPanelText.clear_content()
-        multi_file = bool(sublime.load_settings(FUZZY_SETTINGS).get("keep_panel_open_after_action", False))
+        multi_file = (
+            bool(sublime.load_settings(FUZZY_SETTINGS).get("keep_panel_open_after_action", False)) and
+            "mkfile" not in sublime.load_settings(FUZZY_SETTINGS).get("keep_panel_open_exceptions", [])
+        )
         if not multi_file:
             self.window.run_command("hide_overlay")
             FuzzyFileNavCommand.reset()
@@ -433,7 +445,10 @@ class FuzzyMakeFolderCommand(sublime_plugin.WindowCommand):
         error = False
         full_name = path.join(FuzzyFileNavCommand.cwd, FuzzyPanelText.get_content())
         FuzzyPanelText.clear_content()
-        multi_file = bool(sublime.load_settings(FUZZY_SETTINGS).get("keep_panel_open_after_action", False))
+        multi_file = (
+            bool(sublime.load_settings(FUZZY_SETTINGS).get("keep_panel_open_after_action", False)) and
+            "mkdir" not in sublime.load_settings(FUZZY_SETTINGS).get("keep_panel_open_exceptions", [])
+        )
         if not multi_file:
             self.window.run_command("hide_overlay")
             FuzzyFileNavCommand.reset()
@@ -724,7 +739,10 @@ class FuzzyFileNavCommand(sublime_plugin.WindowCommand):
                     self.window.open_file(self.cls.cwd)
 
                     # If multi-file open is set, leave panel open after opening file
-                    if bool(sublime.load_settings(FUZZY_SETTINGS).get("keep_panel_open_after_action", False)):
+                    if (
+                        bool(sublime.load_settings(FUZZY_SETTINGS).get("keep_panel_open_after_action", False)) and
+                        "open" not in sublime.load_settings(FUZZY_SETTINGS).get("keep_panel_open_exceptions", [])
+                    ):
                         self.cls.cwd = path.normpath(back_dir(self.cls.cwd))
                         self.display_files(self.cls.cwd)
                     else:
