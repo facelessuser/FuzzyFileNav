@@ -522,11 +522,11 @@ class FuzzyToggleHiddenCommand(sublime_plugin.WindowCommand):
         if FuzzyFileNavCommand.active:
             FuzzyFileNavCommand.fuzzy_reload = True
             if show == None:
-                FuzzyFileNavCommand.ignore_excludes = not FuzzyFileNavCommand.ignore_excludes
+                FuzzyFileNavCommand.hide_hidden = not FuzzyFileNavCommand.hide_hidden
             elif bool(show):
-                FuzzyFileNavCommand.ignore_excludes = True
+                FuzzyFileNavCommand.hide_hidden = True
             else:
-                FuzzyFileNavCommand.ignore_excludes = False
+                FuzzyFileNavCommand.hide_hidden = False
             self.window.run_command("hide_overlay")
             self.window.run_command("fuzzy_file_nav", {"start": FuzzyFileNavCommand.cwd})
 
@@ -683,7 +683,7 @@ class FuzzyFileNavCommand(sublime_plugin.WindowCommand):
     win_id = None
     view = None
     fuzzy_reload = False
-    ignore_excludes = False
+    hide_hidden = False
     cwd = ""
 
     @classmethod
@@ -691,12 +691,12 @@ class FuzzyFileNavCommand(sublime_plugin.WindowCommand):
         cls.active = False
         cls.win_id = None
         cls.view = None
-        cls.ignore_excludes = not bool(sublime.load_settings(FUZZY_SETTINGS).get("show_system_hidden_files", False))
+        cls.hide_hidden = not bool(sublime.load_settings(FUZZY_SETTINGS).get("show_system_hidden_files", False))
         FuzzyClipboardCommand.clear_entries()
 
     @classmethod
     def set_hidden(cls, value):
-        cls.ignore_excludes = value
+        cls.hide_hidden = value
 
     def run(self, start=None):
         self.cls = FuzzyFileNavCommand
@@ -738,7 +738,7 @@ class FuzzyFileNavCommand(sublime_plugin.WindowCommand):
             full_path = path.join(cwd, f)
 
             # Check exclusion to omit files.
-            if self.ignore_excludes:
+            if self.hide_hidden:
                 if valid:
                     if not PLATFORM == "windows":
                         if f.startswith('.') and f != "..":
