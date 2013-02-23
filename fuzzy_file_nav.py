@@ -738,7 +738,7 @@ class FuzzyFileNavCommand(sublime_plugin.WindowCommand):
             full_path = path.join(cwd, f)
 
             # Check exclusion to omit files.
-            if not self.ignore_excludes:
+            if self.ignore_excludes:
                 if valid:
                     if not PLATFORM == "windows":
                         if f.startswith('.') and f != "..":
