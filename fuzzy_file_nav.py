@@ -787,7 +787,9 @@ class FuzzyFileNavCommand(sublime_plugin.WindowCommand):
                     self.display_files(self.cls.cwd)
                 else:
                     # Open file
-                    self.window.open_file(self.cls.cwd)
+                    new_view = self.window.open_file(self.cls.cwd)
+                    if new_view is not None:
+                        self.window.focus_view(new_view)
 
                     # If multi-file open is set, leave panel open after opening file
                     if (
