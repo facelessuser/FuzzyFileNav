@@ -386,7 +386,11 @@ class FuzzySaveFileCommand(sublime_plugin.WindowCommand):
             FuzzyEditGlobal.region = sublime.Region(0, self.view.size())
             self.view.run_command("fuzzy_apply_edits")
             FuzzyEditGlobal.clear()
+            sels = self.view.sel()
+            sels.clear()
+            sels.add_all(self.current_sels)
             self.window.focus_view(self.view)
+            self.view.set_viewport_position(self.position)
             self.view.run_command("save")
             if self.multi_file:
                 self.window.run_command("hide_overlay")
@@ -408,6 +412,8 @@ class FuzzySaveFileCommand(sublime_plugin.WindowCommand):
         if active_view is None:
             return
         self.bfr = active_view.substr(sublime.Region(0, active_view.size()))
+        self.current_sels = [s for s in active_view.sel()]
+        self.position = active_view.viewport_position()
         if not self.multi_file:
             self.window.run_command("hide_overlay")
             FuzzyFileNavCommand.reset()
