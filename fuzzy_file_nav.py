@@ -502,11 +502,11 @@ class FuzzyToggleHiddenCommand(sublime_plugin.WindowCommand):
         if FuzzyFileNavCommand.active:
             FuzzyFileNavCommand.fuzzy_reload = True
             if show == None:
-                FuzzyFileNavCommand.ignore_excludes = not FuzzyFileNavCommand.ignore_excludes
+                FuzzyFileNavCommand.hide_hidden = not FuzzyFileNavCommand.hide_hidden
             elif bool(show):
-                FuzzyFileNavCommand.ignore_excludes = True
+                FuzzyFileNavCommand.hide_hidden = True
             else:
-                FuzzyFileNavCommand.ignore_excludes = False
+                FuzzyFileNavCommand.hide_hidden = False
             self.window.run_command("fuzzy_file_nav", {"start": FuzzyFileNavCommand.cwd})
 
 
@@ -638,7 +638,7 @@ class FuzzyFileNavCommand(sublime_plugin.WindowCommand):
     win_id = None
     view = None
     fuzzy_reload = False
-    ignore_excludes = False
+    hide_hidden = False
     cwd = ""
 
     @classmethod
@@ -646,8 +646,12 @@ class FuzzyFileNavCommand(sublime_plugin.WindowCommand):
         cls.active = False
         cls.win_id = None
         cls.view = None
-        cls.ignore_excludes = False
+        cls.hide_hidden = not bool(sublime.load_settings(FUZZY_SETTINGS).get("show_system_hidden_files", False))
         FuzzyClipboardCommand.clear_entries()
+
+    @classmethod
+    def set_hidden(cls, value):
+        cls.hide_hidden = value
 
     def run(self, start=None):
         self.cls = FuzzyFileNavCommand
@@ -684,14 +688,13 @@ class FuzzyFileNavCommand(sublime_plugin.WindowCommand):
         files = get_drives() if PLATFORM == "windows" and cwd == u"" else os.listdir(cwd)
         folders = []
         documents = []
-        show_hidden = sublime.load_settings(FUZZY_SETTINGS).get("show_system_hidden_files", False)
         for f in files:
             valid = True
             full_path = path.join(cwd, f)
 
             # Check exclusion to omit files.
-            if not self.ignore_excludes:
-                if valid and not show_hidden:
+            if self.hide_hidden:
+                if valid:
                     if not PLATFORM == "windows":
                         if f.startswith('.') and f != "..":
                             valid = False
@@ -759,3 +762,14 @@ class FuzzyFileNavCommand(sublime_plugin.WindowCommand):
         else:
             # Reset reload flag if reloading
             self.cls.fuzzy_reload = False
+
+
+def init_hidden():
+    setting = sublime.load_settings(FUZZY_SETTINGS)
+    show_hidden = not bool(setting.get("show_system_hidden_files", False))
+    FuzzyFileNavCommand.set_hidden(show_hidden)
+    setting.clear_on_change('reload')
+    setting.add_on_change('reload', init_hidden)
+
+
+init_hidden()
