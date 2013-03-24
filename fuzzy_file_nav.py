@@ -369,7 +369,11 @@ class FuzzySaveFileCommand(sublime_plugin.WindowCommand):
                 self.bfr
             )
             self.view.end_edit(edit)
+            sels = self.view.sel()
+            sels.clear()
+            map(lambda x: self.view.sel().add(x), self.current_sels)
             self.window.focus_view(self.view)
+            self.view.set_viewport_position(self.position)
             self.view.run_command("save")
             if self.multi_file:
                 self.window.run_command("fuzzy_file_nav", {"start": FuzzyFileNavCommand.cwd})
@@ -390,6 +394,8 @@ class FuzzySaveFileCommand(sublime_plugin.WindowCommand):
         if active_view is None:
             return
         self.bfr = active_view.substr(sublime.Region(0, active_view.size()))
+        self.current_sels = [sublime.Region(s.begin(), s.end()) for s in active_view.sel()]
+        self.position = active_view.viewport_position()
         if not self.multi_file:
             self.window.run_command("hide_overlay")
             FuzzyFileNavCommand.reset()
@@ -739,7 +745,9 @@ class FuzzyFileNavCommand(sublime_plugin.WindowCommand):
                     self.display_files(self.cls.cwd)
                 else:
                     # Open file
-                    self.window.open_file(self.cls.cwd)
+                    new_view = self.window.open_file(self.cls.cwd)
+                    if new_view is not None:
+                        self.window.focus_view(new_view)
 
                     # If multi-file open is set, leave panel open after opening file
                     if (
