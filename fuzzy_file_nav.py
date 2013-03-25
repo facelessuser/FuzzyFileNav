@@ -795,7 +795,7 @@ class FuzzyFileNavCommand(sublime_plugin.WindowCommand):
                     # Open file
                     new_view = self.window.open_file(self.cls.cwd)
                     if new_view is not None:
-                        self.window.focus_view(new_view)
+                        sublime.set_timeout(lambda: self.window.focus_view(new_view), 500)
 
                     # If multi-file open is set, leave panel open after opening file
                     if (
