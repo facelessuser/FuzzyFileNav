@@ -792,16 +792,24 @@ class FuzzyFileNavCommand(sublime_plugin.WindowCommand):
                     # List directories content
                     self.display_files(self.cls.cwd)
                 else:
+                    multi = (
+                        bool(sublime.load_settings(FUZZY_SETTINGS).get("keep_panel_open_after_action", False)) and
+                        "open" not in sublime.load_settings(FUZZY_SETTINGS).get("keep_panel_open_exceptions", [])
+                    )
+
                     # Open file
                     new_view = self.window.open_file(self.cls.cwd)
                     if new_view is not None:
-                        sublime.set_timeout(lambda: self.window.focus_view(new_view), 500)
+                        # Horrible ugly hack to ensure opened file gets focus
+                        def fun(v, multi):
+                            v.window().focus_view(v)
+                            if not multi:
+                                v.window().show_quick_panel(["None"], None)
+                                v.window().run_command("hide_overlay")
+                        sublime.set_timeout(lambda: fun(new_view, multi), 500)
 
                     # If multi-file open is set, leave panel open after opening file
-                    if (
-                        bool(sublime.load_settings(FUZZY_SETTINGS).get("keep_panel_open_after_action", False)) and
-                        "open" not in sublime.load_settings(FUZZY_SETTINGS).get("keep_panel_open_exceptions", [])
-                    ):
+                    if multi:
                         self.cls.cwd = path.normpath(back_dir(self.cls.cwd))
                         self.display_files(self.cls.cwd)
                     else:
