@@ -87,7 +87,7 @@ Currently the `home` settings in the settings file, and the `path` setting in a 
 The syntax to configure one of these settings to be OS and/or host specific is found below:
 
 - The setting should be a key/value pair, where the key is `#multiconf#` and the value is an array of key/value entries whose keys describe the host and/or os qualifiers needed for the value to be used.
-- The key/value entries will have a key that represents one or more qualifiers, each of which must be separated with a `;```
+- The key/value entries will have a key that represents one or more qualifiers, each of which must be separated with a `;`
 - Each qualifier consists of the qualifier type and a qualifier value to compare against.  These will be separated by a `:`.
 - There are two supported qualifiers: `host` and `os`.  `host` is the name of your PC.  `os` is the platform and can be either `windows`, `linux`, or `osx`.
 - The key/value entries will have a value associated with the key, and can be of any type: string, number, array, dictionary, etc.
