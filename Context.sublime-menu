@@ -1,8 +1,12 @@
 [
     { "caption": "-" },
     {
-        "caption": "Fuzzy Nav",
+        "caption": "Fuzzy Nav to /",
         "command": "fuzzy_file_nav"
+    },
+    {
+        "caption": "Fuzzy Nav to Home",
+        "command": "fuzzy_start_from_home"
     },
     {
         "caption": "Fuzzy Nav Here",
