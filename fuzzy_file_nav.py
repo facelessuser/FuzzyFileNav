@@ -34,6 +34,10 @@ def get_root_path():
     # return an empty string to represent its root.
     return u"" if PLATFORM == "windows" else u"/"
 
+def get_home_path():
+    home = qualify_settings(sublime.load_settings(FUZZY_SETTINGS), "home", u"", expanduser)
+    home = get_root_path() if not path.exists(home) or not path.isdir(home) else home
+    return home;
 
 def expanduser(path, default):
     return os.path.expanduser(path) if path != None else path
@@ -154,9 +158,7 @@ class FuzzyEventListener(sublime_plugin.EventListener):
                 if m.group(1):
                     # Go Home
                     FuzzyFileNavCommand.fuzzy_reload = True
-                    home = qualify_settings(sublime.load_settings(FUZZY_SETTINGS), "home", u"", expanduser)
-                    home = get_root_path() if not path.exists(home) or not path.isdir(home) else home
-                    win.run_command("fuzzy_file_nav", {"start": home})
+                    win.run_command("fuzzy_file_nav", {"start": get_home_path()})
                 elif m.group(2):
                     # Back a directory
                     FuzzyFileNavCommand.fuzzy_reload = True
@@ -516,6 +518,10 @@ class FuzzyToggleHiddenCommand(sublime_plugin.WindowCommand):
             self.window.run_command("fuzzy_file_nav", {"start": FuzzyFileNavCommand.cwd})
 
 
+class FuzzyStartFromHomeCommand(sublime_plugin.WindowCommand):
+    def run(self):
+        self.window.run_command("fuzzy_file_nav", {"start": get_home_path()})
+
 class FuzzyStartFromFileCommand(sublime_plugin.WindowCommand):
     def run(self):
         actions = set(["home", "bookmarks", "root"])
@@ -535,9 +541,7 @@ class FuzzyStartFromFileCommand(sublime_plugin.WindowCommand):
                 self.window.run_command("fuzzy_bookmarks_load")
 
     def home(self):
-        home = qualify_settings(sublime.load_settings(FUZZY_SETTINGS), "home", u"", expanduser)
-        home = get_root_path() if not path.exists(home) or not path.isdir(home) else home
-        self.window.run_command("fuzzy_file_nav", {"start": home})
+        self.window.run_command("fuzzy_file_nav", {"start": get_home_path()})
 
     def root(self):
         self.window.run_command("fuzzy_file_nav")
