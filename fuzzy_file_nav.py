@@ -117,6 +117,14 @@ class FuzzyEventListener(sublime_plugin.EventListener):
             # See if this is the auto-complete path command
             if key in ["fuzzy_path_complete", "fuzzy_path_complete_back", "fuzzy_toggle_hidden", "fuzzy_bookmarks_load", "fuzzy_get_cwd", "fuzzy_cwv"]:
                 return active
+            elif key == "fuzzy_open_folder":
+                if (
+                    (
+                        (not empty and path.exists(full_name) and path.isdir(full_name)) or
+                        (empty and path.exists(FuzzyFileNavCommand.cwd))
+                    )
+                ):
+                    return active
             elif key in ["fuzzy_reveal", "fuzzy_search"]:
                 if path.exists(FuzzyFileNavCommand.cwd):
                     return active
@@ -192,6 +200,22 @@ class FuzzyEventListener(sublime_plugin.EventListener):
                         FuzzyFileNavCommand.fuzzy_reload = True
                         win.run_command("hide_overlay")
                         win.run_command("fuzzy_file_nav", {"start": new_path})
+
+
+class FuzzyOpenFolderCommand(sublime_plugin.WindowCommand):
+    def run(self):
+        data = self.window.project_data()
+        already_exists = False
+        for folder in data["folders"]:
+            if PLATFORM == "windows" and folder["path"].lower() == FuzzyFileNavCommand.cwd.lower():
+                already_exists = True
+                break
+            elif PLATFORM != "windows" and folder["path"] == FuzzyFileNavCommand.cwd:
+                already_exists = True
+                break
+        if not already_exists:
+            data["folders"].append({'follow_symlinks': True, 'path': FuzzyFileNavCommand.cwd})
+            self.window.set_project_data(data)
 
 
 class FuzzyCurrentWorkingViewCommand(sublime_plugin.TextCommand):
