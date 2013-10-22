@@ -794,13 +794,13 @@ class FuzzyFileNavCommand(sublime_plugin.WindowCommand):
     def on_highlight(self, value):
         FuzzyPathCompleteCommand.hl_index = value
 
-    def display_files(self, cwd):
+    def display_files(self, cwd, index=-1):
         # Get the folders children
         self.cls.files = self.get_files(cwd)
 
         # Make sure panel is down before loading a new one.
         self.cls.view = None
-        sublime.set_timeout(lambda: self.window.show_quick_panel(self.cls.files, self.check_selection, on_highlight=self.on_highlight), 0)
+        sublime.set_timeout(lambda: self.window.show_quick_panel(self.cls.files, self.check_selection, 0, index, on_highlight=self.on_highlight), 0)
 
     def check_selection(self, selection):
         debug_log("Process selection")
@@ -835,7 +835,7 @@ class FuzzyFileNavCommand(sublime_plugin.WindowCommand):
                     # If multi-file open is set, leave panel open after opening file
                     if multi:
                         self.cls.cwd = path.normpath(back_dir(self.cls.cwd))
-                        self.display_files(self.cls.cwd)
+                        self.display_files(self.cls.cwd, selection)
                     else:
                         self.cls.reset()
             except:
