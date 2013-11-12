@@ -203,18 +203,43 @@ class FuzzyEventListener(sublime_plugin.EventListener):
 
 
 class FuzzyOpenFolderCommand(sublime_plugin.WindowCommand):
-    def run(self):
-        data = self.window.project_data()
+    def compare_relative(self, proj_folder, new_folder, proj_file):
+        if proj_file is None:
+            return self.compare_absolute(proj_folder, new_folder)
+        return path.relpath(new_folder, path.dirname(proj_file)) == proj_folder
+
+    def compare_absolute(self, proj_folder, new_folder):
+        return proj_folder == new_folder
+
+    def compare(self, folders, new_folder, proj_file):
         already_exists = False
-        for folder in data["folders"]:
-            if PLATFORM == "windows" and folder["path"].lower() == FuzzyFileNavCommand.cwd.lower():
-                already_exists = True
+        for folder in folders:
+            if PLATFORM == "windows":
+                # Verify windows not sure if sublime stores them /C/whatever
+                pass
+            else:
+                if folder["path"].startswith("/"):
+                    already_exists = self.compare_absolute(folder["path"], new_folder)
+                else:
+                    already_exists = self.compare_relative(folder["path"], new_folder, proj_file)
+            if already_exists:
                 break
-            elif PLATFORM != "windows" and folder["path"] == FuzzyFileNavCommand.cwd:
-                already_exists = True
-                break
+        return already_exists
+
+    def run(self):
+        file_name = FuzzyPanelText.get_content()
+        FuzzyPanelText.clear_content()
+        proj_file = self.window.project_file_name()
+        data = self.window.project_data()
+        new_folder = path.join(FuzzyFileNavCommand.cwd, file_name)
+        if not path.exists(new_folder):
+            return
+        if not path.isdir(new_folder):
+            new_folder = path.dirname(new_folder)
+        already_exists = self.compare(data["folders"], new_folder, proj_file)
+
         if not already_exists:
-            data["folders"].append({'follow_symlinks': True, 'path': FuzzyFileNavCommand.cwd})
+            data["folders"].append({'follow_symlinks': True, 'path': new_folder})
             self.window.set_project_data(data)
 
 
