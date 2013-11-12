@@ -34,5 +34,11 @@
     "bookmarks": [
         {"name": "My Computer", "path": {"#multiconf#": [{"os:windows": ""}]}},
         {"name": "Root", "path": {"#multiconf#": [{"os:linux": "/"}, {"os:osx": "/"}]}}
-    ]
+    ],
+
+    // Add your folders relative to the project file (if project file exists on disk)
+    "add_folder_to_project_relative": false,
+
+    // When adding folder to project, set "follow_symlinks" setting as true or false
+    "add_folder_to_project_follow_symlink": true
 }

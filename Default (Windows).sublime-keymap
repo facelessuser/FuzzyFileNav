@@ -82,10 +82,10 @@
         "keys": ["ctrl+f"],
         "command": "fuzzy_search_folder",
         "context": [{"key": "fuzzy_search"}]
+    },
+    {
+        "keys": ["ctrl+p"],
+        "command": "fuzzy_open_folder",
+        "context": [{"key": "fuzzy_open_folder"}]
     }
-    // ,{
-    //     "keys": ["ctrl+p"],
-    //     "command": "fuzzy_open_folder",
-    //     "context": [{"key": "fuzzy_open_folder"}]
-    // }
 ]
