@@ -253,6 +253,8 @@ class FuzzyOpenFolderCommand(sublime_plugin.WindowCommand):
             return
         if not path.isdir(new_folder):
             new_folder = path.dirname(new_folder)
+        if "folders" not in data:
+            data["folders"] = []
         already_exists = self.compare(data["folders"], new_folder, proj_file)
 
         if not already_exists:
