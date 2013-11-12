@@ -77,10 +77,10 @@
         "keys": ["super+f"],
         "command": "fuzzy_search_folder",
         "context": [{"key": "fuzzy_search"}]
+    },
+    {
+        "keys": ["super+p"],
+        "command": "fuzzy_open_folder",
+        "context": [{"key": "fuzzy_open_folder"}]
     }
-    // ,{
-    //     "keys": ["super+p"],
-    //     "command": "fuzzy_open_folder",
-    //     "context": [{"key": "fuzzy_open_folder"}]
-    // }
 ]
