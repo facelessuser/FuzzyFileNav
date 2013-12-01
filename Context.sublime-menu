@@ -1,16 +1,26 @@
 [
     { "caption": "-" },
     {
-        "caption": "Fuzzy Nav",
-        "command": "fuzzy_file_nav"
-    },
-    {
-        "caption": "Fuzzy Nav Here",
-        "command": "fuzzy_start_from_file"
-    },
-    {
-        "caption": "Fuzzy BookMarks",
-        "command": "fuzzy_bookmarks_load"
+        "caption": "Fuzzy File Nav",
+        "children":
+        [
+            {
+                "caption": "Fuzzy Nav",
+                "command": "fuzzy_file_nav"
+            },
+            {
+                "caption": "Fuzzy Nav Here",
+                "command": "fuzzy_start_from_file"
+            },
+            {
+                "caption": "Fuzzy Project Folders",
+                "command": "fuzzy_project_folder_load"
+            },
+            {
+                "caption": "Fuzzy BookMarks",
+                "command": "fuzzy_bookmarks_load"
+            }
+        ]
     },
     { "caption": "-"}
 ]

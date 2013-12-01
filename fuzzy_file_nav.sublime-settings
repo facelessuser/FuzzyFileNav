@@ -27,7 +27,7 @@
     // If the "FuzzyStartFromFileCommand" is run outside of a open buffer
     // or from a buffer that does not exist on disk, you can specify
     // its default action to do instead of starting navigation from
-    // a file's location.  Options are "bookmarks", "home", "root".
+    // a file's location.  Options are "bookmarks", "home", "root", "project".
     "start_from_here_default_action": "bookmarks",
 
     // Bookmarked paths

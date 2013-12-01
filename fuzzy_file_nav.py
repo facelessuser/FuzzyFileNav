@@ -33,6 +33,24 @@ def get_root_path():
     return "" if PLATFORM == "windows" else "/"
 
 
+def get_path_true_case(pth):
+    if PLATFORM == "windows":
+        # http://stackoverflow.com/a/14742779
+        true_path = None
+        if path.exists(pth):
+            glob_test = []
+            parts = path.normpath(pth).split('\\')
+            glob_test.append(parts[0].upper())
+            for p in parts[1:]:
+                glob_test.append("%s[%s]" % (p[:-1], p[-1]))
+            results = glob.glob('\\'.join(glob_test))
+            if results is not None:
+                true_path = results[0]
+    else:
+        true_path = pth
+    return true_path
+
+
 def expanduser(path, default):
     return os.path.expanduser(path) if path != None else path
 
@@ -212,25 +230,11 @@ class FuzzyOpenFolderCommand(sublime_plugin.WindowCommand):
     def compare_absolute(self, proj_folder, new_folder):
         return proj_folder == new_folder
 
-    # http://stackoverflow.com/a/14742779
-    def get_path_true_case(self, pth):
-        true_path = None
-        if path.exists(pth):
-            glob_test = []
-            parts = path.normpath(pth).split('\\')
-            glob_test.append(parts[0].upper())
-            for p in parts[1:]:
-                glob_test.append("%s[%s]" % (p[:-1], p[-1]))
-            results = glob.glob('\\'.join(glob_test))
-            if results is not None:
-                true_path = results[0]
-        return true_path
-
     def compare(self, folders, new_folder, proj_file):
         already_exists = False
         for folder in folders:
             if PLATFORM == "windows":
-                if re.match(WIN_DRIVE, new_folder) is not None:
+                if re.match(WIN_DRIVE, folder["path"]) is not None:
                     already_exists = self.compare_absolute(folder["path"].lower(), new_folder.lower())
                 else:
                     already_exists = self.compare_relative(folder["path"].lower(), new_folder.lower(), proj_file.lower())
@@ -258,18 +262,43 @@ class FuzzyOpenFolderCommand(sublime_plugin.WindowCommand):
         already_exists = self.compare(data["folders"], new_folder, proj_file)
 
         if not already_exists:
-            true_path = self.get_path_true_case(new_folder) if PLATFORM == "windows" else new_folder
+            true_path = get_path_true_case(new_folder)
             if true_path is not None:
                 if (
                     sublime.load_settings(FUZZY_SETTINGS).get("add_folder_to_project_relative", False) and
                     proj_file is not None
                 ):
-                    new_folder = path.relpath(new_folder, proj_file)
+                    new_folder = path.relpath(new_folder, path.dirname(proj_file))
                 follow_sym = sublime.load_settings(FUZZY_SETTINGS).get("add_folder_to_project_follow_symlink", True)
                 data["folders"].append({'follow_symlinks': follow_sym, 'path': new_folder})
                 self.window.set_project_data(data)
             else:
                 sublime.error_message("Couldn't resolve case for path %s!" % new_folder)
+
+
+class FuzzyProjectFolderLoadCommand(sublime_plugin.WindowCommand):
+    def run(self):
+        self.display = []
+        proj_file = self.window.project_file_name()
+        data = self.window.project_data()
+        if "folders" not in data:
+            data["folders"] = []
+        for folder in data["folders"]:
+            if (
+                (PLATFORM == "windows" and re.match(WIN_DRIVE, folder["path"]) and proj_file is not None) or
+                (PLATFORM != "windows" and folder["path"].startswith("/") and proj_file is not None)
+            ):
+                self.display.append(get_path_true_case(folder["path"]))
+            else:
+                self.display.append(get_path_true_case(path.abspath(path.join(path.dirname(proj_file), folder["path"]))))
+
+        if len(self.display):
+            self.window.show_quick_panel([path.basename(x) for x in self.display], self.check_selection)
+
+    def check_selection(self, value):
+        if value > -1:
+            # Load fuzzy nav with project folder
+            self.window.run_command("fuzzy_file_nav", {"start": self.display[value]})
 
 
 class FuzzyCurrentWorkingViewCommand(sublime_plugin.TextCommand):
@@ -617,7 +646,7 @@ class FuzzyToggleHiddenCommand(sublime_plugin.WindowCommand):
 
 class FuzzyStartFromFileCommand(sublime_plugin.WindowCommand):
     def run(self):
-        actions = set(["home", "bookmarks", "root"])
+        actions = set(["home", "bookmarks", "root", "project"])
         # Check if you can retrieve a file name (means it exists on disk).
         view = self.window.active_view()
         name = view.file_name() if view != None else None
@@ -632,6 +661,9 @@ class FuzzyStartFromFileCommand(sublime_plugin.WindowCommand):
             else:
                 # Invalid action; just load bookmarks
                 self.window.run_command("fuzzy_bookmarks_load")
+
+    def project(self):
+        self.window.run_command("fuzzy_project_folder_load")
 
     def home(self):
         home = qualify_settings(sublime.load_settings(FUZZY_SETTINGS), "home", "", expanduser)
