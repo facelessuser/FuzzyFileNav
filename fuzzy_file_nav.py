@@ -285,12 +285,12 @@ class FuzzyProjectFolderLoadCommand(sublime_plugin.WindowCommand):
             data["folders"] = []
         for folder in data["folders"]:
             if (
-                (PLATFORM == "windows" and re.match(WIN_DRIVE, folder["path"]) and proj_file is not None) or
-                (PLATFORM != "windows" and folder["path"].startswith("/") and proj_file is not None)
+                (PLATFORM == "windows" and re.match(WIN_DRIVE, folder["path"]) is None and proj_file is not None) or
+                (PLATFORM != "windows" and not folder["path"].startswith("/") and proj_file is not None)
             ):
-                self.display.append(get_path_true_case(folder["path"]))
-            else:
                 self.display.append(get_path_true_case(path.abspath(path.join(path.dirname(proj_file), folder["path"]))))
+            else:
+                self.display.append(get_path_true_case(folder["path"]))
 
         if len(self.display):
             self.window.show_quick_panel([path.basename(x) for x in self.display], self.check_selection)
