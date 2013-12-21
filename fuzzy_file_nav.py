@@ -27,6 +27,12 @@ def debug_log(s):
         print("FuzzyFileNav: %s" % s)
 
 
+def status_cwd():
+    if FuzzyFileNavCommand.status:
+        sublime.run_command("fuzzy_get_cwd")
+        sublime.set_timeout(status_cwd, 1000)
+
+
 def get_root_path():
     # Windows doesn't have a root, so just
     # return an empty string to represent its root.
@@ -801,12 +807,14 @@ class FuzzyFileNavCommand(sublime_plugin.WindowCommand):
     fuzzy_reload = False
     hide_hidden = False
     cwd = ""
+    status = False
 
     @classmethod
     def reset(cls):
         cls.active = False
         cls.win_id = None
         cls.view = None
+        cls.status = False
         cls.hide_hidden = not bool(sublime.load_settings(FUZZY_SETTINGS).get("show_system_hidden_files", False))
         FuzzyClipboardCommand.clear_entries()
 
@@ -882,6 +890,8 @@ class FuzzyFileNavCommand(sublime_plugin.WindowCommand):
 
     def display_files(self, cwd, index=-1):
         # Get the folders children
+        self.cls.status = True
+        status_cwd()
         self.cls.files = self.get_files(cwd)
 
         # Make sure panel is down before loading a new one.
