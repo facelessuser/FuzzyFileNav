@@ -155,6 +155,13 @@ class FuzzyEventListener(sublime_plugin.EventListener):
                     return active
                 else:
                     sublime.status_message("%s does not exist!" % FuzzyFileNavCommand.cwd)
+            elif key in ["fuzzy_quick_open"]:
+                sels = view.sel()
+                if len(sels) == 1:
+                    if sels[0].a == sels[0].b and sels[0].a == view.size():
+                        return active
+                    else:
+                        pass
             elif key == "fuzzy_delete":
                 if not empty and path.exists(full_name):
                     return active
@@ -681,6 +688,15 @@ class FuzzyStartFromFileCommand(sublime_plugin.WindowCommand):
 
     def bookmarks(self):
         self.window.run_command("fuzzy_bookmarks_load")
+
+
+class FuzzyQuickOpenCommand(sublime_plugin.WindowCommand):
+    def run(self):
+        hl_index = FuzzyPathCompleteCommand.hl_index
+        if hl_index != -1 or hl_index < len(FuzzyFileNavCommand.files):
+            file_path = path.join(FuzzyFileNavCommand.cwd, FuzzyFileNavCommand.files[hl_index])
+            if not path.isdir(file_path):
+                self.window.open_file(file_path)
 
 
 class FuzzyPathCompleteCommand(sublime_plugin.WindowCommand):
