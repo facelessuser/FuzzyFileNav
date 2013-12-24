@@ -482,6 +482,8 @@ class FuzzyMakeFolderCommand(sublime_plugin.WindowCommand):
 
 class FuzzyBookmarksLoadCommand(sublime_plugin.WindowCommand):
     def run(self):
+        if FuzzyFileNavCommand.active:
+            self.window.run_command("hide_overlay")
         self.display = []
         # Search through bookmarks
         bookmarks = sublime.load_settings(FUZZY_SETTINGS).get("bookmarks", [])
@@ -524,6 +526,8 @@ class FuzzyToggleHiddenCommand(sublime_plugin.WindowCommand):
 
 class FuzzyStartFromFileCommand(sublime_plugin.WindowCommand):
     def run(self, paths=[]):
+        if FuzzyFileNavCommand.active:
+            self.window.run_command("hide_overlay")
         name = self.get_target(paths)
         actions = set(["home", "bookmarks", "root"])
         # Check if you can retrieve a file name (means it exists on disk).
@@ -674,13 +678,15 @@ class FuzzyFileNavCommand(sublime_plugin.WindowCommand):
         cls.view = None
         cls.status = False
         cls.hide_hidden = not bool(sublime.load_settings(FUZZY_SETTINGS).get("show_system_hidden_files", False))
-        FuzzyClipboardCommand.clear_entries()
+        # FuzzyClipboardCommand.clear_entries()
 
     @classmethod
     def set_hidden(cls, value):
         cls.hide_hidden = value
 
     def run(self, start=None):
+        if FuzzyFileNavCommand.active:
+            self.window.run_command("hide_overlay")
         self.cls = FuzzyFileNavCommand
         previous = self.cls.cwd
         self.cls.active = True
