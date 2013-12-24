@@ -2,7 +2,8 @@
     { "caption": "-" },
     {
         "caption": "Fuzzy Nav Here...",
-        "command": "fuzzy_start_from_file"
+        "command": "fuzzy_start_from_file",
+        "args": {"paths": []}
     },
     {
         "caption": "Fuzzy File Nav",
@@ -22,5 +23,5 @@
             }
         ]
     },
-    { "caption": "-"}
+    { "caption": "-" }
 ]

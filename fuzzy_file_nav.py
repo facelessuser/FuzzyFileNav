@@ -658,14 +658,21 @@ class FuzzyToggleHiddenCommand(sublime_plugin.WindowCommand):
 
 
 class FuzzyStartFromFileCommand(sublime_plugin.WindowCommand):
-    def run(self):
+    def run(self, paths=[]):
+        name = self.get_target(paths)
         actions = set(["home", "bookmarks", "root", "project"])
         # Check if you can retrieve a file name (means it exists on disk).
-        view = self.window.active_view()
-        name = view.file_name() if view != None else None
+        if name is None:
+            view = self.window.active_view()
+            name = view.file_name() if view != None else None
         if name:
             # Buffer/view has a file name, so it exists on disk; naviagte its parent directory.
-            self.window.run_command("fuzzy_file_nav", {"start": path.dirname(name)})
+            self.window.run_command(
+                "fuzzy_file_nav",
+                {
+                    "start": path.dirname(name) if not path.isdir(name) else name
+                }
+            )
         else:
             action = sublime.load_settings(FUZZY_SETTINGS).get("start_from_here_default_action", "bookmarks")
             if action in actions:
@@ -674,6 +681,12 @@ class FuzzyStartFromFileCommand(sublime_plugin.WindowCommand):
             else:
                 # Invalid action; just load bookmarks
                 self.window.run_command("fuzzy_bookmarks_load")
+
+    def get_target(self, paths=[]):
+        target = None
+        if len(paths) and path.exists(paths[0]):
+            target = paths[0]
+        return target
 
     def project(self):
         self.window.run_command("fuzzy_project_folder_load")
