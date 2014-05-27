@@ -265,6 +265,8 @@ class FuzzyOpenFolderCommand(sublime_plugin.WindowCommand):
         FuzzyPanelText.clear_content()
         proj_file = self.window.project_file_name()
         data = self.window.project_data()
+        if data is None:
+            data = {}
         new_folder = path.join(FuzzyFileNavCommand.cwd, file_name)
         if not path.exists(new_folder):
             return
@@ -296,6 +298,8 @@ class FuzzyProjectFolderLoadCommand(sublime_plugin.WindowCommand):
         self.display = []
         proj_file = self.window.project_file_name()
         data = self.window.project_data()
+        if data is None:
+            data = {}
         if "folders" not in data:
             data["folders"] = []
         for folder in data["folders"]:
@@ -683,10 +687,12 @@ class FuzzyStartFromFileCommand(sublime_plugin.WindowCommand):
             action = sublime.load_settings(FUZZY_SETTINGS).get("start_from_here_default_action", "bookmarks")
             if action in actions:
                 # Load special action
+                debug_log("Load default action: %s" % action)
                 getattr(self, action)()
             else:
                 # Invalid action; just load bookmarks
                 self.window.run_command("fuzzy_bookmarks_load")
+                debug_log("Load bookmarks")
 
     def get_target(self, paths=[]):
         target = None
@@ -695,7 +701,17 @@ class FuzzyStartFromFileCommand(sublime_plugin.WindowCommand):
         return target
 
     def project(self):
-        self.window.run_command("fuzzy_project_folder_load")
+        proj_file = self.window.project_file_name()
+        data = self.window.project_data()
+        if data is None:
+            data = {}
+        if "folders" not in data:
+            folders = []
+
+        if len(folders):
+            self.window.run_command("fuzzy_project_folder_load")
+        else:
+            self.home()
 
     def home(self):
         home = qualify_settings(sublime.load_settings(FUZZY_SETTINGS), "home", "", expanduser)
@@ -706,7 +722,10 @@ class FuzzyStartFromFileCommand(sublime_plugin.WindowCommand):
         self.window.run_command("fuzzy_file_nav")
 
     def bookmarks(self):
-        self.window.run_command("fuzzy_bookmarks_load")
+        if len(sublime.load_settings(FUZZY_SETTINGS).get("bookmarks", [])):
+            self.window.run_command("fuzzy_bookmarks_load")
+        else:
+            self.home()
 
 
 class FuzzyQuickOpenCommand(sublime_plugin.WindowCommand):
