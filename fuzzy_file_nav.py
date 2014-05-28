@@ -20,6 +20,7 @@ FUZZY_SETTINGS = "fuzzy_file_nav.sublime-settings"
 CMD_WIN = r"^(?:(?:(~)|(\.\.))(?:\\|/)|((?:[A-Za-z]{1}:)?(?:\\|/))|([\w\W]*(?:\\|/)))$"
 CMD_NIX = r"^(?:(?:(~)|(\.\.))/|(/)|([\w\W]*/))$"
 WIN_DRIVE = r"(^[A-Za-z]{1}:(?:\\|/))"
+PLATFORM = None
 
 
 def debug_log(s):
@@ -58,7 +59,7 @@ def get_path_true_case(pth):
 
 
 def expanduser(path, default):
-    return os.path.expanduser(path) if path != None else path
+    return os.path.expanduser(path) if path is not None else path
 
 
 def back_dir(cwd):
@@ -130,12 +131,12 @@ class FuzzyEventListener(sublime_plugin.EventListener):
         if FuzzyFileNavCommand.active and view.window() and view.window().id() != FuzzyFileNavCommand.win_id:
             FuzzyFileNavCommand.reset()
         # View has not been assinged yet for since fuzzy nav panel appeared; assign it
-        if FuzzyFileNavCommand.active and (FuzzyFileNavCommand.view == None or FuzzyFileNavCommand.view.id() != view.id()):
+        if FuzzyFileNavCommand.active and (FuzzyFileNavCommand.view is None or FuzzyFileNavCommand.view.id() != view.id()):
             FuzzyFileNavCommand.view = view
 
     def on_query_context(self, view, key, operator, operand, match_all):
-        active = FuzzyFileNavCommand.active == True
-        if active and FuzzyFileNavCommand.view != None and FuzzyFileNavCommand.view.id() == view.id():
+        active = FuzzyFileNavCommand.active is True
+        if active and FuzzyFileNavCommand.view is not None and FuzzyFileNavCommand.view.id() == view.id():
             FuzzyPanelText.set_content(view.substr(view.line(view.sel()[0])))
             full_name = path.join(FuzzyFileNavCommand.cwd, FuzzyPanelText.get_content())
             empty = (FuzzyPanelText.get_content() == "")
@@ -195,7 +196,7 @@ class FuzzyEventListener(sublime_plugin.EventListener):
         return False
 
     def on_modified(self, view):
-        if FuzzyFileNavCommand.active and FuzzyFileNavCommand.view != None and FuzzyFileNavCommand.view.id() == view.id():
+        if FuzzyFileNavCommand.active and FuzzyFileNavCommand.view is not None and FuzzyFileNavCommand.view.id() == view.id():
             sel = view.sel()[0]
             win = view.window()
             line_text = view.substr(view.line(sel))
@@ -456,7 +457,7 @@ class FuzzyClipboardCommand(sublime_plugin.WindowCommand):
 
     @classmethod
     def add_entry(cls, entry):
-        if not entry in cls.clips:
+        if entry not in cls.clips:
             cls.clips.append(entry)
 
     @classmethod
@@ -631,7 +632,7 @@ class FuzzyBookmarksLoadCommand(sublime_plugin.WindowCommand):
             # Only show bookmarks that are for this host and/or platform
             target = qualify_settings(bm, "path", None, expanduser)
             # Make sure bookmards point to valid locations
-            if target != None and ((path.exists(target) and path.isdir(target)) or (PLATFORM == "windows" and target == "")):
+            if target is not None and ((path.exists(target) and path.isdir(target)) or (PLATFORM == "windows" and target == "")):
                 self.display.append([bm.get("name", target), target])
         if len(self.display) > 0:
             # Display bookmarks if valid ones were found
@@ -655,7 +656,7 @@ class FuzzyToggleHiddenCommand(sublime_plugin.WindowCommand):
     def run(self, show=None):
         if FuzzyFileNavCommand.active:
             FuzzyFileNavCommand.fuzzy_reload = True
-            if show == None:
+            if show is None:
                 FuzzyFileNavCommand.hide_hidden = not FuzzyFileNavCommand.hide_hidden
             elif bool(show):
                 FuzzyFileNavCommand.hide_hidden = True
@@ -674,7 +675,7 @@ class FuzzyStartFromFileCommand(sublime_plugin.WindowCommand):
         # Check if you can retrieve a file name (means it exists on disk).
         if name is None:
             view = self.window.active_view()
-            name = view.file_name() if view != None else None
+            name = view.file_name() if view is not None else None
         if name:
             # Buffer/view has a file name, so it exists on disk; naviagte its parent directory.
             self.window.run_command(
@@ -701,7 +702,6 @@ class FuzzyStartFromFileCommand(sublime_plugin.WindowCommand):
         return target
 
     def project(self):
-        proj_file = self.window.project_file_name()
         data = self.window.project_data()
         if data is None:
             data = {}
@@ -748,7 +748,7 @@ class FuzzyPathCompleteCommand(sublime_plugin.WindowCommand):
         view = FuzzyFileNavCommand.view
         settings = sublime.load_settings(FUZZY_SETTINGS)
         completion_style = settings.get("completion_style", "fuzzy")
-        if view != None:
+        if view is not None:
             if completion_style == "fuzzy":
                 self.sublime_completion(cls, view)
             else:
@@ -772,7 +772,7 @@ class FuzzyPathCompleteCommand(sublime_plugin.WindowCommand):
         case_insensitive = PLATFORM == "windows" or not nix_path_complete
         sel = view.sel()[0]
 
-        if cls.text == None:
+        if cls.text is None:
             cls.text = view.substr(view.line(sel))
         debug_log("completion text - " + cls.text)
         current = cls.text.lower() if case_insensitive else cls.text
@@ -798,9 +798,9 @@ class FuzzyPathCompleteCommand(sublime_plugin.WindowCommand):
             else:
                 last = cls.last
                 if back:
-                    cls.last = complete_len - 1 if last == None or last < 1 else last - 1
+                    cls.last = complete_len - 1 if last is None or last < 1 else last - 1
                 else:
-                    cls.last = 0 if last == None or last >= complete_len - 1 else last + 1
+                    cls.last = 0 if last is None or last >= complete_len - 1 else last + 1
                 cls.in_progress = True
             FuzzyEditGlobal.bfr = complete[cls.last]
             FuzzyEditGlobal.region = sublime.Region(0, view.size())
@@ -838,7 +838,7 @@ class FuzzyPathCompleteCommand(sublime_plugin.WindowCommand):
 
     @classmethod
     def update_autocomplete(cls, text):
-        if text != cls.text and cls.last != None:
+        if text != cls.text and cls.last is not None:
             if not cls.in_progress:
                 cls.text = None
                 cls.last = None
@@ -890,7 +890,7 @@ class FuzzyFileNavCommand(sublime_plugin.WindowCommand):
 
         # Check if a start destination has been given
         # and ensure it is valid.
-        directory = get_root_path() if start == None or not path.exists(start) or not path.isdir(start) else start
+        directory = get_root_path() if start is None or not path.exists(start) or not path.isdir(start) else start
         self.cls.cwd = directory if PLATFORM == "windows" and directory == "" else path.normpath(directory)
 
         debug_log("cwd - %s" % self.cls.cwd)

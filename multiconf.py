@@ -70,7 +70,7 @@ def get(settings_obj, key, default=None, callback=None):
         raise AttributeError("Invalid settings object")
     if not isinstance(key, str):
         raise AttributeError("Invalid callback function")
-    if callback != None and not hasattr(callback, '__call__'):
+    if callback is not None and not hasattr(callback, '__call__'):
         raise AttributeError("Invalid callback function")
 
     setting = settings_obj.get(key, default)
@@ -115,7 +115,7 @@ class Qualifications(object):
 
     @classmethod
     def add_qual(cls, key, callback):
-        if isinstance(key, str) and re.match(r"^[a-zA-Z][a-zA-Z\d_]*$", key) == None:
+        if isinstance(key, str) and re.match(r"^[a-zA-Z][a-zA-Z\d_]*$", key) is None:
             raise QualException("'%s' is not a valid function name." % key)
         if not hasattr(callback, '__call__'):
             raise QualException("Bad function callback.")
