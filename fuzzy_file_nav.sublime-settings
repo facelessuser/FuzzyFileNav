@@ -40,5 +40,8 @@
     "add_folder_to_project_relative": false,
 
     // When adding folder to project, set "follow_symlinks" setting as true or false
-    "add_folder_to_project_follow_symlink": true
+    "add_folder_to_project_follow_symlink": true,
+
+    // Use subnotify if available
+    "use_sub_notify": true
 }
