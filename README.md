@@ -4,6 +4,9 @@ Fuzzy File Nav is a simple plugin that allows for quick navigation of the file s
 # Usage
 Fuzzy File Nav by default has access enabled via the context menu.  You can access the root of your system by selecting `Fuzzy Nav`.  If you would like access Fuzzy File Nav but have it start in the current direct of the open file, you can select `Fuzzy Nav Here`.  If you would like to open the bookmark menu with your custom defined folders, you can select `Fuzzy BookMarks`.
 
+# Installation
+It is recommended to use [Package Control](https://sublime.wbond.net/)
+
 ## Suggested Accessibility Shortcuts
 You can create shorcuts to access Fuzzy File Nav Quickly, some examples are shown below.
 
