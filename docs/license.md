@@ -1,5 +1,8 @@
-# License
-Fuzzy File nav is released under the MIT license.
+# License {: .doctitle}
+
+---
+
+FuzzyFileNav is released under the MIT license.
 
 Copyright (c) 2012 - 2015 Isaac Muse <isaacmuse@gmail.com>
 

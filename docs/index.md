@@ -1,5 +1,11 @@
-# FuzzyFileNav
-Fuzzy File Nav is a simple plugin that allows for quick navigation of the file system from the quick panel.  It also allows for deletion, copying, moving, and creation of files and folders.
+# FuzzyFileNav {: .doctitle}
+A file navigation system for Sublime Text.
+{: .doctitle-info}
+
+---
+
+#Overview
+FuzzyFileNav is a simple plugin that allows for quick navigation of the file system from the quick panel.  It also allows for deletion, copying, moving, and creation of files and folders.
 
 # Installation
 It is recommended to use [Package Control](https://sublime.wbond.net/)
@@ -9,4 +15,4 @@ It is recommended to use [Package Control](https://sublime.wbond.net/)
 
 * Special thanks to [Boundincode](https://github.com/Boundincode) whose witty humor and quirky coding fueled the development of the plugin. (If only he was more humble...)
 
-* Thanks to biermeester and matthjes for thier suggestions and ideas with platform/host specific settings.
+* Thanks to biermeester and matthjes for their suggestions and ideas with platform/host specific settings.
