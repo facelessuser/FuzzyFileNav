@@ -20,7 +20,10 @@
 
   <script src="./js/jquery-2.1.1.min.js"></script>
   <script src="./js/modernizr-2.8.3.min.js"></script>
-  <script src="./js/theme.js"></script> 
+  <script src="./js/theme.js"></script>
+  <script>var base_url = '.';</script>
+  <script data-main="./mkdocs/js/search.js" src="./mkdocs/js/require.js"></script>
+
 
   
 </head>
@@ -44,24 +47,8 @@
       <ul class="current">
     
         
-            <li class="toctree-l1 current">
-                <a class="current" href=".">Home</a>
-                
-                    <ul>
-                    
-                        <li class="toctree-l3"><a href="#fuzzyfilenav">FuzzyFileNav</a></li>
-                        
-                    
-                        <li class="toctree-l3"><a href="#overview">Overview</a></li>
-                        
-                    
-                        <li class="toctree-l3"><a href="#installation">Installation</a></li>
-                        
-                    
-                        <li class="toctree-l3"><a href="#credits">Credits</a></li>
-                        
-                    
-                    </ul>
+            <li class="toctree-l1 ">
+                <a class="" href=".">Home</a>
                 
             </li>
         
@@ -104,9 +91,7 @@
   <ul class="wy-breadcrumbs">
     <li><a href=".">Docs</a> &raquo;</li>
     
-      
     
-    <li>Home</li>
     <li class="wy-breadcrumbs-aside">
       
         
@@ -120,36 +105,22 @@
           <div role="main">
             <div class="section">
               
-                <h1 class="doctitle" id="fuzzyfilenav"><a name="user-content-fuzzyfilenav" href="#fuzzyfilenav" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>FuzzyFileNav</h1>
-<p class="doctitle-info">A file navigation system for Sublime Text.<br /></p>
-<hr />
-<h1 id="overview"><a name="user-content-overview" href="#overview" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>Overview</h1>
-<p>FuzzyFileNav is a simple plugin that allows for quick navigation of the file system from the quick panel.  It also allows for deletion, copying, moving, and creation of files and folders.</p>
-<h1 id="installation"><a name="user-content-installation" href="#installation" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>Installation</h1>
-<p>It is recommended to use <a href="https://sublime.wbond.net/">Package Control</a></p>
-<h1 id="credits"><a name="user-content-credits" href="#credits" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>Credits</h1>
-<ul>
-<li>
-<p>Thanks to quodlibet for helping come up with great ideas for the plugin during development.</p>
-</li>
-<li>
-<p>Special thanks to <a href="https://github.com/Boundincode">Boundincode</a> whose witty humor and quirky coding fueled the development of the plugin. (If only he was more humble&hellip;)</p>
-</li>
-<li>
-<p>Thanks to biermeester and matthjes for their suggestions and ideas with platform/host specific settings.</p>
-</li>
-</ul>
-              
+
+  <h1 id="search">Search Results</h1>
+
+  <form id="content_search" action="search.html">
+    <span role="status" aria-live="polite" class="ui-helper-hidden-accessible"></span>
+    <input name="q" id="mkdocs-search-query" type="text" class="search_input search-query ui-autocomplete-input" placeholder="Search the Docs" autocomplete="off">
+  </form>
+
+  <div id="mkdocs-search-results">
+    Sorry, page not found.
+  </div>
+
+
             </div>
           </div>
           <footer>
-  
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="usage/" class="btn btn-neutral float-right" title="User Guide"/>Next <span class="icon icon-circle-arrow-right"></span></a>
-      
-      
-    </div>
   
 
   <hr/>
@@ -179,14 +150,12 @@
       
       
       
-        <span style="margin-left: 15px"><a href="usage/" style="color: #fcfcfc">Next &raquo;</a></span>
-      
     </span>
 </div>
 
 <!--
 MkDocs version      : 0.13.0.dev
-Docs Build Date UTC : 2015-04-29 00:38:14.376316
+Docs Build Date UTC : 2015-04-29 00:38:14.162063
 -->
 </body>
 </html>
