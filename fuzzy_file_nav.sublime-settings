@@ -6,16 +6,14 @@
     "regex_exclude": [".*\\.(DS_Store|svn|git)$"],
 
     // Keep panel open after a file is opened, deleted, created, etc. so
-    // More files can be have actions perfomred on them.
+    // More files can be have actions performed on them.
     "keep_panel_open_after_action": true,
 
     // Actions that can ignore the keep panel open settings
     // Available actions: delete, open, saveas, mkfile, mkdir, paste
     "keep_panel_open_exceptions": [],
 
-    // By default, files hidden by the system are hidden in Fuzzy File Nav
-    // as well (files that start with "." in Linux\Unix and files with the
-    // hidden attribute in windows)
+    // Controls whether system hidden files are shown in FuzzyFileNav.
     "show_system_hidden_files": true,
 
     // (fuzzy/windows/nix)
