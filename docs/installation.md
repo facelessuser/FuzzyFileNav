@@ -32,4 +32,4 @@ The recommended way to install FuzzyFileNav is via [Package Control](https://pac
     git clone https://github.com/facelessuser/FuzzyFileNav.git FuzzyFileNav
     ```
 
-3 Restart Sublime Text.
+3. Restart Sublime Text.
