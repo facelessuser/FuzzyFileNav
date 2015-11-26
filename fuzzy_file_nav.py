@@ -116,7 +116,6 @@ def back_to_root(cwd):
 
 
 class FuzzyEditGlobal(object):
-
     """Class containing global variables to store buffers and regions for editing."""
 
     bfr = None
@@ -131,7 +130,6 @@ class FuzzyEditGlobal(object):
 
 
 class FuzzyApplyEditsCommand(sublime_plugin.TextCommand):
-
     """Applies edits to a view."""
 
     def run(self, edit):
@@ -141,7 +139,6 @@ class FuzzyApplyEditsCommand(sublime_plugin.TextCommand):
 
 
 class FuzzyPanelText(object):
-
     """Object to track panel content."""
 
     content = ""
@@ -166,7 +163,6 @@ class FuzzyPanelText(object):
 
 
 class FuzzyEventListener(sublime_plugin.EventListener):
-
     """Listener that detects panel closes, shortcuts pressed in the panel, and panel content changes."""
 
     def on_activated(self, view):
@@ -294,7 +290,6 @@ class FuzzyEventListener(sublime_plugin.EventListener):
 
 
 class FuzzyOpenFolderCommand(sublime_plugin.WindowCommand):
-
     """Open folders in project."""
 
     def compare_relative(self, proj_folder, new_folder, proj_file):
@@ -364,7 +359,6 @@ class FuzzyOpenFolderCommand(sublime_plugin.WindowCommand):
 
 
 class FuzzyProjectFolderLoadCommand(sublime_plugin.WindowCommand):
-
     """Load folder content in quick panel."""
 
     def run(self):
@@ -402,7 +396,6 @@ class FuzzyProjectFolderLoadCommand(sublime_plugin.WindowCommand):
 
 
 class FuzzyCurrentWorkingViewCommand(sublime_plugin.TextCommand):
-
     """Insert current working directory into panel."""
 
     def run(self, edit):
@@ -428,7 +421,6 @@ class FuzzyCurrentWorkingViewCommand(sublime_plugin.TextCommand):
 
 
 class FuzzyRevealCommand(sublime_plugin.WindowCommand):
-
     """Reveal the file/folder in file browser."""
 
     def run(self):
@@ -443,7 +435,6 @@ class FuzzyRevealCommand(sublime_plugin.WindowCommand):
 
 
 class FuzzySearchFolderCommand(sublime_plugin.WindowCommand):
-
     """Initiate Sublime's folder search."""
 
     def run(self):
@@ -459,7 +450,6 @@ class FuzzySearchFolderCommand(sublime_plugin.WindowCommand):
 
 
 class FuzzyClipboardCommand(sublime_plugin.WindowCommand):
-
     """Command to handle fuzzy cut/copy/paste actions."""
 
     clips = []
@@ -583,7 +573,6 @@ class FuzzyClipboardCommand(sublime_plugin.WindowCommand):
 
 
 class FuzzyDeleteCommand(sublime_plugin.WindowCommand):
-
     """Delete file/folder."""
 
     def run(self):
@@ -622,7 +611,6 @@ class FuzzyDeleteCommand(sublime_plugin.WindowCommand):
 
 
 class FuzzySaveFileCommand(sublime_plugin.WindowCommand):
-
     """Save file."""
 
     def save(self):
@@ -686,7 +674,6 @@ class FuzzySaveFileCommand(sublime_plugin.WindowCommand):
 
 
 class FuzzyMakeFileCommand(sublime_plugin.WindowCommand):
-
     """Create a file."""
 
     def run(self):
@@ -722,7 +709,6 @@ class FuzzyMakeFileCommand(sublime_plugin.WindowCommand):
 
 
 class FuzzyMakeFolderCommand(sublime_plugin.WindowCommand):
-
     """Create a folder."""
 
     def run(self):
@@ -756,7 +742,6 @@ class FuzzyMakeFolderCommand(sublime_plugin.WindowCommand):
 
 
 class FuzzyBookmarksLoadCommand(sublime_plugin.WindowCommand):
-
     """Load bookmarks in panel."""
 
     def run(self):
@@ -791,7 +776,6 @@ class FuzzyBookmarksLoadCommand(sublime_plugin.WindowCommand):
 
 
 class FuzzyGetCwdCommand(sublime_plugin.ApplicationCommand):
-
     """Show the current working directory in the status bar."""
 
     def run(self):
@@ -802,7 +786,6 @@ class FuzzyGetCwdCommand(sublime_plugin.ApplicationCommand):
 
 
 class FuzzyToggleHiddenCommand(sublime_plugin.WindowCommand):
-
     """Toggle whether hidden files are shown or hidden."""
 
     def run(self, show=None):
@@ -821,7 +804,6 @@ class FuzzyToggleHiddenCommand(sublime_plugin.WindowCommand):
 
 
 class FuzzyStartFromFileCommand(sublime_plugin.WindowCommand):
-
     """Start navigating from the folder, project, file system root, or bookmarks."""
 
     def run(self, paths=[]):
@@ -898,7 +880,6 @@ class FuzzyStartFromFileCommand(sublime_plugin.WindowCommand):
 
 
 class FuzzyQuickOpenCommand(sublime_plugin.WindowCommand):
-
     """Mimic open file when the right arrow key is pressed (like sublime does)."""
 
     def run(self):
@@ -912,7 +893,6 @@ class FuzzyQuickOpenCommand(sublime_plugin.WindowCommand):
 
 
 class FuzzyPathCompleteCommand(sublime_plugin.WindowCommand):
-
     """Complete a path when 'tab' is pressed."""
 
     last = None
@@ -1042,7 +1022,6 @@ class FuzzyPathCompleteCommand(sublime_plugin.WindowCommand):
 
 
 class FuzzyFileNavCommand(sublime_plugin.WindowCommand):
-
     """Navigate through folders."""
 
     active = False

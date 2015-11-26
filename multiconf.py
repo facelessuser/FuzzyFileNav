@@ -122,14 +122,12 @@ def get(settings_obj, key, default=None, callback=None):
 
 
 class QualException(Exception):
-
     """Qualification exception."""
 
     pass
 
 
 class Qualifications(object):
-
     """Qualifications."""
 
     __qualifiers = {}
