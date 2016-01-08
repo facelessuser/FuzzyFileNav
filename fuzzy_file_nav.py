@@ -851,9 +851,9 @@ class FuzzyStartFromFileCommand(sublime_plugin.WindowCommand):
         if data is None:
             data = {}
         if "folders" not in data:
-            folders = []
+            data["folders"] = []
 
-        if len(folders):
+        if len(data["folders"]):
             self.window.run_command("fuzzy_project_folder_load")
         else:
             self.home()
