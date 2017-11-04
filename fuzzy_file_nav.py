@@ -240,6 +240,8 @@ class FuzzyEventListener(sublime_plugin.EventListener):
             elif key == "fuzzy_paste":
                 if path.exists(FuzzyFileNavCommand.cwd) and len(FuzzyClipboardCommand.clips):
                     return active
+                elif not len(FuzzyClipboardCommand.clips):
+                    notify("Clipboard is empty!")
                 else:
                     notify("%s does not exist!" % FuzzyFileNavCommand.cwd)
         return False
@@ -480,7 +482,7 @@ class FuzzyClipboardCommand(sublime_plugin.WindowCommand):
         FuzzyPanelText.clear_content()
         move = (self.cls.action == "cut")
         self.from_path = self.cls.clips[0]
-        self.cls.clear_entries()
+        # self.cls.clear_entries()
         multi_file = (
             bool(sublime.load_settings(FUZZY_SETTINGS).get("keep_panel_open_after_action", False)) and
             "paste" not in sublime.load_settings(FUZZY_SETTINGS).get("keep_panel_open_exceptions", [])
@@ -513,11 +515,22 @@ class FuzzyClipboardCommand(sublime_plugin.WindowCommand):
         try:
             if path.exists(self.to_path):
                 if path.isdir(self.to_path):
+                    dest = path.join(self.to_path, path.basename(self.from_path))
+                    if path.exists(dest) and sublime.ok_cancel_dialog('Overwrite?'):
+                        if path.isdir(dest):
+                            shutil.rmtree(dest)
+                        else:
+                            os.remove(dest)
                     self.action(self.from_path, path.join(self.to_path, path.basename(self.from_path)))
                 else:
                     errors = True
                     error("%s already exists!" % self.to_path)
             elif path.exists(path.dirname(self.to_path)):
+                if path.exists(self.to_path) and sublime.ok_cancel_dialog('Overwrite?'):
+                    if path.isdir(self.to_path):
+                        shutil.rmtree(self.to_path)
+                    else:
+                        os.remove(self.to_path)
                 self.action(self.from_path, self.to_path)
             else:
                 errors = True
