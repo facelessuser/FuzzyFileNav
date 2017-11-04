@@ -78,6 +78,7 @@ def get(settings_obj, key, default=None, callback=None):
       default      - the default value to return if the key value is not found.
       callback     - a callback function that, if provided, will be called with
                      the found and default values as parameters.
+
     """
 
     # Parameter validation
