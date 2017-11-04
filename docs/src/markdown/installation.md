@@ -1,14 +1,12 @@
-# Installation {: .doctitle}
-Installing FuzzyFileNav.
-
----
+# Installation
 
 ## Package Control
+
 The recommended way to install FuzzyFileNav is via [Package Control](https://packagecontrol.io/).  Package Control will install the correct branch on your system and keep it up to date.
 
 1. Ensure Package Control is installed.  Instructions are found [here](https://packagecontrol.io/installation).
 
-2. In Sublime Text, press <kbd>ctrl</kbd> + <kbd>shift</kbd> + <kbd>p</kbd> (Win, Linux) or <kbd>cmd</kbd> + <kbd>shift</kbd> + <kbd>p</kbd> (OSX) to bring up the quick panel.  It will show a list of installable plugins.
+2. In Sublime Text, press ++ctrl+shift+p++ (Win, Linux) or ++cmd+shift+p++ (OSX) to bring up the quick panel.  It will show a list of installable plugins.
 
 3. Start typing `FuzzyFileNav`; when you see it, select it.
 
