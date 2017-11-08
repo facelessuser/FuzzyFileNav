@@ -600,7 +600,7 @@ class FuzzyDeleteCommand(sublime_plugin.WindowCommand):
                     os.remove(full_name)
             except Exception:
                 errors = True
-                error("Error deleting %d!" % full_name)
+                error("Error deleting %s!" % full_name)
 
         if multi_file:
             if errors:
@@ -731,7 +731,7 @@ class FuzzyMakeFolderCommand(sublime_plugin.WindowCommand):
             os.makedirs(full_name)
         except Exception:
             errors = True
-            error("Could not create %d!" % full_name)
+            error("Could not create %s!" % full_name)
 
         if multi_file:
             if errors:
@@ -767,11 +767,11 @@ class FuzzyRenameCommand(sublime_plugin.WindowCommand):
                     if current_file != self.full_name:
                         sublime.set_timeout(lambda: self.window.focus_view(current_view), 100)
                     break
-            self.on_finish()
 
         except Exception:
             self.errors = True
-            error("Could not rename %d!" % self.full_name)
+            error("Could not rename %s!" % self.full_name)
+        self.on_finish()
 
     def on_finish(self):
         """Further actions."""
@@ -822,13 +822,13 @@ class FuzzyDuplicateCommand(sublime_plugin.WindowCommand):
         new = self.dir + os.sep + name
         try:
             if self.is_dir:
-                shutil.copytree(self.full_name, new)
+                shutil.copytree(self.full_name, new, symlinks=True)
             else:
                 shutil.copyfile(self.full_name, new)
-            self.on_finish()
         except Exception:
             self.errors = True
-            error("Could not duplicate %d!" % self.full_name)
+            error("Could not duplicate %s!" % self.full_name)
+        self.on_finish()
 
     def on_finish(self):
         """Further actions."""
