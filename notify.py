@@ -35,4 +35,4 @@ def error(msg):
     if settings.get("use_sub_notify", False) and Notify.is_ready():
         sublime.run_command("sub_notify", {"title": "ExportHtml", "msg": msg, "level": "error"})
     else:
-        sublime.error_message("ExportHtml:\n%s" % msg)
+        sublime.error_message("FuzzyFileNav:\n%s" % msg)
