@@ -212,7 +212,7 @@ class FuzzyEventListener(sublime_plugin.EventListener):
                         return active
                     else:
                         pass
-            elif key == "fuzzy_delete":
+            elif key in ["fuzzy_delete", "fuzzy_rename", "fuzzy_duplicate"]:
                 if not empty and path.exists(full_name):
                     return active
                 elif not empty:
@@ -739,6 +739,133 @@ class FuzzyMakeFolderCommand(sublime_plugin.WindowCommand):
             else:
                 self.window.run_command("hide_overlay")
                 self.window.run_command("fuzzy_file_nav", {"start": FuzzyFileNavCommand.cwd})
+
+
+class FuzzyRenameCommand(sublime_plugin.WindowCommand):
+    """Rename a file or directory."""
+
+    def on_done(self, name):
+        """Finalize rename."""
+
+        if name == self.basename:      # same name, do nothing
+            self.on_finish()
+            return
+
+        new = self.dir + os.sep + name
+        try:
+            os.rename(self.full_name, new)
+
+            # close and open renamed file if among open files
+            current_view = self.window.active_view()
+            current_file = current_view.file_name()
+            for v in self.window.views():
+                if v.file_name() == self.full_name:
+                    self.window.focus_view(v)
+                    v.set_scratch(True)
+                    self.window.run_command('close_file')
+                    self.window.open_file(new)
+                    if current_file != self.full_name:
+                        sublime.set_timeout(lambda: self.window.focus_view(current_view), 100)
+                    break
+            self.on_finish()
+
+        except Exception:
+            self.errors = True
+            error("Could not rename %d!" % self.full_name)
+
+    def on_finish(self):
+        """Further actions."""
+
+        if self.multi_file:
+            if self.errors:
+                FuzzyFileNavCommand.reset()
+            else:
+                self.window.run_command("hide_overlay")
+                self.window.run_command("fuzzy_file_nav", {"start": FuzzyFileNavCommand.cwd})
+
+    def run(self):
+        """Run command."""
+
+        self.errors = False
+        self.full_name = path.join(FuzzyFileNavCommand.cwd, FuzzyPanelText.get_content())
+        FuzzyPanelText.clear_content()
+        self.multi_file = (
+            bool(sublime.load_settings(FUZZY_SETTINGS).get("keep_panel_open_after_action", False)) and
+            "rename" not in sublime.load_settings(FUZZY_SETTINGS).get("keep_panel_open_exceptions", [])
+        )
+
+        if not self.multi_file:
+            self.window.run_command("hide_overlay")
+            FuzzyFileNavCommand.reset()
+        else:
+            FuzzyFileNavCommand.fuzzy_reload = True
+
+        if os.path.isdir(self.full_name):
+            self.dir = os.path.dirname(self.full_name)
+            self.basename = os.path.basename(self.full_name)
+        else:
+            self.dir, self.basename = os.path.split(self.full_name)
+
+        self.window.show_input_panel("Rename file to:", self.basename, self.on_done, None, self.on_finish)
+
+
+class FuzzyDuplicateCommand(sublime_plugin.WindowCommand):
+    """Duplicate a file or directory."""
+
+    def on_done(self, name):
+        """Finalize duplicate."""
+
+        if name == self.basename:      # same name, do nothing
+            self.on_finish()
+            return
+
+        new = self.dir + os.sep + name
+        try:
+            if self.is_dir:
+                shutil.copytree(self.full_name, new)
+            else:
+                shutil.copyfile(self.full_name, new)
+            self.on_finish()
+        except Exception:
+            self.errors = True
+            error("Could not duplicate %d!" % self.full_name)
+
+    def on_finish(self):
+        """Further actions."""
+
+        if self.multi_file:
+            if self.errors:
+                FuzzyFileNavCommand.reset()
+            else:
+                self.window.run_command("hide_overlay")
+                self.window.run_command("fuzzy_file_nav", {"start": FuzzyFileNavCommand.cwd})
+
+    def run(self):
+        """Run command."""
+
+        self.errors = False
+        self.full_name = path.join(FuzzyFileNavCommand.cwd, FuzzyPanelText.get_content())
+        FuzzyPanelText.clear_content()
+        self.multi_file = (
+            bool(sublime.load_settings(FUZZY_SETTINGS).get("keep_panel_open_after_action", False)) and
+            "rename" not in sublime.load_settings(FUZZY_SETTINGS).get("keep_panel_open_exceptions", [])
+        )
+
+        if not self.multi_file:
+            self.window.run_command("hide_overlay")
+            FuzzyFileNavCommand.reset()
+        else:
+            FuzzyFileNavCommand.fuzzy_reload = True
+
+        if os.path.isdir(self.full_name):
+            self.is_dir = True
+            self.dir = os.path.dirname(self.full_name)
+            self.basename = os.path.basename(self.full_name)
+        else:
+            self.is_dir = False
+            self.dir, self.basename = os.path.split(self.full_name)
+
+        self.window.show_input_panel("Duplicate to:", self.basename, self.on_done, None, self.on_finish)
 
 
 class FuzzyBookmarksLoadCommand(sublime_plugin.WindowCommand):
