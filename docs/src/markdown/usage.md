@@ -190,7 +190,7 @@ Allows the changing of the completion style to one of three styles.
 
 ### `start_from_here_default_action`
 
-There are times when the a FuzzyFileNav navigation command won't be fed a path.  One example is when the `Fuzzy Nav Here...` command is run from a view that hasn't been saved to disk.  This setting allows you to sepcify the fallback options to display.
+There are times when the a FuzzyFileNav navigation command won't be fed a path.  One example is when the `Fuzzy Nav Here...` command is run from a view that hasn't been saved to disk.  This setting allows you to specify the fallback options to display.
 
 ```js
     // If the "FuzzyStartFromFileCommand" is run outside of an open buffer
