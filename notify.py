@@ -21,9 +21,9 @@ except Exception:
 def notify(msg):
     """Notify message."""
 
-    settings = sublime.load_settings("ExportHtml.sublime-settings")
+    settings = sublime.load_settings("fuzzy_file_nav.sublime-settings")
     if settings.get("use_sub_notify", False) and Notify.is_ready():
-        sublime.run_command("sub_notify", {"title": "ExportHtml", "msg": msg})
+        sublime.run_command("sub_notify", {"title": "FuzzyFileNav", "msg": msg})
     else:
         sublime.status_message(msg)
 
@@ -31,8 +31,8 @@ def notify(msg):
 def error(msg):
     """Error message."""
 
-    settings = sublime.load_settings("ExportHtml.sublime-settings")
+    settings = sublime.load_settings("fuzzy_file_nav.sublime-settings")
     if settings.get("use_sub_notify", False) and Notify.is_ready():
-        sublime.run_command("sub_notify", {"title": "ExportHtml", "msg": msg, "level": "error"})
+        sublime.run_command("sub_notify", {"title": "FuzzyFileNav", "msg": msg, "level": "error"})
     else:
-        sublime.error_message("ExportHtml:\n%s" % msg)
+        sublime.error_message("FuzzyFileNav:\n%s" % msg)
