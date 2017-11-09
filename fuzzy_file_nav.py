@@ -613,7 +613,7 @@ class FuzzyDeleteCommand(sublime_plugin.WindowCommand):
                     os.remove(full_name)
             except Exception:
                 errors = True
-                error("Error deleting %d!" % full_name)
+                error("Error deleting %s!" % full_name)
 
         if multi_file:
             if errors:
@@ -744,7 +744,7 @@ class FuzzyMakeFolderCommand(sublime_plugin.WindowCommand):
             os.makedirs(full_name)
         except Exception:
             errors = True
-            error("Could not create %d!" % full_name)
+            error("Could not create %s!" % full_name)
 
         if multi_file:
             if errors:
