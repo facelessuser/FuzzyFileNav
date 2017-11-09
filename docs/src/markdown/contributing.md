@@ -56,23 +56,25 @@ There are a couple of dependencies that must be present before running the tests
 
 1. As ST3 is the only current, actively supported version, Python 3.3 must be used to validate the tests.
 
-2. Unit tests are run with `nose`.  You can install nose via:
+2. Unit tests are run with `pytest`.  You can install `pytest` via:
 
     ```
-    pip install nose
+    pip install pytest
     ```
 
     The tests should be run from the root folder of the plugin by using the following command:
 
     ```
-    nosetests .
+    py.test .
     ```
 
-3. Linting is performed on the entire project with `flake8`, `flake8_docstrings`, `pep8-naming`.  These can be installed via:
+3. Linting is performed on the entire project with with the libraries below.  They can be installed with:
 
     ```
     pip install flake8
-    pip install flake8_docstrings
+    pip install flake8-docstrings
+    pip install flake8-mutable
+    pip install flake8-builtins
     pip install pep8-naming
     ```
 
