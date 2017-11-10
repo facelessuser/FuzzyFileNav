@@ -32,16 +32,34 @@
         "args": {"action": "copy"}
     },
     {
+        "keys": ["ctrl+shift+c"],
+        "command": "fuzzy_clipboard",
+        "context": [{"key": "fuzzy_copy"}],
+        "args": {"action": "copy_append"}
+    },
+    {
         "keys": ["ctrl+x"],
         "command": "fuzzy_clipboard",
         "context": [{"key": "fuzzy_cut"}],
         "args": {"action": "cut"}
     },
     {
+        "keys": ["ctrl+shift+x"],
+        "command": "fuzzy_clipboard",
+        "context": [{"key": "fuzzy_cut"}],
+        "args": {"action": "cut_append"}
+    },
+    {
         "keys": ["ctrl+v"],
         "command": "fuzzy_clipboard",
         "context": [{"key": "fuzzy_paste"}],
         "args": {"action": "paste"}
+    },
+    {
+        "keys": ["ctrl+shift+v"],
+        "command": "fuzzy_clipboard",
+        "context": [{"key": "fuzzy_paste"}],
+        "args": {"action": "selective_paste"}
     },
     {
         "keys": ["ctrl+n"],
@@ -52,11 +70,6 @@
         "keys": ["ctrl+shift+n"],
         "command": "fuzzy_make_folder",
         "context": [{"key": "fuzzy_make_folder"}]
-    },
-    {
-        "keys": ["ctrl+forward_slash"],
-        "command": "fuzzy_get_cwd",
-        "context": [{"key": "fuzzy_get_cwd"}]
     },
     {
         "keys": ["ctrl+r"],

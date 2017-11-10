@@ -34,7 +34,7 @@ def status_cwd():
     """Set the status bar to the current working directory."""
 
     if FuzzyFileNavCommand.status:
-        sublime.run_command("fuzzy_get_cwd")
+        sublime.run_command("fuzzy_show_status")
         sublime.set_timeout(status_cwd, 1000)
 
 
@@ -185,11 +185,11 @@ class FuzzyEventListener(sublime_plugin.EventListener):
         if active and FuzzyFileNavCommand.view is not None and FuzzyFileNavCommand.view.id() == view.id():
             FuzzyPanelText.set_content(view.substr(view.line(view.sel()[0])))
             full_name = path.join(FuzzyFileNavCommand.cwd, FuzzyPanelText.get_content())
-            empty = (FuzzyPanelText.get_content() == "")
+            empty = (FuzzyPanelText.get_content().strip() in ("", '.', '..'))
             # See if this is the auto-complete path command
             if key in [
                 "fuzzy_path_complete", "fuzzy_path_complete_back", "fuzzy_toggle_hidden",
-                "fuzzy_bookmarks_load", "fuzzy_get_cwd", "fuzzy_cwv"
+                "fuzzy_bookmarks_load" "fuzzy_cwv"
             ]:
                 return active
             elif key == "fuzzy_open_folder":
@@ -455,40 +455,68 @@ class FuzzyClipboardCommand(sublime_plugin.WindowCommand):
     """Command to handle fuzzy cut/copy/paste actions."""
 
     clips = []
-    action = None
+    copy_type = None
 
     def run(self, action):
         """Run command."""
 
+        self.multi_file = False
+        self.action = None
         self.cls = FuzzyClipboardCommand
-        if action in ["cut", "copy"]:
-            if len(self.cls.clips):
-                self.cls.clear_entries()
+        if action in ("cut", "cut_append", "copy", "copy_append"):
+            self.set_copy_type(action.rstrip('_append'))
+            if not action.endswith('_append') and len(self.get_entries()):
+                self.clear_entries()
             full_name = path.join(FuzzyFileNavCommand.cwd, FuzzyPanelText.get_content())
             FuzzyPanelText.clear_content()
             self.cls.add_entry(full_name)
-            self.cls.set_action(action)
             FuzzyFileNavCommand.fuzzy_reload = True
             self.window.run_command("hide_overlay")
             self.window.run_command("fuzzy_file_nav", {"start": FuzzyFileNavCommand.cwd})
         elif action == "paste":
-            self.paste()
+            errors = False
+            for item in self.get_entries(self.get_copy_type() == "cut"):
+                if self.paste(item):
+                    errors = True
 
-    def paste(self):
+            if self.multi_file:
+                if errors:
+                    FuzzyFileNavCommand.reset()
+                else:
+                    self.window.run_command("hide_overlay")
+                    self.window.run_command("fuzzy_file_nav", {"start": FuzzyFileNavCommand.cwd})
+        elif action == 'selective_paste':
+            self.window.run_command("hide_overlay")
+            entries = [[os.path.basename(e), e] for e in self.get_entries()]
+            self.window.show_quick_panel(entries, self.check_selection)
+
+    def check_selection(self, value):
+        """Check the clip selection."""
+
+        if value > -1:
+            errors = self.paste(self.get_entry(value, self.get_copy_type() == "cut"))
+
+            if self.multi_file:
+                if errors:
+                    FuzzyFileNavCommand.reset()
+                else:
+                    self.window.run_command("hide_overlay")
+                    self.window.run_command("fuzzy_file_nav", {"start": FuzzyFileNavCommand.cwd})
+
+    def paste(self, clip):
         """Paste files."""
 
         errors = False
         self.to_path = path.join(FuzzyFileNavCommand.cwd, FuzzyPanelText.get_content())
         FuzzyPanelText.clear_content()
-        move = (self.cls.action == "cut")
-        self.from_path = self.cls.clips[0]
-        # self.cls.clear_entries()
-        multi_file = (
+        move = (self.get_copy_type() == "cut")
+        self.from_path = clip
+        self.multi_file = (
             bool(sublime.load_settings(FUZZY_SETTINGS).get("keep_panel_open_after_action", False)) and
             "paste" not in sublime.load_settings(FUZZY_SETTINGS).get("keep_panel_open_exceptions", [])
         )
 
-        if not multi_file:
+        if not self.multi_file:
             self.window.run_command("hide_overlay")
             FuzzyFileNavCommand.reset()
         else:
@@ -501,12 +529,7 @@ class FuzzyClipboardCommand(sublime_plugin.WindowCommand):
             else:
                 self.action = shutil.copyfile if not bool(move) else shutil.move
                 errors = self.file_copy()
-        if multi_file:
-            if errors:
-                FuzzyFileNavCommand.reset()
-            else:
-                self.window.run_command("hide_overlay")
-                self.window.run_command("fuzzy_file_nav", {"start": FuzzyFileNavCommand.cwd})
+        return errors
 
     def dir_copy(self):
         """Handle directory copy."""
@@ -516,22 +539,38 @@ class FuzzyClipboardCommand(sublime_plugin.WindowCommand):
             if path.exists(self.to_path):
                 if path.isdir(self.to_path):
                     dest = path.join(self.to_path, path.basename(self.from_path))
-                    if path.exists(dest) and sublime.ok_cancel_dialog('Overwrite?'):
-                        if path.isdir(dest):
-                            shutil.rmtree(dest)
+                    if PLATFORM == "windows":
+                        same = dest.lower() == self.from_path.lower()
+                    else:
+                        same = dest == self.from_path
+                    if path.exists(dest) and not same:
+                        if sublime.ok_cancel_dialog('%s exists!\n\nOverwrite?' % dest):
+                            if path.isdir(dest):
+                                shutil.rmtree(dest)
+                            else:
+                                os.remove(dest)
                         else:
-                            os.remove(dest)
-                    self.action(self.from_path, path.join(self.to_path, path.basename(self.from_path)))
+                            return errors
+                    if not same:
+                        self.action(self.from_path, dest)
                 else:
                     errors = True
                     error("%s already exists!" % self.to_path)
             elif path.exists(path.dirname(self.to_path)):
-                if path.exists(self.to_path) and sublime.ok_cancel_dialog('Overwrite?'):
-                    if path.isdir(self.to_path):
-                        shutil.rmtree(self.to_path)
+                if PLATFORM == "windows":
+                    same = self.to_path.lower() == self.from_path.lower()
+                else:
+                    same = self.to_path == self.from_path
+                if path.exists(self.to_path) and not same:
+                    if sublime.ok_cancel_dialog('%s exists!\n\nOverwrite?' % self.to_path):
+                        if path.isdir(self.to_path):
+                            shutil.rmtree(self.to_path)
+                        else:
+                            os.remove(self.to_path)
                     else:
-                        os.remove(self.to_path)
-                self.action(self.from_path, self.to_path)
+                        return errors
+                if not same:
+                    self.action(self.from_path, self.to_path)
             else:
                 errors = True
                 error("Cannot copy %s" % self.from_path)
@@ -548,14 +587,29 @@ class FuzzyClipboardCommand(sublime_plugin.WindowCommand):
             if path.exists(self.to_path):
                 if path.isdir(self.to_path):
                     file_name = path.join(self.to_path, path.basename(self.from_path))
-                    if path.exists(file_name):
+                    if PLATFORM == "windows":
+                        same = file_name.lower() == self.from_path.lower()
+                    else:
+                        same = file_name == self.from_path
+                    if path.exists(file_name) and not same:
                         if not sublime.ok_cancel_dialog("%s exists!\n\nOverwrite file?" % file_name):
-                            return
-                    self.action(self.from_path, file_name)
-                elif sublime.ok_cancel_dialog("%s exists!\n\nOverwrite file?" % self.to_path):
-                    self.action(self.from_path, self.to_path)
+                            return errors
+                    if not same:
+                        self.action(self.from_path, file_name)
+                else:
+                    if PLATFORM == "windows":
+                        same = self.to_path.lower() == self.from_path.lower()
+                    else:
+                        same = self.to_path == self.from_path
+                    if not same and sublime.ok_cancel_dialog("%s exists!\n\nOverwrite file?" % self.to_path):
+                        self.action(self.from_path, self.to_path)
             elif path.exists(path.dirname(self.to_path)):
-                self.action(self.from_path, self.to_path)
+                if PLATFORM == "windows":
+                    same = self.to_path.lower() == self.from_path.lower()
+                else:
+                    same = self.to_path == self.from_path
+                if not same:
+                    self.action(self.from_path, self.to_path)
             else:
                 errors = True
                 error("Cannot copy %s" % self.from_path)
@@ -565,6 +619,27 @@ class FuzzyClipboardCommand(sublime_plugin.WindowCommand):
         return errors
 
     @classmethod
+    def get_entry(cls, index, clear=False):
+        """Get clip entry."""
+
+        return cls.clips.pop(index) if clear else cls.clips[index]
+
+    @classmethod
+    def clear_entries(cls):
+        """Clear entries."""
+
+        cls.clips.clear()
+
+    @classmethod
+    def get_entries(cls, clear=False):
+        """Get all entries."""
+
+        entries = cls.clips[:]
+        if clear:
+            cls.clips.clear()
+        return entries
+
+    @classmethod
     def add_entry(cls, entry):
         """Add entry to clip board."""
 
@@ -572,17 +647,18 @@ class FuzzyClipboardCommand(sublime_plugin.WindowCommand):
             cls.clips.append(entry)
 
     @classmethod
-    def set_action(cls, action):
-        """Set the action."""
+    def set_copy_type(cls, copy_type):
+        """Set the copy type."""
 
-        cls.action = action
+        if copy_type != cls.copy_type:
+            cls.clips.clear()
+        cls.copy_type = copy_type
 
     @classmethod
-    def clear_entries(cls):
-        """Clear entries."""
+    def get_copy_type(cls):
+        """Set the copy type."""
 
-        cls.clips = []
-        cls.action = None
+        return cls.copy_type
 
 
 class FuzzyDeleteCommand(sublime_plugin.WindowCommand):
@@ -788,14 +864,14 @@ class FuzzyBookmarksLoadCommand(sublime_plugin.WindowCommand):
             self.window.run_command("fuzzy_file_nav", {"start": self.display[value][1]})
 
 
-class FuzzyGetCwdCommand(sublime_plugin.ApplicationCommand):
+class FuzzyShowStatusCommand(sublime_plugin.ApplicationCommand):
     """Show the current working directory in the status bar."""
 
     def run(self):
         """Run command."""
 
         if FuzzyFileNavCommand.active:
-            sublime.status_message("CWD: " + FuzzyFileNavCommand.cwd)
+            sublime.status_message("CLIPS: %d; CWD: %s;" % (len(FuzzyClipboardCommand.clips), FuzzyFileNavCommand.cwd))
 
 
 class FuzzyToggleHiddenCommand(sublime_plugin.WindowCommand):
@@ -929,7 +1005,7 @@ class FuzzyPathCompleteCommand(sublime_plugin.WindowCommand):
     def sublime_completion(self, cls, view):
         """Sublime fuzzy completion."""
 
-        if cls.hl_index != -1 or cls.hl_index < len(FuzzyFileNavCommand.files):
+        if cls.hl_index > 0 and cls.hl_index < len(FuzzyFileNavCommand.files):
             FuzzyEditGlobal.bfr = FuzzyFileNavCommand.files[cls.hl_index]
             if path.isdir(path.join(FuzzyFileNavCommand.cwd, FuzzyEditGlobal.bfr)):
                 FuzzyEditGlobal.bfr = FuzzyEditGlobal.bfr[0:len(FuzzyEditGlobal.bfr) - 1]
@@ -953,6 +1029,8 @@ class FuzzyPathCompleteCommand(sublime_plugin.WindowCommand):
         current = cls.text.lower() if case_insensitive else cls.text
         for item in FuzzyFileNavCommand.files:
             # Windows is case insensitive
+            if item == '..':
+                continue
             i = item.lower() if case_insensitive else item
             # See if current input matches the beginning of some of the entries
             if i.startswith(current):
@@ -1054,7 +1132,6 @@ class FuzzyFileNavCommand(sublime_plugin.WindowCommand):
         cls.view = None
         cls.status = False
         cls.hide_hidden = not bool(sublime.load_settings(FUZZY_SETTINGS).get("show_system_hidden_files", False))
-        # FuzzyClipboardCommand.clear_entries()
 
     @classmethod
     def set_hidden(cls, value):
