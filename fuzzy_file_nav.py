@@ -451,6 +451,22 @@ class FuzzySearchFolderCommand(sublime_plugin.WindowCommand):
             self.window.run_command("show_panel", {"panel": "find_in_files", "where": FuzzyFileNavCommand.cwd})
 
 
+class FuzzyClipboardViewCommand(sublime_plugin.WindowCommand):
+    """View the current fuzzy clipboard."""
+
+    def run(self):
+        """Run command."""
+
+        entries = [[os.path.basename(e), e] for e in FuzzyClipboardCommand.get_entries()]
+        if entries:
+            self.window.show_quick_panel(entries, self.noop)
+
+    def noop(self, value):
+        """No operation."""
+
+        self.window.run_command("hide_overlay")
+
+
 class FuzzyClipboardCommand(sublime_plugin.WindowCommand):
     """Command to handle fuzzy cut/copy/paste actions."""
 
@@ -464,9 +480,10 @@ class FuzzyClipboardCommand(sublime_plugin.WindowCommand):
         self.action = None
         self.cls = FuzzyClipboardCommand
         if action in ("cut", "cut_append", "copy", "copy_append"):
-            self.set_copy_type(action.rstrip('_append'))
-            if not action.endswith('_append') and len(self.get_entries()):
+            copy_type = action.rstrip('_append')
+            if (not action.endswith('_append') or cls.copy_type != copy_type) and len(self.get_entries()):
                 self.clear_entries()
+            self.set_copy_type(copy_type)
             full_name = path.join(FuzzyFileNavCommand.cwd, FuzzyPanelText.get_content())
             FuzzyPanelText.clear_content()
             self.cls.add_entry(full_name)
