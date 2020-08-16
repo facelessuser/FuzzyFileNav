@@ -15,5 +15,9 @@
     {
         "caption": "Fuzzy BookMarks",
         "command": "fuzzy_bookmarks_load"
+    },
+    {
+        "caption": "Fuzzy View Clipboard",
+        "command": "fuzzy_clipboard_view"
     }
 ]

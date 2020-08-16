@@ -1,7 +1,6 @@
 # FuzzyFileNav 2.0.0
 
-Nov X, 2017
-
+- **NEW**: Add command to view current items in the clipboard.
 - **NEW**: Copied files/folders persist across FuzzyFileNav sessions (panel open and closes).
 - **NEW**: Add ability to store multiple files and folders in the clipboard.
 - **NEW**: Add ability to paste a single file or folder from the clipboard stash when there are multiple.
