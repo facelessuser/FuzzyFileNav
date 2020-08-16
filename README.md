@@ -11,7 +11,7 @@ https://facelessuser.github.io/FuzzyFileNav/
 
 # License
 
-Fuzzy File nav is released under the MIT license.
+FuzzyFileNav is released under the MIT license.
 
 Copyright (c) 2012 - 2017 Isaac Muse <isaacmuse@gmail.com>
 

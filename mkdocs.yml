@@ -4,7 +4,7 @@ repo_url: https://github.com/facelessuser/FuzzyFileNav
 edit_uri: tree/master/docs/src/markdown
 site_description: A Sublime Text plugin navigating the file system.
 copyright: |
-  Copyright &copy; 2011 - 2020 <a href="https://github.com/facelessuser"  target="_blank" rel="noopener">Isaac Muse</a>
+  Copyright &copy; 2012 - 2020 <a href="https://github.com/facelessuser"  target="_blank" rel="noopener">Isaac Muse</a>
 
 docs_dir: docs/src/markdown
 theme:
