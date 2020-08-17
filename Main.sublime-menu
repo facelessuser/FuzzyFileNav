@@ -16,21 +16,21 @@
                         "children":
                         [
                             {
-                              "caption": "Settings",
-                              "command": "edit_settings",
-                              "args": {
-                                "base_file": "${packages}/FuzzyFileNav/fuzzy_file_nav.sublime-settings",
-                                "default": "// Settings in here override those in \"FuzzyFileNav/fuzzy_file_nav.sublime-settings\"\n{\n\t$0\n}\n"
-                              }
+                                "caption": "Settings",
+                                "command": "edit_settings",
+                                "args": {
+                                    "base_file": "${packages}/FuzzyFileNav/fuzzy_file_nav.sublime-settings",
+                                    "default": "// Settings in here override those in \"FuzzyFileNav/fuzzy_file_nav.sublime-settings\"\n{\n\t$0\n}\n"
+                                }
                             },
                             {
-                              "caption": "Key Bindings",
-                              "command": "edit_settings",
-                              "args": {
-                                "base_file": "${packages}/FuzzyFileNav/Default (${platform}).sublime-keymap",
-                                "user_file": "${packages}/User/Default (${platform}).sublime-keymap",
-                                "default": "[\n\t$0\n]\n"
-                              }
+                                "caption": "Key Bindings",
+                                "command": "edit_settings",
+                                "args": {
+                                    "base_file": "${packages}/FuzzyFileNav/Default (${platform}).sublime-keymap",
+                                    "user_file": "${packages}/User/Default (${platform}).sublime-keymap",
+                                    "default": "[\n\t$0\n]\n"
+                                }
                             }
                         ]
                     }
