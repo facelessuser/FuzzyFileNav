@@ -2,15 +2,24 @@
 
 ## General Usage
 
-By default, FuzzyFileNav has access enabled via the view context menu.  The context menu gives you various fuzzy navigation methods.  By selecting `Fuzzy Nav Here...`, you will begin navigating the parent folder of the view's file (if saved on disk).  By selecting an option under `Fuzzy File Nav`, you can start with a list of folders from the project, bookmarks, or the root of the file system.  If you prefer to initiate the commands from a shortcut, you can define your own; some suggestions are shown in [Suggested Accessibility Shortcuts](#suggested-accessibility-shortcuts).  From the FuzzyFileNav panel, you can use shortcuts to copy, paste, delete, open, and various other file actions.
+By default, FuzzyFileNav has access enabled via the view context menu.  The context menu gives you various fuzzy
+navigation methods.  By selecting `Fuzzy Nav Here...`, you will begin navigating the parent folder of the view's file
+(if saved on disk).  By selecting an option under `Fuzzy File Nav`, you can start with a list of folders from the
+project, bookmarks, or the root of the file system.  If you prefer to initiate the commands from a shortcut, you can
+define your own; some suggestions are shown in [Suggested Accessibility Shortcuts](#suggested-accessibility-shortcuts).
+From the FuzzyFileNav panel, you can use shortcuts to copy, paste, delete, open, and various other file actions.
 
 ## Using the FuzzyFileNav Panel
 
-While a FuzzyFileNav navigation panel is open, a number of shortcuts will be activated that can apply different actions to a file or folder or aide in navigating the panel.  Actions are only performed when the **full** name is typed into the panel. Using the path completion navigation shortcut will make this quick and easy.
+While a FuzzyFileNav navigation panel is open, a number of shortcuts will be activated that can apply different actions
+to a file or folder or aide in navigating the panel.  Actions are only performed when the **full** name is typed into
+the panel. Using the path completion navigation shortcut will make this quick and easy.
 
 ### Autocomplete File Paths
 
-FuzzyFileNav can complete file paths in the quick panel when ++tab++ is pressed.  Depending on the completion style, ++shift+tab++ can navigate through the completion options backwards.  There are three styles of autocompletion that FuzzyFileNav supports.
+FuzzyFileNav can complete file paths in the quick panel when ++tab++ is pressed.  Depending on the completion style,
+++shift+tab++ can navigate through the completion options backwards.  There are three styles of autocompletion that
+FuzzyFileNav supports.
 
 Autocomplete\ Style | Description
 ------------------- | -----------
@@ -22,10 +31,15 @@ See the [completion_style](#completion_style) setting for more info on configuri
 
 ### Navigating Folders
 
-When navigating folders in the quick panel, you start typing the folder's name, and you can press ++tab++ to complete the path (behavior may differ depending on [completion style setting](#autocomplete-file-paths)). You can descend into the folder by typing a `/` at the end (you can also use `\` on windows). The full path must be completed for "slash folder navigation".  You can can also press ++enter++ and whatever folder is currently selected in the panel will be navigated to.
+When navigating folders in the quick panel, you start typing the folder's name, and you can press ++tab++ to complete
+the path (behavior may differ depending on [completion style setting](#autocomplete-file-paths)). You can descend into
+the folder by typing a `/` at the end (you can also use `\` on windows). The full path must be completed for "slash
+folder navigation".  You can can also press ++enter++ and whatever folder is currently selected in the panel will be
+navigated to.
 
 !!! tip "Tip"
-    Your file systems root can be accessed any time by typing '/'.  You can also switch to windows drives by typing `c:\` etc.
+    Your file systems root can be accessed any time by typing '/'.  You can also switch to windows drives by typing
+    `c:\` etc.
 
     The home folder can be accessed any time by typing `~/` into the FuzzyFileNav quick panel.
 
@@ -54,7 +68,8 @@ This action opens the selected file in the palette.
 
 #### Show/Hide hidden files
 
-Toggles the showing/hiding of hidden files defined by the system or that are hidden via the regular expression patterns in the settings file.
+Toggles the showing/hiding of hidden files defined by the system or that are hidden via the regular expression patterns
+in the settings file.
 
 #### Show Bookmarks
 
@@ -66,50 +81,67 @@ Deletes the folder/file object currently typed in the FuzzyFileNav panel.
 
 #### Copy
 
-Copies the folder/file object currently typed file in the FuzzyFileNav panel.  The copy will remain in the clipboard until a paste is performed.  Copies will be remembered even when the panel is manually dismissed and reopened.
+Copies the folder/file object currently typed file in the FuzzyFileNav panel.  The copy will remain in the clipboard
+until another copy or cut replaces it.  Copies will be remembered even when the panel is manually dismissed and
+reopened.
 
 #### Cut
 
-Cuts (moves) the folder/file object currently typed into the FuzzyFileNav panel.  A Fuzzy File Paste must be performed to complete the cut (move). The cut file will be remembered even when the panel is manually dismissed and reopened.
+Cuts (moves) the folder/file object currently typed into the FuzzyFileNav panel. A Fuzzy File Paste must be performed
+to complete the cut (move). The cut will remain in the clipboard until a paste is performed or another copy or cut
+replaces it. The cut file will be remembered even when the panel is manually dismissed and reopened.
 
 #### Paste
 
-Pastes the folder/file object that is in the clipboard.  The file/folder will be pasted into the currently opened folder in the FuzzyFileNav panel. To rename the folder/file object on paste, type the full name in the panel that should be used before pressing initiating the paste.
+Pastes the folder/file object that is in the clipboard.  The file/folder will be pasted into the currently opened folder
+in the FuzzyFileNav panel. To rename the folder/file object on paste, type the full name in the panel that should be
+used before pressing initiating the paste.
 
 #### New File
 
-Creates a new file in the currently opened folder in the FuzzyFileNav panel.  The name that is typed into the panel is the name that will be used.
+Creates a new file in the currently opened folder in the FuzzyFileNav panel.  The name that is typed into the panel is
+the name that will be used.
 
 #### New Folder
 
-Creates a new folder in the currently opened folder in the FuzzyFileNav panel.  The name that is typed into the panel is the name that will be used.
+Creates a new folder in the currently opened folder in the FuzzyFileNav panel.  The name that is typed into the panel is
+the name that will be used.
 
 #### Save File as
 
-Saves the current focused view to the the currently opened folder in the FuzzyFileNav Panel.  The name that is typed into the panel is the name of the file the view will be saved to.  You will be prompted for file overwrite.
+Saves the current focused view to the the currently opened folder in the FuzzyFileNav Panel.  The name that is typed
+into the panel is the name of the file the view will be saved to.  You will be prompted for file overwrite.
 
 #### Reveal
 
-Reveals the location of the file/folder name typed into the FuzzyFileNav panel in your file manager.  Will use the current folder if a valid one is not typed into the panel.
+Reveals the location of the file/folder name typed into the FuzzyFileNav panel in your file manager.  Will use the
+current folder if a valid one is not typed into the panel.
 
 #### Search Folder
 
-This action will open a folder search panel with the current folder's path, or the path of a subfolder (if one is typed into the FuzzyFileNav panel) and pre-load that folder name into the `where` box.  Any content in clipboard will be pre-loaded into the `Find` box.
+This action will open a folder search panel with the current folder's path, or the path of a subfolder (if one is typed
+into the FuzzyFileNav panel) and pre-load that folder name into the `where` box.  Any content in clipboard will be
+pre-loaded into the `Find` box.
 
 #### Add Folder to Project
 
-Adds the location of the folder name typed into the FuzzyFileNav panel into the current project.  Will use the current folder if a valid one is not typed into the panel.
+Adds the location of the folder name typed into the FuzzyFileNav panel into the current project.  Will use the current
+folder if a valid one is not typed into the panel.
 
 #### Get Current Working View
 
 Gets the file name of the current working view and copies it into the FuzzyFileNav Panel.
 
 ## Settings
+
 There are various settings you can alter to enhance your experience with FuzzyFileNav.
 
 ### `bookmarks`
 
-When using the bookmark command, you can bring up a list of bookmarked folders.  Bookmarks are defined in `bookmarks` setting as shown below. To add or change the bookmark list, just add, remove or modify an entry in the bookmark list.  Each entry is a dictionary containing two keys: `name` and `path`.  `name` is the name that will be displayed, path is the path to the folder.
+When using the bookmark command, you can bring up a list of bookmarked folders.  Bookmarks are defined in `bookmarks`
+setting as shown below. To add or change the bookmark list, just add, remove or modify an entry in the bookmark list.
+Each entry is a dictionary containing two keys: `name` and `path`.  `name` is the name that will be displayed, path is
+the path to the folder.
 
 ```javascript
     // Bookmarked paths
@@ -120,7 +152,8 @@ When using the bookmark command, you can bring up a list of bookmarked folders. 
 ```
 
 !!! tip "Tip"
-    If it is desired to have specific bookmarks show up only on a specific OS or a specific host, you can augment the `path` option using the notation below.  For more information, please see [Platform/Computer Specific Settings](#platformcomputer-specific-settings).
+    If it is desired to have specific bookmarks show up only on a specific OS or a specific host, you can augment the
+    `path` option using the notation below.  For more information, please see[Platform/Computer Specific Settings](#platformcomputer-specific-settings).
 
     ```javascript
         // Bookmarked paths
@@ -132,7 +165,8 @@ When using the bookmark command, you can bring up a list of bookmarked folders. 
 
 ### `home`
 
-`home` is your home directory.  By default it is `~` which expands to your user directory on your OS, but if you would like to modify it to be something else, this is the place!
+`home` is your home directory.  By default it is `~` which expands to your user directory on your OS, but if you would
+like to modify it to be something else, this is the place!
 
 ```javascript
     // Location of home folder
@@ -141,7 +175,8 @@ When using the bookmark command, you can bring up a list of bookmarked folders. 
 
 ### `regex_exclude`
 
-`regex_exclude` is an array of regular expression patterns that indicate which files and folders FuzzyFileNav should ignore.
+`regex_exclude` is an array of regular expression patterns that indicate which files and folders FuzzyFileNav should
+ignore.
 
 ```js
     // Patterns of files/folders to exclude
@@ -170,7 +205,8 @@ Provides exceptions for the [keep_panel_open_after_action](#keep_panel_open_afte
 
 ### `show_system_hidden_files`
 
-Controls whether system hidden files are shown in FuzzyFileNav. How files are hidden vary on a given OS, but this should be able to show them.
+Controls whether system hidden files are shown in FuzzyFileNav. How files are hidden vary on a given OS, but this should
+be able to show them.
 
 ```js
     // Controls whether system hidden files are shown in FuzzyFileNav.
@@ -190,7 +226,9 @@ Allows the changing of the completion style to one of three styles.
 
 ### `start_from_here_default_action`
 
-There are times when the a FuzzyFileNav navigation command won't be fed a path.  One example is when the `Fuzzy Nav Here...` command is run from a view that hasn't been saved to disk.  This setting allows you to specify the fallback options to display.
+There are times when the a FuzzyFileNav navigation command won't be fed a path.  One example is when the
+`Fuzzy Nav Here...` command is run from a view that hasn't been saved to disk.  This setting allows you to specify the
+fallback options to display.
 
 ```js
     // If the "FuzzyStartFromFileCommand" is run outside of an open buffer
@@ -202,7 +240,8 @@ There are times when the a FuzzyFileNav navigation command won't be fed a path. 
 
 ### `add_folder_to_project_relative`
 
-When a FuzzyFileNav adds a folder to the project, this will be used to determined if the folder should be added as a path relative to the project file or not.
+When a FuzzyFileNav adds a folder to the project, this will be used to determined if the folder should be added as a
+path relative to the project file or not.
 
 ```js
     // Add your folders relative to the project file (if project file exists on disk)
@@ -211,7 +250,8 @@ When a FuzzyFileNav adds a folder to the project, this will be used to determine
 
 ### `add_folder_to_project_follow_symlink`
 
-When a FuzzyFileNav adds a folder to the project, this will be used to determined if the folder should have the `follow_symlinks` option set.
+When a FuzzyFileNav adds a folder to the project, this will be used to determined if the folder should have the
+`follow_symlinks` option set.
 
 ```js
     // When adding folder to project, set "follow_symlinks" setting as true or false
@@ -255,15 +295,21 @@ For macOS:
 
 ## Platform/Computer Specific Settings
 
-Currently, the `home` settings in the settings file, and the `path` setting in a bookmark entry can be configured to have multiple OS and/or host specific settings to help manage settings across different machines.
+Currently, the `home` settings in the settings file, and the `path` setting in a bookmark entry can be configured to
+have multiple OS and/or host specific settings to help manage settings across different machines.
 
 The syntax to configure one of these settings for multiple OS and/or hostname:
 
-- The setting should be a key/value pair, where the key is `#multiconf#` and the value is an array of key/value entries whose keys describe the host and/or os qualifiers needed for the value to be used.
-- The key/value entries will have a key that represents one or more qualifiers, each of which must be separated with a `;`
-- Each qualifier consists of the qualifier type and a qualifier value to compare against.  These will be separated by a `:`.
-- There are two supported qualifiers: `host` and `os`.  `host` is the name of your PC.  `os` is the platform and can be either `windows`, `linux`, or `osx`.
-- The key/value entries will have a value associated with the key, and can be of any type: string, number, array, dictionary, etc.  This value is what will be returned if the qualifier is met.
+- The setting should be a key/value pair, where the key is `#multiconf#` and the value is an array of key/value entries
+  whose keys describe the host and/or os qualifiers needed for the value to be used.
+- The key/value entries will have a key that represents one or more qualifiers, each of which must be separated with a
+  `;`
+- Each qualifier consists of the qualifier type and a qualifier value to compare against.  These will be separated by a
+  `:`.
+- There are two supported qualifiers: `host` and `os`.  `host` is the name of your PC.  `os` is the platform and can be
+  either `windows`, `linux`, or `osx`.
+- The key/value entries will have a value associated with the key, and can be of any type: string, number, array,
+  dictionary, etc.  This value is what will be returned if the qualifier is met.
 
 examples:
 

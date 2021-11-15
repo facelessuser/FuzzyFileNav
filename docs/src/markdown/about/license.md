@@ -1,19 +1,8 @@
-[![Unix Build Status][travis-image]][travis-link]
-![License][license-image]
-# FuzzyFileNav
-
-FuzzyFileNav is a simple plugin that allows for quick navigation of the file system from the quick panel.  It also
-allows for deletion, copying, moving, creation of files and folders, and other actions.
-
-# Documentation
-
-https://facelessuser.github.io/FuzzyFileNav/
-
 # License
 
-Fuzzy File nav is released under the MIT license.
+FuzzyFileNav is released under the MIT license.
 
-Copyright (c) 2012 - 2017 Isaac Muse <isaacmuse@gmail.com>
+Copyright (c) 2012 - 2020 Isaac Muse <isaacmuse@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
 documentation files (the "Software"), to deal in the Software without restriction, including without limitation the
@@ -27,7 +16,3 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
 COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
 OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-[travis-image]: https://img.shields.io/travis/facelessuser/FuzzyFileNav/master.svg
-[travis-link]: https://travis-ci.org/facelessuser/FuzzyFileNav
-[license-image]: https://img.shields.io/badge/license-MIT-blue.svg
