@@ -85,7 +85,7 @@ def back_dir(cwd):
     prev = path.dirname(cwd)
 
     # On windows, if you try and get the
-    # dirname of a drive, you get the drive.
+    # directory name of a drive, you get the drive.
     # So if the previous directory is the same
     # as the current, back out of the drive and
     # list all drives.
@@ -107,7 +107,7 @@ def back_to_root(cwd):
         root = "/"
     else:
         # Windows: try and find root drive from path
-        # otherwise return "" to signal fuzzy nav to
+        # otherwise return "" to signal fuzzy navigation to
         # list all drives.
         m = re.match(WIN_DRIVE, cwd)
         if m:
@@ -171,7 +171,7 @@ class FuzzyEventListener(sublime_plugin.EventListener):
         # New window gained activation? Reset fuzzy command state
         if FuzzyFileNavCommand.active and view.window() and view.window().id() != FuzzyFileNavCommand.win_id:
             FuzzyFileNavCommand.reset()
-        # View has not been assinged yet since fuzzy nav panel appeared; assign it
+        # View has not been assigned yet since fuzzy navigation panel appeared; assign it
         if (
             FuzzyFileNavCommand.active and
             (FuzzyFileNavCommand.view is None or FuzzyFileNavCommand.view.id() != view.id())
@@ -179,7 +179,7 @@ class FuzzyEventListener(sublime_plugin.EventListener):
             FuzzyFileNavCommand.view = view
 
     def on_query_context(self, view, key, operator, operand, match_all):
-        """Capture shortcuts in a FuzzyNavPanel."""
+        """Capture shortcuts in a `FuzzyNavPanel`."""
 
         active = FuzzyFileNavCommand.active is True
         if active and FuzzyFileNavCommand.view is not None and FuzzyFileNavCommand.view.id() == view.id():
@@ -391,7 +391,7 @@ class FuzzyProjectFolderLoadCommand(sublime_plugin.WindowCommand):
         """Check the user's selection."""
 
         if value > -1:
-            # Load fuzzy nav with project folder
+            # Load fuzzy navigation with project folder
             self.window.run_command("fuzzy_file_nav", {"start": self.display[value]})
 
 
@@ -555,7 +555,7 @@ class FuzzyClipboardCommand(sublime_plugin.WindowCommand):
         return errors
 
     def file_copy(self):
-        """Hanlde file copy."""
+        """Handle file copy."""
 
         errors = False
         try:
@@ -797,7 +797,7 @@ class FuzzyBookmarksLoadCommand(sublime_plugin.WindowCommand):
         for bm in bookmarks:
             # Only show bookmarks that are for this host and/or platform
             target = qualify_settings(bm, "path", None, expanduser)
-            # Make sure bookmards point to valid locations
+            # Make sure bookmarks point to valid locations
             if (
                 target is not None and
                 ((path.exists(target) and path.isdir(target)) or (PLATFORM == "windows" and target == ""))
@@ -813,7 +813,7 @@ class FuzzyBookmarksLoadCommand(sublime_plugin.WindowCommand):
         """Check the user's selection and navigate the folder."""
 
         if value > -1:
-            # Load fuzzy nav with bookmarked shortcut
+            # Load fuzzy navigation with bookmarked shortcut
             self.window.run_command("fuzzy_file_nav", {"start": self.display[value][1]})
 
 
@@ -860,7 +860,7 @@ class FuzzyStartFromFileCommand(sublime_plugin.WindowCommand):
             view = self.window.active_view()
             name = view.file_name() if view is not None else None
         if name:
-            # Buffer/view has a file name, so it exists on disk; naviagte its parent directory.
+            # Buffer/view has a file name, so it exists on disk; navigate its parent directory.
             self.window.run_command(
                 "fuzzy_file_nav",
                 {
@@ -1085,7 +1085,7 @@ class FuzzyFileNavCommand(sublime_plugin.WindowCommand):
         cls.view = None
         cls.status = False
         cls.hide_hidden = not bool(sublime.load_settings(FUZZY_SETTINGS).get("show_system_hidden_files", False))
-        # FuzzyClipboardCommand.clear_entries()
+        # `FuzzyClipboardCommand.clear_entries()`
 
     @classmethod
     def set_hidden(cls, value):
@@ -1240,7 +1240,7 @@ class FuzzyFileNavCommand(sublime_plugin.WindowCommand):
 
 
 def init_hidden():
-    """Init the "show hidden file" setting."""
+    """Initialize the "show hidden file" setting."""
 
     setting = sublime.load_settings(FUZZY_SETTINGS)
     show_hidden = not bool(setting.get("show_system_hidden_files", False))

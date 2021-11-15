@@ -9,7 +9,7 @@ ST3              | Fully supported and actively maintained.
 
 Contribution from the community is encouraged and can be done in a variety of ways:
 
-- Become a spnsor.
+- Become a sponsor.
 - Bug reports.
 - Reviewing code.
 - Code patches via pull requests.
