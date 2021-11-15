@@ -4,22 +4,27 @@ repo_url: https://github.com/facelessuser/FuzzyFileNav
 edit_uri: tree/master/docs/src/markdown
 site_description: A Sublime Text plugin navigating the file system.
 copyright: |
-  Copyright &copy; 2011 - 2020 <a href="https://github.com/facelessuser"  target="_blank" rel="noopener">Isaac Muse</a>
+  Copyright &copy; 2011 - 2021 <a href="https://github.com/facelessuser"  target="_blank" rel="noopener">Isaac Muse</a>
 
 docs_dir: docs/src/markdown
 theme:
-  name: material
   custom_dir: docs/theme
-  palette:
-    primary: drac-purple
-    accent: drac-purple
+  name: material
   icon:
     logo: material/book-open-page-variant
+  palette:
+    scheme: dracula
+    primary: deep purple
+    accent: deep purple
   font:
     text: Roboto
     code: Roboto Mono
   features:
-    - tabs
+    - navigation.tabs
+    - navigation.top
+    - navigation.instant
+  pymdownx:
+    sponsor: "https://github.com/sponsors/facelessuser"
 
 nav:
   - About FuzzyFileNav: index.md
@@ -31,7 +36,7 @@ nav:
 
 markdown_extensions:
   - markdown.extensions.toc:
-      slugify: !!python/name:pymdownx.slugs.uslugify
+      slugify: !!python/object/apply:pymdownx.slugs.slugify {kwds: {case: lower}}
       permalink: ""
   - markdown.extensions.admonition:
   - markdown.extensions.smarty:
@@ -44,15 +49,11 @@ markdown_extensions:
   - markdown.extensions.md_in_html:
   - pymdownx.superfences:
   - pymdownx.highlight:
-      extend_pygments_lang:
-        - name: php-inline
-          lang: php
-          options:
-            startinline: true
   - pymdownx.inlinehilite:
   - pymdownx.magiclink:
       repo_url_shortener: true
       repo_url_shorthand: true
+      social_url_shorthand: true
       user: facelessuser
       repo: FuzzyFileNav
   - pymdownx.tilde:
@@ -69,11 +70,15 @@ markdown_extensions:
   - pymdownx.progressbar:
   - pymdownx.striphtml:
   - pymdownx.snippets:
-      base_path: docs/src/markdown/_snippets
+      base_path:
+      - docs/src/markdown/_snippets
+      auto_append:
+      - refs.md
   - pymdownx.keys:
       separator: "\uff0b"
   - pymdownx.details:
   - pymdownx.tabbed:
+       alternate_style: true
   - pymdownx.saneheaders:
 
 extra:

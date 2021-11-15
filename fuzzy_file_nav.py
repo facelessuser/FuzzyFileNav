@@ -1019,19 +1019,19 @@ class FuzzyPathCompleteCommand(sublime_plugin.WindowCommand):
             cls.last = None
             cls.text = None
 
-    def nix_common_chars(self, current_complete, l, case_insensitive):
+    def nix_common_chars(self, current_complete, clist, case_insensitive):
         """Resolve entries using their common start."""
 
         common = current_complete
         while True:
             match = True
             cmn_len = len(current_complete)
-            if len(l[0]) > cmn_len:
-                common += l[0][cmn_len].lower() if case_insensitive else l[0][cmn_len]
+            if len(clist[0]) > cmn_len:
+                common += clist[0][cmn_len].lower() if case_insensitive else clist[0][cmn_len]
                 cmn_len += 1
             else:
                 break
-            for item in l:
+            for item in clist:
                 value = item.lower() if case_insensitive else item
                 if not value.startswith(common):
                     match = False
@@ -1040,9 +1040,9 @@ class FuzzyPathCompleteCommand(sublime_plugin.WindowCommand):
                 break
             else:
                 current_complete = common
-        selection = l[0][0:len(current_complete)]
-        del l[:]
-        l.append(selection)
+        selection = clist[0][0:len(current_complete)]
+        del clist[:]
+        clist.append(selection)
 
     @classmethod
     def update_autocomplete(cls, text):

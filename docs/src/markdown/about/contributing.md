@@ -114,5 +114,3 @@ You don't have to render the docs locally before pull requesting, but if you wis
 [mkdocs](http://www.mkdocs.org) with my own custom Python Markdown [extensions](https://github.com/facelessuser/pymdown-extensions)
 to render the docs.  You can preview the docs if you install these two packages.  The command for previewing the docs is
 `mkdocs serve` from the root directory.
-
---8<-- "refs.md"
