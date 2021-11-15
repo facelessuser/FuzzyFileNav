@@ -185,7 +185,7 @@ class FuzzyEventListener(sublime_plugin.EventListener):
         if active and FuzzyFileNavCommand.view is not None and FuzzyFileNavCommand.view.id() == view.id():
             FuzzyPanelText.set_content(view.substr(view.line(view.sel()[0])))
             full_name = path.join(FuzzyFileNavCommand.cwd, FuzzyPanelText.get_content())
-            empty = (FuzzyPanelText.get_content() == "")
+            empty = (FuzzyPanelText.get_content().strip() in ("", '.', '..'))
             # See if this is the auto-complete path command
             if key in [
                 "fuzzy_path_complete", "fuzzy_path_complete_back", "fuzzy_toggle_hidden",
@@ -916,7 +916,7 @@ class FuzzyPathCompleteCommand(sublime_plugin.WindowCommand):
     def sublime_completion(self, cls, view):
         """Sublime fuzzy completion."""
 
-        if cls.hl_index != -1 or cls.hl_index < len(FuzzyFileNavCommand.files):
+        if cls.hl_index > 0 and cls.hl_index < len(FuzzyFileNavCommand.files):
             FuzzyEditGlobal.bfr = FuzzyFileNavCommand.files[cls.hl_index]
             if path.isdir(path.join(FuzzyFileNavCommand.cwd, FuzzyEditGlobal.bfr)):
                 FuzzyEditGlobal.bfr = FuzzyEditGlobal.bfr[0:len(FuzzyEditGlobal.bfr) - 1]
@@ -940,6 +940,8 @@ class FuzzyPathCompleteCommand(sublime_plugin.WindowCommand):
         current = cls.text.lower() if case_insensitive else cls.text
         for item in FuzzyFileNavCommand.files:
             # Windows is case insensitive
+            if item == '..':
+                continue
             i = item.lower() if case_insensitive else item
             # See if current input matches the beginning of some of the entries
             if i.startswith(current):
