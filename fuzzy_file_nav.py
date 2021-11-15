@@ -514,22 +514,38 @@ class FuzzyClipboardCommand(sublime_plugin.WindowCommand):
             if path.exists(self.to_path):
                 if path.isdir(self.to_path):
                     dest = path.join(self.to_path, path.basename(self.from_path))
-                    if path.exists(dest) and sublime.ok_cancel_dialog('Overwrite?'):
-                        if path.isdir(dest):
-                            shutil.rmtree(dest)
+                    if PLATFORM == "windows":
+                        same = dest.lower() == self.from_path.lower()
+                    else:
+                        same = dest == self.from_path
+                    if path.exists(dest) and not same:
+                        if sublime.ok_cancel_dialog('%s exists!\n\nOverwrite?' % dest):
+                            if path.isdir(dest):
+                                shutil.rmtree(dest)
+                            else:
+                                os.remove(dest)
                         else:
-                            os.remove(dest)
-                    self.action(self.from_path, path.join(self.to_path, path.basename(self.from_path)))
+                            return errors
+                    if not same:
+                        self.action(self.from_path, dest)
                 else:
                     errors = True
                     error("%s already exists!" % self.to_path)
             elif path.exists(path.dirname(self.to_path)):
-                if path.exists(self.to_path) and sublime.ok_cancel_dialog('Overwrite?'):
-                    if path.isdir(self.to_path):
-                        shutil.rmtree(self.to_path)
+                if PLATFORM == "windows":
+                    same = self.to_path.lower() == self.from_path.lower()
+                else:
+                    same = self.to_path == self.from_path
+                if path.exists(self.to_path) and not same:
+                    if sublime.ok_cancel_dialog('%s exists!\n\nOverwrite?' % self.to_path):
+                        if path.isdir(self.to_path):
+                            shutil.rmtree(self.to_path)
+                        else:
+                            os.remove(self.to_path)
                     else:
-                        os.remove(self.to_path)
-                self.action(self.from_path, self.to_path)
+                        return errors
+                if not same:
+                    self.action(self.from_path, self.to_path)
             else:
                 errors = True
                 error("Cannot copy %s" % self.from_path)
@@ -546,14 +562,29 @@ class FuzzyClipboardCommand(sublime_plugin.WindowCommand):
             if path.exists(self.to_path):
                 if path.isdir(self.to_path):
                     file_name = path.join(self.to_path, path.basename(self.from_path))
-                    if path.exists(file_name):
+                    if PLATFORM == "windows":
+                        same = file_name.lower() == self.from_path.lower()
+                    else:
+                        same = file_name == self.from_path
+                    if path.exists(file_name) and not same:
                         if not sublime.ok_cancel_dialog("%s exists!\n\nOverwrite file?" % file_name):
-                            return
-                    self.action(self.from_path, file_name)
-                elif sublime.ok_cancel_dialog("%s exists!\n\nOverwrite file?" % self.to_path):
-                    self.action(self.from_path, self.to_path)
+                            return errors
+                    if not same:
+                        self.action(self.from_path, file_name)
+                else:
+                    if PLATFORM == "windows":
+                        same = self.to_path.lower() == self.from_path.lower()
+                    else:
+                        same = self.to_path == self.from_path
+                    if not same and sublime.ok_cancel_dialog("%s exists!\n\nOverwrite file?" % self.to_path):
+                        self.action(self.from_path, self.to_path)
             elif path.exists(path.dirname(self.to_path)):
-                self.action(self.from_path, self.to_path)
+                if PLATFORM == "windows":
+                    same = self.to_path.lower() == self.from_path.lower()
+                else:
+                    same = self.to_path == self.from_path
+                if not same:
+                    self.action(self.from_path, self.to_path)
             else:
                 errors = True
                 error("Cannot copy %s" % self.from_path)
