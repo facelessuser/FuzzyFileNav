@@ -272,14 +272,16 @@ class FuzzyEventListener(sublime_plugin.EventListener):
                     win.run_command("fuzzy_file_nav", {"start": back_dir(FuzzyFileNavCommand.cwd)})
                 elif m.group(3):
                     # Go to root of drive/computer
+                    new_path = None
                     if PLATFORM == "windows" and re.match(WIN_DRIVE, line_text):
                         if path.exists(line_text):
                             new_path = line_text.upper()
                     else:
                         new_path = back_to_root(FuzzyFileNavCommand.cwd)
-                    FuzzyFileNavCommand.fuzzy_reload = True
-                    win.run_command("hide_overlay")
-                    win.run_command("fuzzy_file_nav", {"start": new_path})
+                    if new_path is not None:
+                        FuzzyFileNavCommand.fuzzy_reload = True
+                        win.run_command("hide_overlay")
+                        win.run_command("fuzzy_file_nav", {"start": new_path})
                 elif m.group(4):
                     # Load folder
                     new_path = path.join(FuzzyFileNavCommand.cwd, m.group(4))
