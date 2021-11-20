@@ -514,10 +514,7 @@ class FuzzyClipboardCommand(sublime_plugin.WindowCommand):
             if path.exists(self.to_path):
                 if path.isdir(self.to_path):
                     dest = path.join(self.to_path, path.basename(self.from_path))
-                    if PLATFORM == "windows":
-                        same = dest.lower() == self.from_path.lower()
-                    else:
-                        same = dest == self.from_path
+                    same = path.samefile(self.from_path, dest)
                     if path.exists(dest) and not same:
                         if sublime.ok_cancel_dialog('%s exists!\n\nOverwrite?' % dest):
                             if path.isdir(dest):
@@ -532,10 +529,7 @@ class FuzzyClipboardCommand(sublime_plugin.WindowCommand):
                     errors = True
                     error("%s already exists!" % self.to_path)
             elif path.exists(path.dirname(self.to_path)):
-                if PLATFORM == "windows":
-                    same = self.to_path.lower() == self.from_path.lower()
-                else:
-                    same = self.to_path == self.from_path
+                same = path.samefile(self.from_path, self.to_path)
                 if path.exists(self.to_path) and not same:
                     if sublime.ok_cancel_dialog('%s exists!\n\nOverwrite?' % self.to_path):
                         if path.isdir(self.to_path):
