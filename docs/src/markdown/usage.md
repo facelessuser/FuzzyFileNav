@@ -45,23 +45,23 @@ navigated to.
 
 ### Actions
 
-Action                                                               | Windows\ &amp;\ Linux    | macOS
----------------------------------------------------------------------| ------------------------ | -----
-[Open](#open)                                                        | ++enter++\ or\ ++right++ | ++enter++\ or\ ++right++
-[Show/Hide\ hidden\ files](#show-hide-hidden-files)                  | ++ctrl+h++               | ++cmd+h++
-[Show\ Bookmarks](#show-bookmarks)                                   | ++ctrl+b++               | ++cmd+b++
-[Delete](#delete)                                                    | ++ctrl+d++               | ++cmd+d++
-[Copy](#copy)                                                        | ++ctrl+c++               | ++cmd+c++
-[Cut](#cut)                                                          | ++ctrl+x++               | ++cmd+x++
-[Paste](#paste)                                                      | ++ctrl+v++               | ++cmd+v++
-[New\ file](#new-file)                                               | ++ctrl+n++               | ++cmd+n++
-[New\ folder](#new-folder)                                           | ++ctrl+shift+n++         | ++cmd+shift+n++
-[Save\ file\ as](#save-file-as)                                      | ++ctrl+s++               | ++cmd+s++
-[Reveal](#reveal)                                                    | ++ctrl+r++               | ++cmd+r++
-[Search\ folder](#search-folder)                                     | ++ctrl+f++               | ++cmd+f++
-[Add\ folder\ to\ project](#add-folder-to-project)                   | ++ctrl+p++               | ++cmd+p++
-[Add\ folder\ to\ new\ window's\ project](#add-folder-to-new-window) | ++ctrl+shift+p++         | ++cmd+shift+p++
-[Get\ Current\ Working\ View](#get-current-working-view)             | ++ctrl+period++          | ++cmd+period++
+Action                                                    | Windows\ &amp;\ Linux    | macOS
+--------------------------------------------------------- | ------------------------ | -----
+[Open](#open)                                             | ++enter++\ or\ ++right++ | ++enter++\ or\ ++right++
+[Show/Hide\ hidden\ files](#show-hide-hidden-files)       | ++ctrl+h++               | ++cmd+h++
+[Show\ Bookmarks](#show-bookmarks)                        | ++ctrl+b++               | ++cmd+b++
+[Delete](#delete)                                         | ++ctrl+d++               | ++cmd+d++
+[Copy](#copy)                                             | ++ctrl+c++               | ++cmd+c++
+[Cut](#cut)                                               | ++ctrl+x++               | ++cmd+x++
+[Paste](#paste)                                           | ++ctrl+v++               | ++cmd+v++
+[New\ file](#new-file)                                    | ++ctrl+n++               | ++cmd+n++
+[New\ folder](#new-folder)                                | ++ctrl+shift+n++         | ++cmd+shift+n++
+[Save\ file\ as](#save-file-as)                           | ++ctrl+s++               | ++cmd+s++
+[Reveal](#reveal)                                         | ++ctrl+r++               | ++cmd+r++
+[Search\ folder](#search-folder)                          | ++ctrl+f++               | ++cmd+f++
+[Add\ folder\ to\ project](#add-folder-to-project)        | ++ctrl+p++               | ++cmd+p++
+[Add\ folder\ to\ new\ window](#add-folder-to-new-window) | ++ctrl+shift+p++         | ++cmd+shift+p++
+[Get\ Current\ Working\ View](#get-current-working-view)  | ++ctrl+period++          | ++cmd+period++
 
 #### Open
 
@@ -82,15 +82,14 @@ Deletes the folder/file object currently typed in the FuzzyFileNav panel.
 
 #### Copy
 
-Copies the folder/file object currently typed file in the FuzzyFileNav panel.  The copy will remain in the clipboard
-until another copy or cut replaces it.  Copies will be remembered even when the panel is manually dismissed and
-reopened.
+Copies the folder/file object currently typed file in the FuzzyFileNav panel. The copy will remain in the clipboard
+until a paste is performed or a new copy is initiated.
 
 #### Cut
 
 Cuts (moves) the folder/file object currently typed into the FuzzyFileNav panel. A Fuzzy File Paste must be performed
 to complete the cut (move). The cut will remain in the clipboard until a paste is performed or another copy or cut
-replaces it. The cut file will be remembered even when the panel is manually dismissed and reopened.
+replaces it.
 
 #### Paste
 
