@@ -1,0 +1,12 @@
+## git
+*.git export-ignore
+*.gitignore export-ignore
+*.gitattributes export-ignore
+
+## docs sources
+doc_theme/ export-ignore
+mkdocs.yml export-ignore
+
+## unit testing
+tests/ export-ignore
+run_tests.sh export-ignore

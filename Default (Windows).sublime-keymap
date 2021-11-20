@@ -54,16 +54,6 @@
         "context": [{"key": "fuzzy_make_folder"}]
     },
     {
-        "keys": ["ctrl+back_slash"],
-        "command": "fuzzy_get_cwd",
-        "context": [{"key": "fuzzy_get_cwd"}]
-    },
-    {
-        "keys": ["ctrl+forward_slash"],
-        "command": "fuzzy_get_cwd",
-        "context": [{"key": "fuzzy_get_cwd"}]
-    },
-    {
         "keys": ["ctrl+r"],
         "command": "fuzzy_reveal",
         "context": [{"key": "fuzzy_reveal"}]
@@ -87,6 +77,12 @@
         "keys": ["ctrl+p"],
         "command": "fuzzy_open_folder",
         "context": [{"key": "fuzzy_open_folder"}]
+    },
+    {
+        "keys": ["ctrl+shift+p"],
+        "command": "fuzzy_open_folder",
+        "context": [{"key": "fuzzy_open_folder"}],
+        "args": {"new_window": true}
     },
     {
         "keys": ["right"],
