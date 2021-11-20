@@ -1,4 +1,7 @@
-[![Unix Build Status][travis-image]][travis-link]
+[![Donate via PayPal][donate-image]][donate-link]
+[![Discord][discord-image]][discord-link]
+[![Build][github-ci-image]][github-ci-link]
+[![Package Control Downloads][pc-image]][pc-link]
 ![License][license-image]
 # FuzzyFileNav
 
@@ -28,6 +31,12 @@ WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEM
 COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
 OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-[travis-image]: https://img.shields.io/travis/facelessuser/FuzzyFileNav/master.svg
-[travis-link]: https://travis-ci.org/facelessuser/FuzzyFileNav
-[license-image]: https://img.shields.io/badge/license-MIT-blue.svg
+[github-ci-image]: https://github.com/facelessuser/FuzzyFileNav/workflows/build/badge.svg?branch=master&event=push
+[github-ci-link]: https://github.com/facelessuser/FuzzyFileNav/actions?query=workflow%3Abuild+branch%3Amaster
+[discord-image]: https://img.shields.io/discord/678289859768745989?logo=discord&logoColor=aaaaaa&color=mediumpurple&labelColor=333333
+[discord-link]: https://discord.gg/TWs8Tgr
+[pc-image]: https://img.shields.io/packagecontrol/dt/FuzzyFileNav.svg?labelColor=333333&logo=sublime%20text
+[pc-link]: https://packagecontrol.io/packages/FuzzyFileNav
+[license-image]: https://img.shields.io/badge/license-MIT-blue.svg?labelColor=333333
+[donate-image]: https://img.shields.io/badge/Donate-PayPal-3fabd1?logo=paypal
+[donate-link]: https://www.paypal.me/facelessuser
