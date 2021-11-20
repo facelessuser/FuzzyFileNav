@@ -558,27 +558,18 @@ class FuzzyClipboardCommand(sublime_plugin.WindowCommand):
             if path.exists(self.to_path):
                 if path.isdir(self.to_path):
                     file_name = path.join(self.to_path, path.basename(self.from_path))
-                    if PLATFORM == "windows":
-                        same = file_name.lower() == self.from_path.lower()
-                    else:
-                        same = file_name == self.from_path
+                    same = path.samefile(self.from_path, file_name)
                     if path.exists(file_name) and not same:
                         if not sublime.ok_cancel_dialog("{} exists!\n\nOverwrite file?".format(file_name)):
                             return errors
                     if not same:
                         self.action(self.from_path, file_name)
                 else:
-                    if PLATFORM == "windows":
-                        same = self.to_path.lower() == self.from_path.lower()
-                    else:
-                        same = self.to_path == self.from_path
+                    same = path.samefile(self.from_path, self.to_path)
                     if not same and sublime.ok_cancel_dialog("{} exists!\n\nOverwrite file?".format(self.to_path)):
                         self.action(self.from_path, self.to_path)
             elif path.exists(path.dirname(self.to_path)):
-                if PLATFORM == "windows":
-                    same = self.to_path.lower() == self.from_path.lower()
-                else:
-                    same = self.to_path == self.from_path
+                same = path.samefile(self.from_path, self.to_path)
                 if not same:
                     self.action(self.from_path, self.to_path)
             else:
