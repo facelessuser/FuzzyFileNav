@@ -327,13 +327,19 @@ class FuzzyOpenFolderCommand(sublime_plugin.WindowCommand):
                 break
         return already_exists
 
-    def run(self):
+    def run(self, new_window=False):
         """Run the command."""
+
+        if new_window:
+            sublime.run_command('new_window')
+            window = sublime.active_window()
+        else:
+            window = self.window
 
         file_name = FuzzyPanelText.get_content()
         FuzzyPanelText.clear_content()
-        proj_file = self.window.project_file_name()
-        data = self.window.project_data()
+        proj_file = window.project_file_name()
+        data = window.project_data()
         if data is None:
             data = {}
         new_folder = path.join(FuzzyFileNavCommand.cwd, file_name)
@@ -355,9 +361,13 @@ class FuzzyOpenFolderCommand(sublime_plugin.WindowCommand):
                     new_folder = path.relpath(new_folder, path.dirname(proj_file))
                 follow_sym = sublime.load_settings(FUZZY_SETTINGS).get("add_folder_to_project_follow_symlink", True)
                 data["folders"].append({'follow_symlinks': follow_sym, 'path': new_folder})
-                self.window.set_project_data(data)
+                window.set_project_data(data)
             else:
                 error("Couldn't resolve case for path {}!".format(new_folder))
+
+        if new_window:
+            self.window.run_command("hide_overlay")
+            FuzzyFileNavCommand.reset()
 
 
 class FuzzyProjectFolderLoadCommand(sublime_plugin.WindowCommand):

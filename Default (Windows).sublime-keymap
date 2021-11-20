@@ -79,6 +79,12 @@
         "context": [{"key": "fuzzy_open_folder"}]
     },
     {
+        "keys": ["ctrl+shift+p"],
+        "command": "fuzzy_open_folder",
+        "context": [{"key": "fuzzy_open_folder"}],
+        "args": {"new_window": true}
+    },
+    {
         "keys": ["right"],
         "command": "fuzzy_quick_open",
         "context": [{"key": "fuzzy_quick_open"}]

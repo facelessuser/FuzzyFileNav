@@ -45,22 +45,23 @@ navigated to.
 
 ### Actions
 
-Action                                                   | Windows\ &amp;\ Linux    | macOS
--------------------------------------------------------- | ------------------------ | -----
-[Open](#open)                                            | ++enter++\ or\ ++right++ | ++enter++\ or\ ++right++
-[Show/Hide\ hidden\ files](#show-hide-hidden-files)      | ++ctrl+h++               | ++cmd+h++
-[Show\ Bookmarks](#show-bookmarks)                       | ++ctrl+b++               | ++cmd+b++
-[Delete](#delete)                                        | ++ctrl+d++               | ++cmd+d++
-[Copy](#copy)                                            | ++ctrl+c++               | ++cmd+c++
-[Cut](#cut)                                              | ++ctrl+x++               | ++cmd+x++
-[Paste](#paste)                                          | ++ctrl+v++               | ++cmd+v++
-[New\ file](#new-file)                                   | ++ctrl+n++               | ++cmd+n++
-[New\ folder](#new-folder)                               | ++ctrl+shift+n++         | ++cmd+shift+n++
-[Save\ file\ as](#save-file-as)                          | ++ctrl+s++               | ++cmd+s++
-[Reveal](#reveal)                                        | ++ctrl+r++               | ++cmd+r++
-[Search\ folder](#search-folder)                         | ++ctrl+f++               | ++cmd+f++
-[Add\ folder\ to\ project](#add-folder-to-project)       | ++ctrl+p++               | ++cmd+p++
-[Get\ Current\ Working\ View](#get-current-working-view) | ++ctrl+period++          | ++cmd+period++
+Action                                                               | Windows\ &amp;\ Linux    | macOS
+---------------------------------------------------------------------| ------------------------ | -----
+[Open](#open)                                                        | ++enter++\ or\ ++right++ | ++enter++\ or\ ++right++
+[Show/Hide\ hidden\ files](#show-hide-hidden-files)                  | ++ctrl+h++               | ++cmd+h++
+[Show\ Bookmarks](#show-bookmarks)                                   | ++ctrl+b++               | ++cmd+b++
+[Delete](#delete)                                                    | ++ctrl+d++               | ++cmd+d++
+[Copy](#copy)                                                        | ++ctrl+c++               | ++cmd+c++
+[Cut](#cut)                                                          | ++ctrl+x++               | ++cmd+x++
+[Paste](#paste)                                                      | ++ctrl+v++               | ++cmd+v++
+[New\ file](#new-file)                                               | ++ctrl+n++               | ++cmd+n++
+[New\ folder](#new-folder)                                           | ++ctrl+shift+n++         | ++cmd+shift+n++
+[Save\ file\ as](#save-file-as)                                      | ++ctrl+s++               | ++cmd+s++
+[Reveal](#reveal)                                                    | ++ctrl+r++               | ++cmd+r++
+[Search\ folder](#search-folder)                                     | ++ctrl+f++               | ++cmd+f++
+[Add\ folder\ to\ project](#add-folder-to-project)                   | ++ctrl+p++               | ++cmd+p++
+[Add\ folder\ to\ new\ window's\ project](#add-folder-to-new-window) | ++ctrl+shift+p++         | ++cmd+shift+p++
+[Get\ Current\ Working\ View](#get-current-working-view)             | ++ctrl+period++          | ++cmd+period++
 
 #### Open
 
@@ -127,6 +128,11 @@ pre-loaded into the `Find` box.
 
 Adds the location of the folder name typed into the FuzzyFileNav panel into the current project.  Will use the current
 folder if a valid one is not typed into the panel.
+
+### Add Folder to New Window
+
+Open's a new window and adds the location of the folder name typed into the FuzzyFileNav panel into the current project.
+Will use the current folder if a valid one is not typed into the panel.
 
 #### Get Current Working View
 
