@@ -37,11 +37,12 @@ the folder by typing a `/` at the end (you can also use `\` on windows). The ful
 folder navigation".  You can can also press ++enter++ and whatever folder is currently selected in the panel will be
 navigated to.
 
-!!! tip "Tip"
-    Your file systems root can be accessed any time by typing '/'.  You can also switch to windows drives by typing
-    `c:\` etc.
+/// tip | Tip
+Your file systems root can be accessed any time by typing '/'.  You can also switch to windows drives by typing
+`c:\` etc.
 
-    The home folder can be accessed any time by typing `~/` into the FuzzyFileNav quick panel.
+The home folder can be accessed any time by typing `~/` into the FuzzyFileNav quick panel.
+///
 
 ### Actions
 
@@ -156,17 +157,18 @@ the path to the folder.
     ]
 ```
 
-!!! tip "Tip"
-    If it is desired to have specific bookmarks show up only on a specific OS or a specific host, you can augment the
-    `path` option using the notation below.  For more information, please see[Platform/Computer Specific Settings](#platformcomputer-specific-settings).
+/// tip | Tip
+If it is desired to have specific bookmarks show up only on a specific OS or a specific host, you can augment the
+`path` option using the notation below.  For more information, please see[Platform/Computer Specific Settings](#platformcomputer-specific-settings).
 
-    ```javascript
-        // Bookmarked paths
-        "bookmarks": [
-            {"name": "My Computer", "path": {"#multiconf#": [{"os:windows": ""}]}},
-            {"name": "Root", "path": {"#multiconf#": [{"os:linux": "/"}, {"os:osx": "/"}]}}
-        ]
-    ```
+```javascript
+    // Bookmarked paths
+    "bookmarks": [
+        {"name": "My Computer", "path": {"#multiconf#": [{"os:windows": ""}]}},
+        {"name": "Root", "path": {"#multiconf#": [{"os:linux": "/"}, {"os:osx": "/"}]}}
+    ]
+```
+///
 
 ### `home`
 
@@ -305,16 +307,16 @@ have multiple OS and/or host specific settings to help manage settings across di
 
 The syntax to configure one of these settings for multiple OS and/or hostname:
 
-- The setting should be a key/value pair, where the key is `#multiconf#` and the value is an array of key/value entries
-  whose keys describe the host and/or os qualifiers needed for the value to be used.
-- The key/value entries will have a key that represents one or more qualifiers, each of which must be separated with a
-  `;`
-- Each qualifier consists of the qualifier type and a qualifier value to compare against.  These will be separated by a
-  `:`.
-- There are two supported qualifiers: `host` and `os`.  `host` is the name of your PC.  `os` is the platform and can be
-  either `windows`, `linux`, or `osx`.
-- The key/value entries will have a value associated with the key, and can be of any type: string, number, array,
-  dictionary, etc.  This value is what will be returned if the qualifier is met.
+-   The setting should be a key/value pair, where the key is `#multiconf#` and the value is an array of key/value entries
+    whose keys describe the host and/or os qualifiers needed for the value to be used.
+-   The key/value entries will have a key that represents one or more qualifiers, each of which must be separated with a
+    `;`
+-   Each qualifier consists of the qualifier type and a qualifier value to compare against.  These will be separated by a
+    `:`.
+-   There are two supported qualifiers: `host` and `os`.  `host` is the name of your PC.  `os` is the platform and can be
+    either `windows`, `linux`, or `osx`.
+-   The key/value entries will have a value associated with the key, and can be of any type: string, number, array,
+    dictionary, etc.  This value is what will be returned if the qualifier is met.
 
 examples:
 

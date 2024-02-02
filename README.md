@@ -1,5 +1,4 @@
 [![Donate via PayPal][donate-image]][donate-link]
-[![Discord][discord-image]][discord-link]
 [![Build][github-ci-image]][github-ci-link]
 [![Package Control Downloads][pc-image]][pc-link]
 ![License][license-image]
@@ -16,7 +15,7 @@ https://facelessuser.github.io/FuzzyFileNav/
 
 FuzzyFileNav is released under the MIT license.
 
-Copyright (c) 2012 - 2021 Isaac Muse <isaacmuse@gmail.com>
+Copyright (c) 2012 - 2024 Isaac Muse <isaacmuse@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
 documentation files (the "Software"), to deal in the Software without restriction, including without limitation the
@@ -33,8 +32,6 @@ OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 
 [github-ci-image]: https://github.com/facelessuser/FuzzyFileNav/workflows/build/badge.svg?branch=master&event=push
 [github-ci-link]: https://github.com/facelessuser/FuzzyFileNav/actions?query=workflow%3Abuild+branch%3Amaster
-[discord-image]: https://img.shields.io/discord/678289859768745989?logo=discord&logoColor=aaaaaa&color=mediumpurple&labelColor=333333
-[discord-link]: https://discord.gg/TWs8Tgr
 [pc-image]: https://img.shields.io/packagecontrol/dt/FuzzyFileNav.svg?labelColor=333333&logo=sublime%20text
 [pc-link]: https://packagecontrol.io/packages/FuzzyFileNav
 [license-image]: https://img.shields.io/badge/license-MIT-blue.svg?labelColor=333333
