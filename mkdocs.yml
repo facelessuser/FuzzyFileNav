@@ -69,7 +69,8 @@ markdown_extensions:
   - pymdownx.striphtml:
   - pymdownx.snippets:
       base_path:
-      - docs/src/markdown/_snippets
+      - docs/src/markdown/.snippets
+      - LICENSE.md
       auto_append:
       - refs.md
   - pymdownx.keys:
@@ -133,7 +134,9 @@ extra:
 
 plugins:
   - search
-  - git-revision-date-localized
+  - git-revision-date-localized:
+      fallback_to_build_date: true
+      strict: false
   - mkdocs_pymdownx_material_extras
   - minify:
       minify_html: true
