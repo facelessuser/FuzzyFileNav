@@ -7,9 +7,9 @@ allows for deletion, copying, moving, creation of files and folders, and other a
 
 ## Credits
 
-* Thanks to quodlibet for helping come up with great ideas for the plugin during development.
+*   Thanks to quodlibet for helping come up with great ideas for the plugin during development.
 
-* Special thanks to [Boundincode](https://github.com/Boundincode) whose witty humor and quirky coding fueled the
-  development of the plugin. (If only he was more humble...)
+*   Special thanks to [Boundincode](https://github.com/Boundincode) whose witty humor and quirky coding fueled the
+    development of the plugin. (If only he was more humble...)
 
-* Thanks to biermeester and matthjes for their suggestions and ideas with platform/host specific settings.
+*   Thanks to biermeester and matthjes for their suggestions and ideas with platform/host specific settings.
