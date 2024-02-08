@@ -1,4 +1,10 @@
-# FuzzyFileNav 2.0.0
+# FuzzyFileNav
+
+## 2.0.1
+
+- **FIX**: Fix same file check.
+
+## 2.0.0
 
 - **NEW**: Allow opening folder in new window.
 - **NEW**: Commands are available from the command palette.

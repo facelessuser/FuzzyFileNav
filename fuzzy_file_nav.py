@@ -526,7 +526,7 @@ class FuzzyClipboardCommand(sublime_plugin.WindowCommand):
             if path.exists(self.to_path):
                 if path.isdir(self.to_path):
                     dest = path.join(self.to_path, path.basename(self.from_path))
-                    same = path.samefile(self.from_path, dest)
+                    same = self.samefile(self.from_path, dest)
                     if path.exists(dest) and not same:
                         if sublime.ok_cancel_dialog('{} exists!\n\nOverwrite?'.format(dest)):
                             if path.isdir(dest):
@@ -541,7 +541,7 @@ class FuzzyClipboardCommand(sublime_plugin.WindowCommand):
                     errors = True
                     error("{} already exists!".format(self.to_path))
             elif path.exists(path.dirname(self.to_path)):
-                same = path.samefile(self.from_path, self.to_path)
+                same = self.samefile(self.from_path, self.to_path)
                 if path.exists(self.to_path) and not same:
                     if sublime.ok_cancel_dialog('{} exists!\n\nOverwrite?'.format(self.to_path)):
                         if path.isdir(self.to_path):
@@ -560,6 +560,15 @@ class FuzzyClipboardCommand(sublime_plugin.WindowCommand):
             error("Cannot copy {}".format(self.from_path))
         return errors
 
+    def samefile(self, a, b):
+        """Check if files are the same."""
+
+        if path.exists(a) and path.exists(b):
+            return path.samefile(a, b)
+
+        # One or both don't exist, so they can't be the same.
+        return False
+
     def file_copy(self):
         """Handle file copy."""
 
@@ -568,18 +577,18 @@ class FuzzyClipboardCommand(sublime_plugin.WindowCommand):
             if path.exists(self.to_path):
                 if path.isdir(self.to_path):
                     file_name = path.join(self.to_path, path.basename(self.from_path))
-                    same = path.samefile(self.from_path, file_name)
+                    same = self.samefile(self.from_path, file_name)
                     if path.exists(file_name) and not same:
                         if not sublime.ok_cancel_dialog("{} exists!\n\nOverwrite file?".format(file_name)):
                             return errors
                     if not same:
                         self.action(self.from_path, file_name)
                 else:
-                    same = path.samefile(self.from_path, self.to_path)
+                    same = self.samefile(self.from_path, self.to_path)
                     if not same and sublime.ok_cancel_dialog("{} exists!\n\nOverwrite file?".format(self.to_path)):
                         self.action(self.from_path, self.to_path)
             elif path.exists(path.dirname(self.to_path)):
-                same = path.samefile(self.from_path, self.to_path)
+                same = self.samefile(self.from_path, self.to_path)
                 if not same:
                     self.action(self.from_path, self.to_path)
             else:
