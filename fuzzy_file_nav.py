@@ -1184,14 +1184,28 @@ class FuzzyFileNavCommand(sublime_plugin.WindowCommand):
                 else:
                     folders.append(f + ("\\" if PLATFORM == "windows" else "/"))
 
-        if sublime.load_settings(FUZZY_SETTINGS).get("sort_entries_by_last_accessed", False):
-            options = sorted(
-                folders + documents,
-                key=lambda f: self.get_last_accessed_key(cwd, f),
-                reverse=True
-            )
+        if sublime.load_settings(FUZZY_SETTINGS).get("sort_entries", "alphabetical") == "last-access":
+            if sublime.load_settings(FUZZY_SETTINGS).get("mix_files_and_folders", False):
+                options = sorted(
+                    folders + documents,
+                    key=lambda f: self.get_last_accessed_key(cwd, f),
+                    reverse=True
+                )
+            else:
+                options = sorted(
+                    folders,
+                    key=lambda f: self.get_last_accessed_key(cwd, f),
+                    reverse=True
+                ) + sorted(
+                    documents,
+                    key=lambda f: self.get_last_accessed_key(cwd, f),
+                    reverse=True
+                )
         else:
-            options = sorted(folders) + sorted(documents)
+            if sublime.load_settings(FUZZY_SETTINGS).get("mix_files_and_folders", False):
+                options = sorted(folders + documents)
+            else:
+                options = sorted(folders) + sorted(documents)
 
         if sublime.load_settings(FUZZY_SETTINGS).get("include_parent_directory", True):
             options = [".."] + options
