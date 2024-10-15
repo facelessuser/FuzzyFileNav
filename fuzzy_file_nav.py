@@ -834,7 +834,11 @@ class FuzzyGetCwdCommand(sublime_plugin.ApplicationCommand):
 
 
 class FuzzyGoToParentDirCommand(sublime_plugin.WindowCommand):
+    """Navigate up to the parent folder if not in root."""
+
     def run(self):
+        """Run command."""
+
         if FuzzyFileNavCommand.active:
             self.window.run_command("hide_overlay")
             sublime.set_timeout(lambda: self.window.run_command("fuzzy_file_nav", {"start": back_dir(FuzzyFileNavCommand.cwd)}), 0)
@@ -1173,16 +1177,23 @@ class FuzzyFileNavCommand(sublime_plugin.WindowCommand):
                     documents.append(f)
                 else:
                     folders.append(f + ("\\" if PLATFORM == "windows" else "/"))
-        options = sorted(
-            folders + documents,
-            key=lambda f: self.get_key(cwd, f),
-            reverse=True
-        )
+
+        if sublime.load_settings(FUZZY_SETTINGS).get("sort_entries_by_last_accessed", False):
+            options = sorted(
+                folders + documents,
+                key=lambda f: self.get_last_accessed_key(cwd, f),
+                reverse=True
+            )
+        else:
+            options = sorted(folders) + sorted(documents)
+
         if sublime.load_settings(FUZZY_SETTINGS).get("include_parent_directory", True):
             options = [".."] + options
         return options
 
-    def get_key(self, cwd, f):
+    def get_last_accessed_key(self, cwd, f):
+        """Get the last accessed time of a file. Defaults to the normalized string"""
+
         try:
             accessed = path.getatime(path.join(cwd, f))
         except Exception:
@@ -1216,6 +1227,8 @@ class FuzzyFileNavCommand(sublime_plugin.WindowCommand):
         )
 
     def make_placeholder(self, cwd):
+        """Get the CWD, shortened if necessary"""
+
         if len(cwd) < 50:
             return cwd
         placeholder = cwd

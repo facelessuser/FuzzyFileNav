@@ -16,6 +16,12 @@
     // Controls whether system hidden files are shown in FuzzyFileNav.
     "show_system_hidden_files": true,
 
+    // Controls how files will be sorted in the list. The default
+    // behavior is to show fodlers first, then files, in alphabetical order.
+    // Setting this to true will mix files and folders, and they
+    // will be sorted by the last time they were accessed.
+    "sort_entries_by_last_accessed": false,
+
     // (fuzzy/windows/nix)
     // fuzzy   - this will auto-complete with the selected index in the quick panel
     // windows - this will complete like a windows terminal would complete paths
