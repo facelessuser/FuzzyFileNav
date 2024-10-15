@@ -11,6 +11,11 @@
         "args": {"back": true}
     },
     {
+        "keys": ["backspace"],
+        "command": "fuzzy_go_to_parent_dir",
+        "context": [{"key": "fuzzy_go_to_parent_dir"}]
+    },
+    {
         "keys": ["super+h"],
         "command": "fuzzy_toggle_hidden",
         "context": [{"key": "fuzzy_toggle_hidden"}]

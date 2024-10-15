@@ -22,6 +22,10 @@
     // nix     - this will complete like a unix/linux terminal traditionally completes paths
     "completion_style": "fuzzy",
 
+    // Whether to include the parent directory (..)
+    // in the files list
+    "include_parent_directory": true,
+
     // If the "FuzzyStartFromFileCommand" is run outside of a open buffer
     // or from a buffer that does not exist on disk, you can specify
     // its default action to do instead of starting navigation from

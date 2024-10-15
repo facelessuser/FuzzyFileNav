@@ -189,7 +189,7 @@ class FuzzyEventListener(sublime_plugin.EventListener):
             # See if this is the auto-complete path command
             if key in [
                 "fuzzy_path_complete", "fuzzy_path_complete_back", "fuzzy_toggle_hidden",
-                "fuzzy_bookmarks_load", "fuzzy_get_cwd", "fuzzy_cwv"
+                "fuzzy_bookmarks_load", "fuzzy_get_cwd", "fuzzy_cwv", "fuzzy_go_to_parent_dir"
             ]:
                 return active
             elif key == "fuzzy_open_folder":
@@ -833,6 +833,13 @@ class FuzzyGetCwdCommand(sublime_plugin.ApplicationCommand):
             sublime.status_message("CWD: " + FuzzyFileNavCommand.cwd)
 
 
+class FuzzyGoToParentDirCommand(sublime_plugin.WindowCommand):
+    def run(self):
+        if FuzzyFileNavCommand.active:
+            self.window.run_command("hide_overlay")
+            sublime.set_timeout(lambda: self.window.run_command("fuzzy_file_nav", {"start": back_dir(FuzzyFileNavCommand.cwd)}), 0)
+
+
 class FuzzyToggleHiddenCommand(sublime_plugin.WindowCommand):
     """Toggle whether hidden files are shown or hidden."""
 
@@ -1166,7 +1173,21 @@ class FuzzyFileNavCommand(sublime_plugin.WindowCommand):
                     documents.append(f)
                 else:
                     folders.append(f + ("\\" if PLATFORM == "windows" else "/"))
-        return [".."] + sorted(folders) + sorted(documents)
+        options = sorted(
+            folders + documents,
+            key=lambda f: self.get_key(cwd, f),
+            reverse=True
+        )
+        if sublime.load_settings(FUZZY_SETTINGS).get("include_parent_directory", True):
+            options = [".."] + options
+        return options
+
+    def get_key(self, cwd, f):
+        try:
+            accessed = path.getatime(path.join(cwd, f))
+        except Exception:
+            accessed = 0
+        return (accessed, str.casefold(f))
 
     def on_highlight(self, value):
         """Get index of highlighted file."""
@@ -1185,10 +1206,30 @@ class FuzzyFileNavCommand(sublime_plugin.WindowCommand):
         self.cls.view = None
         sublime.set_timeout(
             lambda: self.window.show_quick_panel(
-                self.cls.files, self.check_selection, 0, index, on_highlight=self.on_highlight
+                self.cls.files,
+                self.check_selection,
+                0,
+                index, on_highlight=self.on_highlight,
+                placeholder=self.make_placeholder(cwd)
             ),
             0
         )
+
+    def make_placeholder(self, cwd):
+        if len(cwd) < 50:
+            return cwd
+        placeholder = cwd
+        while len(placeholder) > 50:
+            parts = list(filter(None, placeholder.split(os.sep)))
+            if len(parts) == 1:
+                break
+            idx_to_shorten = parts.index(next(p for p in parts if len(p) > 1))
+            if idx_to_shorten == len(parts) - 1:
+                break
+            parts[idx_to_shorten] = parts[idx_to_shorten][0]
+            placeholder = os.sep + os.sep.join(parts)
+
+        return placeholder
 
     def check_selection(self, selection):
         """Check the users selection and navigate to directory or open file."""
@@ -1197,7 +1238,8 @@ class FuzzyFileNavCommand(sublime_plugin.WindowCommand):
         if selection > -1:
             self.cls.fuzzy_reload = False
             # The first selection is the "go up a directory" option.
-            directory = back_dir(self.cls.cwd) if selection == 0 else path.join(self.cls.cwd, self.cls.files[selection])
+            parent_selected = selection == 0 and sublime.load_settings(FUZZY_SETTINGS).get("include_parent_directory", True)
+            directory = back_dir(self.cls.cwd) if parent_selected else path.join(self.cls.cwd, self.cls.files[selection])
             self.cls.cwd = directory if PLATFORM == "windows" and directory == "" else path.normpath(directory)
 
             # Check if the option is a folder or if we are at the root (needed for windows)
