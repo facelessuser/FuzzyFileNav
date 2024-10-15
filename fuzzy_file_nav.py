@@ -841,7 +841,13 @@ class FuzzyGoToParentDirCommand(sublime_plugin.WindowCommand):
 
         if FuzzyFileNavCommand.active:
             self.window.run_command("hide_overlay")
-            sublime.set_timeout(lambda: self.window.run_command("fuzzy_file_nav", {"start": back_dir(FuzzyFileNavCommand.cwd)}), 0)
+            sublime.set_timeout(
+                lambda: self.window.run_command(
+                    "fuzzy_file_nav",
+                    {"start": back_dir(FuzzyFileNavCommand.cwd)}
+                ),
+                0
+            )
 
 
 class FuzzyToggleHiddenCommand(sublime_plugin.WindowCommand):
@@ -1213,6 +1219,9 @@ class FuzzyFileNavCommand(sublime_plugin.WindowCommand):
         status_cwd()
         self.cls.files = self.get_files(cwd)
 
+        show_placeholder = sublime.load_settings(FUZZY_SETTINGS).get("show_directory_in_placeholder", False)
+        placeholder = self.make_placeholder(cwd) if show_placeholder else None
+
         # Make sure panel is down before loading a new one.
         self.cls.view = None
         sublime.set_timeout(
@@ -1221,7 +1230,7 @@ class FuzzyFileNavCommand(sublime_plugin.WindowCommand):
                 self.check_selection,
                 0,
                 index, on_highlight=self.on_highlight,
-                placeholder=self.make_placeholder(cwd)
+                placeholder=placeholder
             ),
             0
         )

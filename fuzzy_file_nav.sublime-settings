@@ -13,6 +13,10 @@
     // Available actions: delete, open, saveas, mkfile, mkdir, paste
     "keep_panel_open_exceptions": [],
 
+    // Setting this to true will show the current directory
+    // as a placeholder in the input field
+    "show_directory_in_placeholder": false,
+
     // Controls whether system hidden files are shown in FuzzyFileNav.
     "show_system_hidden_files": true,
 
