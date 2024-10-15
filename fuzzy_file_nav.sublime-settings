@@ -26,7 +26,7 @@
     "sort_entries": "alphabetical",
 
     // Whether or not to mix files and folders in the completion list.
-    // The default behavior is to show fodlers first, then files
+    // The default behavior is to show folders first, then files.
     "mix_files_and_folders": false,
 
     // (fuzzy/windows/nix)
