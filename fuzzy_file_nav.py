@@ -1184,38 +1184,40 @@ class FuzzyFileNavCommand(sublime_plugin.WindowCommand):
                 else:
                     folders.append(f + ("\\" if PLATFORM == "windows" else "/"))
 
-        if sublime.load_settings(FUZZY_SETTINGS).get("sort_entries", "alphabetical") == "last-access":
+        if sublime.load_settings(FUZZY_SETTINGS).get("sort_entries", "alphabetical") == "alphabetical":
+            if sublime.load_settings(FUZZY_SETTINGS).get("mix_files_and_folders", False):
+                options = sorted(folders + documents)
+            else:
+                options = sorted(folders) + sorted(documents)
+        else:
             if sublime.load_settings(FUZZY_SETTINGS).get("mix_files_and_folders", False):
                 options = sorted(
                     folders + documents,
-                    key=lambda f: self.get_last_accessed_key(cwd, f),
+                    key=lambda f: self.get_sort_key(cwd, f),
                     reverse=True
                 )
             else:
                 options = sorted(
                     folders,
-                    key=lambda f: self.get_last_accessed_key(cwd, f),
+                    key=lambda f: self.get_sort_key(cwd, f),
                     reverse=True
                 ) + sorted(
                     documents,
-                    key=lambda f: self.get_last_accessed_key(cwd, f),
+                    key=lambda f: self.get_sort_key(cwd, f),
                     reverse=True
                 )
-        else:
-            if sublime.load_settings(FUZZY_SETTINGS).get("mix_files_and_folders", False):
-                options = sorted(folders + documents)
-            else:
-                options = sorted(folders) + sorted(documents)
 
         if sublime.load_settings(FUZZY_SETTINGS).get("include_parent_directory", True):
             options = [".."] + options
         return options
 
-    def get_last_accessed_key(self, cwd, f):
-        """Get the last accessed time of a file. Defaults to the normalized string"""
+    def get_sort_key(self, cwd, f):
+        """Get the last accessed / modified time of a file. Defaults to the normalized string"""
 
+        sort_type = sublime.load_settings(FUZZY_SETTINGS).get("sort_entries", "last-modified")
+        fun = path.getmtime if sort_type == "last-modified" else path.getatime
         try:
-            accessed = path.getatime(path.join(cwd, f))
+            accessed = fun(path.join(cwd, f))
         except Exception:
             accessed = 0
         return (accessed, str.casefold(f))

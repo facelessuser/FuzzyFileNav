@@ -21,8 +21,9 @@
     "show_system_hidden_files": true,
 
     // (alphabetical/last-access)
-    // alphabetical - sort files by their case-insensitive names
-    // last-access  - sort files by the time they were last accessed
+    // alphabetical  - sort files by their case-insensitive names
+    // last-modified - sort files by the time they were last modified
+    // last-access   - sort files by the time they were last accessed
     "sort_entries": "alphabetical",
 
     // Whether or not to mix files and folders in the completion list.
