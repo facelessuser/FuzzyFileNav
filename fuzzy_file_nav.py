@@ -1212,7 +1212,7 @@ class FuzzyFileNavCommand(sublime_plugin.WindowCommand):
         return options
 
     def get_sort_key(self, cwd, f):
-        """Get the last accessed / modified time of a file. Defaults to the normalized string"""
+        """Get the last accessed / modified time of a file. Defaults to the normalized string."""
 
         sort_type = sublime.load_settings(FUZZY_SETTINGS).get("sort_entries", "last-modified")
         fun = path.getmtime if sort_type == "last-modified" else path.getatime
@@ -1252,7 +1252,7 @@ class FuzzyFileNavCommand(sublime_plugin.WindowCommand):
         )
 
     def make_placeholder(self, cwd):
-        """Get the CWD, shortened if necessary"""
+        """Get the `CWD`, shortened if necessary."""
 
         if len(cwd) < 50:
             return cwd
@@ -1267,7 +1267,7 @@ class FuzzyFileNavCommand(sublime_plugin.WindowCommand):
             parts[idx_to_shorten] = parts[idx_to_shorten][0]
             placeholder = os.sep + os.sep.join(parts)
 
-        return placeholder
+        return placeholder + os.sep
 
     def check_selection(self, selection):
         """Check the users selection and navigate to directory or open file."""
@@ -1276,8 +1276,15 @@ class FuzzyFileNavCommand(sublime_plugin.WindowCommand):
         if selection > -1:
             self.cls.fuzzy_reload = False
             # The first selection is the "go up a directory" option.
-            parent_selected = selection == 0 and sublime.load_settings(FUZZY_SETTINGS).get("include_parent_directory", True)
-            directory = back_dir(self.cls.cwd) if parent_selected else path.join(self.cls.cwd, self.cls.files[selection])
+            parent_selected = (
+                selection == 0 and
+                sublime.load_settings(FUZZY_SETTINGS).get("include_parent_directory", True)
+            )
+            directory = (
+                back_dir(self.cls.cwd)
+                if parent_selected
+                else path.join(self.cls.cwd, self.cls.files[selection])
+            )
             self.cls.cwd = directory if PLATFORM == "windows" and directory == "" else path.normpath(directory)
 
             # Check if the option is a folder or if we are at the root (needed for windows)
