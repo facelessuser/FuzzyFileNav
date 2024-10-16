@@ -13,14 +13,32 @@
     // Available actions: delete, open, saveas, mkfile, mkdir, paste
     "keep_panel_open_exceptions": [],
 
+    // Setting this to true will show the current directory
+    // as a placeholder in the input field
+    "show_directory_in_placeholder": false,
+
     // Controls whether system hidden files are shown in FuzzyFileNav.
     "show_system_hidden_files": true,
+
+    // (alphabetical/last-modified/last-access)
+    // alphabetical  - sort files by their case-insensitive names
+    // last-modified - sort files by the time they were last modified
+    // last-access   - sort files by the time they were last accessed
+    "sort_entries": "alphabetical",
+
+    // Whether or not to mix files and folders in the completion list.
+    // The default behavior is to show folders first, then files.
+    "mix_files_and_folders": false,
 
     // (fuzzy/windows/nix)
     // fuzzy   - this will auto-complete with the selected index in the quick panel
     // windows - this will complete like a windows terminal would complete paths
     // nix     - this will complete like a unix/linux terminal traditionally completes paths
     "completion_style": "fuzzy",
+
+    // Whether to include the parent directory (..)
+    // in the files list
+    "include_parent_directory": true,
 
     // If the "FuzzyStartFromFileCommand" is run outside of a open buffer
     // or from a buffer that does not exist on disk, you can specify
