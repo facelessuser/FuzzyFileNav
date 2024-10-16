@@ -189,9 +189,11 @@ class FuzzyEventListener(sublime_plugin.EventListener):
             # See if this is the auto-complete path command
             if key in [
                 "fuzzy_path_complete", "fuzzy_path_complete_back", "fuzzy_toggle_hidden",
-                "fuzzy_bookmarks_load", "fuzzy_get_cwd", "fuzzy_cwv", "fuzzy_go_to_parent_dir"
+                "fuzzy_bookmarks_load", "fuzzy_get_cwd", "fuzzy_cwv"
             ]:
                 return active
+            elif key == "fuzzy_go_to_parent_dir":
+                return active and empty
             elif key == "fuzzy_open_folder":
                 if (
                     (
