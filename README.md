@@ -1,5 +1,4 @@
 [![Donate via PayPal][donate-image]][donate-link]
-[![Build][github-ci-image]][github-ci-link]
 [![Package Control Downloads][pc-image]][pc-link]
 ![License][license-image]
 # FuzzyFileNav
@@ -15,8 +14,6 @@ https://facelessuser.github.io/FuzzyFileNav/
 
 FuzzyFileNav is released under the MIT license.
 
-[github-ci-image]: https://github.com/facelessuser/FuzzyFileNav/workflows/build/badge.svg?branch=master&event=push
-[github-ci-link]: https://github.com/facelessuser/FuzzyFileNav/actions?query=workflow%3Abuild+branch%3Amaster
 [pc-image]: https://img.shields.io/packagecontrol/dt/FuzzyFileNav.svg?labelColor=333333&logo=sublime%20text
 [pc-link]: https://packagecontrol.io/packages/FuzzyFileNav
 [license-image]: https://img.shields.io/badge/license-MIT-blue.svg?labelColor=333333

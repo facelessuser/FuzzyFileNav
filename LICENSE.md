@@ -1,6 +1,6 @@
 FuzzyFileNav is released under the MIT license.
 
-Copyright (c) 2012 - 2024 Isaac Muse <isaacmuse@gmail.com>
+Copyright (c) 2012 - 2025 Isaac Muse <isaacmuse@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy oft his software and associated
 documentation files (the "Software"), to deal in the Software without restriction, including without limitation the
